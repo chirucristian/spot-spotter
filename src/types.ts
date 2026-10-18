@@ -1,0 +1,31 @@
+export type LandmarkCategory = 'civic' | 'law' | 'sacred' | 'culture';
+
+export interface Landmark {
+  id: string;
+  name: string;
+  role: string;
+  category: LandmarkCategory;
+  catLabel: string;
+  lat: number;
+  lng: number;
+  wikiTitle: string;
+  /** Quick 1-sentence spatial/purpose hook */
+  whyItMatters: string;
+  /** Architectural style & era */
+  styleAndEra: string;
+  /** Architect or builder */
+  architect: string;
+  /** Rich multi-sentence historical & architectural summary */
+  summary: string;
+  /** 2-3 quick bullet highlights when looking at the facade */
+  highlights: string[];
+  fallbackImg: string;
+}
+
+export interface CivicSquare {
+  key: string;
+  name: string;
+  center: { lat: number; lng: number };
+  zoom: number;
+  landmarks: Landmark[];
+}

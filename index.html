@@ -4,111 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0F172A" />
-  <title>Spot Spotter</title>
+  <title>Spot Spotter — Civic Square &amp; Building Explorer</title>
 
   <!-- Clean, highly legible geometric display & outdoor body typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet" />
-
-  <!-- Leaflet fallback CSS (only used if Google Maps demo key is throttled) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-
-  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Full-Screen Map Canvas (Google Maps Default) -->
-  <main class="map-viewport" aria-label="Interactive Map">
-    <div id="google-map" class="map-canvas"></div>
-    <div id="leaflet-map" class="map-canvas hidden"></div>
-  </main>
-
-  <!-- Minimal Floating Top Pill -->
-  <header class="floating-top-bar">
-    <div class="location-pill">
-      <span class="app-mark" aria-hidden="true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L19 21L12 17L5 21L12 2Z"></path>
-        </svg>
-      </span>
-      <select id="square-select" class="square-select" aria-label="Select Square or Live GPS">
-        <option value="senate-helsinki">Senate Square · Helsinki</option>
-        <option value="parliament-london">Parliament Square · London</option>
-        <option value="constitution-bucharest">Piața Constituției · Bucharest</option>
-        <option value="signoria-florence">Piazza della Signoria · Florence</option>
-        <option value="grand-place-brussels">Grand-Place · Brussels</option>
-        <option value="live-gps">📍 My Live Location</option>
-      </select>
-    </div>
-
-    <button type="button" id="scan-area-btn" class="floating-action-pill" title="Spot buildings in this map view">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <span>Spot Here</span>
-    </button>
-  </header>
-
-  <!-- Floating GPS Pinpoint FAB -->
-  <button type="button" id="locate-me-btn" class="locate-fab" aria-label="Pinpoint my location" title="Pinpoint my location">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="4"></circle>
-      <line x1="12" y1="2" x2="12" y2="5"></line>
-      <line x1="12" y1="19" x2="12" y2="22"></line>
-      <line x1="2" y1="12" x2="5" y2="12"></line>
-      <line x1="19" y1="12" x2="22" y2="12"></line>
-    </svg>
-  </button>
-
-  <!-- Clean Building Photo + Summary Card (Appears on Tap) -->
-  <aside id="place-card" class="place-card" aria-labelledby="card-title" aria-hidden="true">
-    <button type="button" id="card-close-btn" class="card-close-btn" aria-label="Close card">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-
-    <div class="card-layout">
-      <div class="card-photo-wrap">
-        <img
-          id="card-img"
-          class="card-photo"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Helsinki_Cathedral_in_July_2004.jpg/960px-Helsinki_Cathedral_in_July_2004.jpg"
-          alt="Helsinki Cathedral"
-          loading="lazy"
-        />
-        <span id="card-badge" class="card-category-badge">Cathedral</span>
-      </div>
-
-      <div class="card-content">
-        <div class="card-header-row">
-          <h2 id="card-title" class="card-title">Helsinki Cathedral</h2>
-          <span id="card-distance" class="card-distance">70 m</span>
-        </div>
-        <p id="card-role" class="card-role">Evangelical Lutheran Cathedral · Senate Square</p>
-        <p id="card-summary" class="card-summary">
-          Designed by Carl Ludvig Engel as the climax of Senate Square, this neoclassical white landmark with green domes was completed in 1852.
-        </p>
-
-        <div class="card-actions">
-          <a id="card-maps-link" class="card-btn-primary" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
-            Open in Google Maps
-          </a>
-          <a id="card-wiki-link" class="card-btn-secondary" href="https://en.wikipedia.org" target="_blank" rel="noopener noreferrer">
-            Wikipedia ↗
-          </a>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Subtle Status Pill -->
-  <div id="status-toast" class="status-toast" role="status" aria-live="polite"></div>
-
-  <!-- Leaflet Fallback SDK -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="app.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

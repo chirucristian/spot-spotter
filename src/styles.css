@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Spot Spotter — Distilled Rooftop Name Pills & Spatial Landmark Card
+   Spot Spotter — React + Vite + TypeScript Spatial Landmark Explorer
    ========================================================================== */
 
 :root {
@@ -37,7 +37,7 @@
   color: var(--ink-on-dark);
 }
 
-html, body {
+html, body, #root {
   width: 100%;
   height: 100dvh;
   overflow: hidden;
@@ -202,7 +202,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Compact Rooftop Building Name Pills (Zero-Overlap, Single-Line)
+   Compact Rooftop Building Name Pills
    ========================================================================== */
 .rooftop-marker-wrap {
   background: transparent;
@@ -219,12 +219,6 @@ html, body {
   pointer-events: auto;
   user-select: none;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
-}
-
-/* When zoomed out or overlapping, gracefully compact to a miniature dot+short label or hide collision */
-.rooftop-pill-anchor.is-crowded .rooftop-pill {
-  padding: 3px 8px;
-  font-size: 0.76rem;
 }
 
 .rooftop-pill-anchor:hover,
@@ -244,7 +238,7 @@ html, body {
   box-shadow: var(--shadow-pill);
   border: 1.5px solid rgba(255, 255, 255, 0.92);
   white-space: nowrap;
-  max-width: 190px;
+  max-width: 195px;
 }
 
 .rooftop-pill-anchor.is-selected .rooftop-pill {
@@ -340,41 +334,46 @@ html, body {
 }
 
 /* ==========================================================================
-   Clean Building Photo + Summary Card (Bottom Sheet on Phone, Floating Card on Desktop)
+   Rich Architectural Dossier Card (Photo + Hook + Facts + Summary + Highlights)
    ========================================================================== */
 .place-card {
   position: fixed;
   left: 12px;
   right: 12px;
   bottom: max(12px, env(safe-area-inset-bottom, 12px));
-  max-width: 440px;
+  max-width: 460px;
+  max-height: 78dvh;
   margin: 0 auto;
   background-color: var(--surface-card);
   border-radius: 20px;
   box-shadow: var(--shadow-float);
   border: 1px solid var(--border-subtle);
   z-index: 40;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  transform: translateY(120%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+  animation: cardSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.place-card.is-open {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
+@keyframes cardSlideUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+            transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .card-close-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background-color: rgba(15, 23, 42, 0.72);
+  background-color: rgba(15, 23, 42, 0.76);
   color: #FFFFFF;
   border: none;
   display: inline-flex;
@@ -384,11 +383,18 @@ html, body {
   z-index: 5;
 }
 
+.card-layout {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 .card-photo-wrap {
   position: relative;
   width: 100%;
-  height: 168px;
+  height: 175px;
   background-color: var(--surface-subtle);
+  flex-shrink: 0;
 }
 
 .card-photo {
@@ -404,71 +410,138 @@ html, body {
   left: 12px;
   padding: 4px 10px;
   border-radius: 999px;
-  background-color: rgba(15, 23, 42, 0.84);
+  background-color: rgba(15, 23, 42, 0.86);
   color: #FFFFFF;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+}
+
+.card-distance-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.94);
+  color: var(--ink-primary);
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .card-content {
   padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
-.card-header-row {
+.card-header-group {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .card-title {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: var(--ink-primary);
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
-.card-distance {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  background-color: var(--surface-subtle);
-  padding: 2px 8px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
 .card-role {
   font-size: 0.84rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink-secondary);
+}
+
+/* 1-Sentence Spatial Orientation Callout */
+.card-why-box {
+  background-color: var(--surface-subtle);
+  border-radius: 10px;
+  padding: 8px 11px;
+  font-size: 0.85rem;
+  line-height: 1.42;
+  color: var(--ink-primary);
+}
+
+.why-label {
+  font-weight: 700;
+  color: var(--surface-pill-active);
+}
+
+/* Architectural Style & Architect Strip */
+.card-facts-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fact-pill {
+  background-color: var(--surface-subtle);
+  border-radius: 10px;
+  padding: 7px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fact-key {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.fact-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.25;
 }
 
 .card-summary {
   font-size: 0.9rem;
   color: var(--ink-secondary);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.55;
+  user-select: text;
+}
+
+/* Facade Highlights List */
+.card-highlights {
+  background-color: var(--surface-subtle);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.highlights-heading {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.highlights-list {
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.84rem;
+  line-height: 1.42;
+  color: var(--ink-secondary);
 }
 
 .card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 6px;
+  padding-top: 2px;
 }
 
 .card-btn-primary {
   flex: 1;
-  height: 38px;
+  height: 40px;
   border-radius: 10px;
   background-color: var(--surface-pill);
   color: var(--ink-on-dark);
@@ -481,7 +554,7 @@ html, body {
 }
 
 .card-btn-secondary {
-  height: 38px;
+  height: 40px;
   padding: 0 14px;
   border-radius: 10px;
   background-color: var(--surface-subtle);
@@ -523,7 +596,8 @@ html, body {
     left: 16px;
     right: auto;
     bottom: 16px;
-    width: 380px;
+    width: 410px;
+    max-height: 82dvh;
     margin: 0;
   }
 }

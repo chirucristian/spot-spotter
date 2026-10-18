@@ -1,70 +1,31 @@
 /* ==========================================================================
-   Spot Spotter — Architectural Cadastral Blueprint & Field Survey Atlas
+   Spot Spotter — Distilled Rooftop Name Pills & Spatial Landmark Card
    ========================================================================== */
 
 :root {
-  /* Daylight Cyanotype Blueprint & Cadastral Slate Palette */
-  --bg-buff: #E4EDF4;
-  --bg-buff-elevated: #F2F7FB;
-  --bg-buff-sunken: #D2E0EC;
-  --ink-primary: #0F1A26;
-  --ink-secondary: #2A3B4E;
-  --ink-muted: #455970;
-  --rule-hairline: #0F1A26;
-  --rule-subtle: #96ADC2;
+  --surface-card: #FFFFFF;
+  --surface-pill: #0F172A;
+  --surface-pill-active: #DC2626;
+  --surface-subtle: #F1F5F9;
+  --ink-primary: #0F172A;
+  --ink-secondary: #334155;
+  --ink-muted: #475569;
+  --ink-on-dark: #FFFFFF;
+  --border-subtle: #E2E8F0;
 
-  /* Cadastral Structural Inks (All >= 4.5:1 WCAG AA contrast with #FFFFFF) */
-  --vermilion: #B8291C;
-  --vermilion-tint: #FCEAE8;
-  --ochre: #9A6300;
-  --ochre-tint: #FDF4E2;
-  --cobalt: #164488;
-  --cobalt-tint: #E5EFFB;
-  --verdigris: #1C5A37;
-  --verdigris-tint: #E3F3EA;
-  --carbon-purple: #532B78;
+  /* Category Indicator Dots */
+  --dot-civic: #EF4444;
+  --dot-law: #3B82F6;
+  --dot-sacred: #10B981;
+  --dot-culture: #F59E0B;
 
-  /* Typography */
-  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
-  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Bricolage Grotesque', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Shadows (Soft offset + blur, never zero-blur block shadows) */
-  --shadow-badge: 0 3px 10px rgba(15, 26, 38, 0.18), 0 1px 3px rgba(15, 26, 38, 0.12);
-  --shadow-badge-active: 0 8px 22px rgba(184, 41, 28, 0.3), 0 2px 6px rgba(15, 26, 38, 0.22);
-  --shadow-sheet: 0 -8px 32px rgba(15, 26, 38, 0.24);
-
-  /* Layout metrics */
-  --header-h: 94px;
-  --dock-h: 110px;
+  --shadow-float: 0 8px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  --shadow-pill: 0 4px 12px rgba(15, 23, 42, 0.25), 0 1px 3px rgba(15, 23, 42, 0.14);
+  --shadow-pill-active: 0 6px 18px rgba(15, 23, 42, 0.34), 0 2px 6px rgba(15, 23, 42, 0.2);
 }
 
-[data-theme="night"] {
-  --bg-buff: #0E1621;
-  --bg-buff-elevated: #152130;
-  --bg-buff-sunken: #091018;
-  --ink-primary: #ECF3F9;
-  --ink-secondary: #B8CAE0;
-  --ink-muted: #869EB8;
-  --rule-hairline: #3C526B;
-  --rule-subtle: #243549;
-
-  --vermilion: #D93B2B;
-  --vermilion-tint: #331614;
-  --ochre: #C98A14;
-  --ochre-tint: #2B210E;
-  --cobalt: #2D6BC4;
-  --cobalt-tint: #12233B;
-  --verdigris: #2B7A4B;
-  --verdigris-tint: #11291B;
-  --carbon-purple: #A982CE;
-
-  --shadow-badge: 0 4px 14px rgba(0, 0, 0, 0.58), 0 1px 4px rgba(0, 0, 0, 0.42);
-  --shadow-badge-active: 0 8px 26px rgba(217, 59, 43, 0.38), 0 2px 8px rgba(0, 0, 0, 0.65);
-  --shadow-sheet: 0 -10px 36px rgba(0, 0, 0, 0.7);
-}
-
-/* Browser Surface Theming */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -72,240 +33,37 @@
 }
 
 ::selection {
-  background-color: var(--vermilion);
-  color: #FFFFFF;
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
 }
 
 html, body {
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  background-color: var(--bg-buff);
-  color: var(--ink-primary);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.45;
+  color: var(--ink-primary);
+  background-color: #E2E8F0;
   -webkit-font-smoothing: antialiased;
-  caret-color: var(--vermilion);
   user-select: none;
 }
 
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-buff-sunken);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--ink-secondary);
-  border-radius: 0;
-}
-
-/* Focus Ring */
 :focus-visible {
-  outline: 2px solid var(--vermilion);
+  outline: 2px solid var(--surface-pill-active);
   outline-offset: 2px;
 }
 
-/* Tabular Data Numerals */
-.tabular {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ==========================================================================
-   App Shell
+   Full-Bleed Map Viewport
    ========================================================================== */
-.app-shell {
-  position: relative;
-  width: 100%;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 20;
-}
-
-/* ==========================================================================
-   Top Surveyor Header Bar & Lexicon Guide Rule
-   ========================================================================== */
-.survey-header {
-  pointer-events: auto;
-  background-color: var(--bg-buff);
-  border-bottom: 1px solid var(--rule-hairline);
-  box-shadow: var(--shadow-badge);
-  z-index: 30;
-}
-
-.header-main-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  gap: 8px;
-  min-height: 54px;
-}
-
-.brand-cluster {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  flex: 1;
-}
-
-.cadastral-seal {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--rule-hairline);
-  background-color: var(--vermilion);
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.brand-titles {
-  min-width: 0;
-  flex: 1;
-}
-
-.app-title {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: var(--ink-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.square-selector-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.square-select {
-  appearance: none;
-  background-color: var(--bg-buff-elevated);
-  color: var(--ink-primary);
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  padding: 2px 24px 2px 8px;
-  cursor: pointer;
-  max-width: 100%;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230F1A26' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 6px center;
-}
-
-[data-theme="night"] .square-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ECF3F9' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.icon-btn {
-  height: 38px;
-  min-width: 38px;
-  padding: 0 10px;
-  background-color: var(--bg-buff-elevated);
-  color: var(--ink-primary);
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.12s ease;
-}
-
-.icon-btn:hover {
-  background-color: var(--bg-buff-sunken);
-}
-
-.icon-btn:active {
-  transform: translateY(1px);
-}
-
-.icon-btn.active-mode {
-  background-color: var(--cobalt-tint);
-  border-color: var(--cobalt);
-  color: var(--cobalt);
-}
-
-.engine-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.engine-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--verdigris);
-}
-
-.engine-dot.gmaps {
-  background-color: var(--cobalt);
-}
-
-/* Lexicon Guide-Word Bar (Raised from rw-lexicon-shoulder-and-plate) */
-.lexicon-guide-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 12px;
-  background-color: var(--bg-buff-sunken);
-  border-top: 1px solid var(--rule-subtle);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--ink-secondary);
-  gap: 8px;
-}
-
-.guide-span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 600;
-}
-
-.guide-coords {
-  flex-shrink: 0;
-  color: var(--ink-primary);
-  font-weight: 700;
-}
-
-/* ==========================================================================
-   Map Stage & Canvases
-   ========================================================================== */
-.map-stage {
+.map-viewport {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100dvh;
   z-index: 1;
-  background-color: var(--bg-buff-sunken);
 }
 
 .map-canvas {
@@ -319,675 +77,440 @@ html, body {
   display: none !important;
 }
 
-/* Cadastral Blueprint Filter for Leaflet OpenStreetMap Tiles */
-#leaflet-map .leaflet-tile-pane {
-  filter: contrast(1.06) brightness(0.97) saturate(0.82);
-}
-
-[data-theme="night"] #leaflet-map .leaflet-tile-pane {
-  filter: invert(0.92) hue-rotate(195deg) contrast(1.12) brightness(0.86);
-}
-
-/* Compact attribution above dock */
 .leaflet-control-attribution {
-  font-family: var(--font-mono) !important;
   font-size: 12px !important;
-  background: rgba(228, 237, 244, 0.88) !important;
-  color: #2A3B4E !important;
-  border-top: 1px solid #96ADC2;
-  bottom: var(--dock-h) !important;
-}
-
-[data-theme="night"] .leaflet-control-attribution {
-  background: rgba(14, 22, 33, 0.88) !important;
-  color: #B8CAE0 !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--ink-secondary) !important;
 }
 
 /* ==========================================================================
-   Building Callout Badges Over Structures (Cadastral + Japanese High Density)
+   Minimal Floating Top Bar
    ========================================================================== */
-.building-marker-wrapper {
+.floating-top-bar {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 12px));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.location-pill {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  box-shadow: var(--shadow-float);
+  max-width: calc(100% - 125px);
+}
+
+.app-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.square-select {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  padding-right: 18px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230F172A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+}
+
+.floating-action-pill {
+  pointer-events: auto;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.floating-action-pill:hover {
+  background-color: #1E293B;
+}
+
+.floating-action-pill:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================================
+   Floating GPS Pinpoint FAB
+   ========================================================================== */
+.locate-fab {
+  position: fixed;
+  right: 14px;
+  bottom: max(22px, env(safe-area-inset-bottom, 22px));
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--surface-card);
+  color: var(--ink-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-float);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.locate-fab:hover {
+  background-color: var(--surface-subtle);
+}
+
+.locate-fab:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Compact Rooftop Building Name Pills (Zero-Overlap, Single-Line)
+   ========================================================================== */
+.rooftop-marker-wrap {
   background: transparent;
   border: none;
 }
 
-.cadastral-callout {
+.rooftop-pill-anchor {
   position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
   transform: translate(-50%, -100%);
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
+  cursor: pointer;
   pointer-events: auto;
   user-select: none;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
-.cadastral-callout:hover,
-.cadastral-callout.is-selected {
-  transform: translate(-50%, -104%) scale(1.05);
-  z-index: 900 !important;
+/* When zoomed out or overlapping, gracefully compact to a miniature dot+short label or hide collision */
+.rooftop-pill-anchor.is-crowded .rooftop-pill {
+  padding: 3px 8px;
+  font-size: 0.76rem;
 }
 
-.callout-box {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: stretch;
-  background-color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
-  box-shadow: var(--shadow-badge);
-  width: max-content;
-  min-width: 152px;
-  max-width: 248px;
+.rooftop-pill-anchor:hover,
+.rooftop-pill-anchor.is-selected {
+  transform: translate(-50%, -106%) scale(1.06);
+  z-index: 950 !important;
 }
 
-.cadastral-callout.is-selected .callout-box {
-  border-color: var(--vermilion);
-  box-shadow: var(--shadow-badge-active);
-  outline: 1px solid var(--vermilion);
-}
-
-/* Category Color Cell */
-.callout-num {
-  display: flex;
+.rooftop-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px 6px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  background-color: var(--vermilion);
-  border-right: 1px solid var(--rule-hairline);
-}
-
-.callout-cat-civic .callout-num { background-color: var(--vermilion); }
-.callout-cat-law .callout-num { background-color: var(--cobalt); }
-.callout-cat-culture .callout-num { background-color: var(--ochre); color: #FFFFFF; }
-.callout-cat-sacred .callout-num { background-color: var(--verdigris); }
-
-/* Building Title & Category Strip */
-.callout-body {
-  padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-}
-
-.callout-type-tag {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--ink-secondary);
-  line-height: 1.15;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
+  box-shadow: var(--shadow-pill);
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
   white-space: nowrap;
+  max-width: 190px;
 }
 
-.callout-name {
-  font-family: var(--font-display);
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--ink-primary);
-  line-height: 1.18;
-  white-space: normal;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.rooftop-pill-anchor.is-selected .rooftop-pill {
+  background-color: var(--surface-pill-active);
+  box-shadow: var(--shadow-pill-active);
+  border-color: #FFFFFF;
 }
 
-/* Distance / Inspected Cell */
-.callout-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 6px;
-  background-color: var(--bg-buff-sunken);
-  border-left: 1px solid var(--rule-subtle);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  white-space: nowrap;
-}
-
-.callout-stamp {
-  font-size: 0.75rem;
-  color: var(--carbon-purple);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-/* Architectural Pointer Stem & Star-Atlas Magnitude Anchor Dot */
-.callout-stem {
-  width: 2px;
-  height: 10px;
-  background-color: var(--rule-hairline);
-}
-
-.cadastral-callout.is-selected .callout-stem {
-  background-color: var(--vermilion);
-}
-
-.callout-anchor-dot {
+.pill-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background-color: var(--vermilion);
-  border: 2px solid var(--bg-buff-elevated);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  background-color: var(--dot-civic);
 }
 
-.mag-1 .callout-anchor-dot { width: 13px; height: 13px; }
-.mag-2 .callout-anchor-dot { width: 10px; height: 10px; }
-.mag-3 .callout-anchor-dot { width: 8px; height: 8px; }
+.cat-civic .pill-dot { background-color: var(--dot-civic); }
+.cat-law .pill-dot { background-color: var(--dot-law); }
+.cat-sacred .pill-dot { background-color: var(--dot-sacred); }
+.cat-culture .pill-dot { background-color: var(--dot-culture); }
 
-/* User GPS Beacon */
-.user-gps-beacon {
+.rooftop-pill-anchor.is-selected .pill-dot {
+  background-color: #FFFFFF;
+}
+
+.pill-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pill-pointer {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--surface-pill);
+  margin-top: -1px;
+}
+
+.rooftop-pill-anchor.is-selected .pill-pointer {
+  border-top-color: var(--surface-pill-active);
+}
+
+.pill-roof-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--surface-pill);
+  border: 1.5px solid #FFFFFF;
+  margin-top: 1px;
+}
+
+.rooftop-pill-anchor.is-selected .pill-roof-dot {
+  background-color: var(--surface-pill-active);
+}
+
+/* User Location Blue Pulse Dot */
+.user-gps-dot {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   transform: translate(-50%, -50%);
 }
 
-.user-gps-core {
+.user-gps-inner {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background-color: var(--cobalt);
+  background-color: #2563EB;
   border: 2.5px solid #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 3px;
+  left: 3px;
   z-index: 2;
 }
 
-.user-gps-pulse {
+.user-gps-halo {
   position: absolute;
-  inset: -8px;
+  inset: -6px;
   border-radius: 50%;
-  border: 2px solid var(--cobalt);
-  background-color: rgba(22, 68, 136, 0.2);
-  animation: pulseRing 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  background-color: rgba(37, 99, 235, 0.22);
+  animation: gpsPulse 2s ease-out infinite;
 }
 
-@keyframes pulseRing {
+@keyframes gpsPulse {
   0% { transform: scale(0.5); opacity: 0.9; }
-  100% { transform: scale(1.65); opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
 }
 
 /* ==========================================================================
-   Bottom Thumb-Zone Dock (Smartphone Ergonomics)
+   Clean Building Photo + Summary Card (Bottom Sheet on Phone, Floating Card on Desktop)
    ========================================================================== */
-.bottom-dock {
-  pointer-events: auto;
-  background-color: var(--bg-buff);
-  border-top: 1px solid var(--rule-hairline);
-  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 30;
-  box-shadow: 0 -4px 16px rgba(15, 26, 38, 0.12);
-}
-
-.dock-controls-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.pinpoint-btn {
-  flex: 1;
-  height: 42px;
-  background-color: var(--vermilion);
-  color: #FFFFFF;
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-display);
-  font-size: 0.9rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 0 14px;
-  box-shadow: 0 2px 6px rgba(184, 41, 28, 0.25);
-  transition: filter 0.15s ease, transform 0.12s ease;
-}
-
-.pinpoint-btn:hover {
-  filter: brightness(1.06);
-}
-
-.pinpoint-btn:active {
-  transform: translateY(1px);
-}
-
-.scan-btn {
-  height: 42px;
-  padding: 0 12px;
-  background-color: var(--bg-buff-elevated);
-  color: var(--ink-primary);
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
-  font-size: 0.84rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.scan-btn:hover {
-  background-color: var(--bg-buff-sunken);
-}
-
-/* Horizontal Building Index Strip */
-.landmark-strip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-
-.landmark-strip::-webkit-scrollbar {
-  display: none;
-}
-
-.strip-chip {
-  flex-shrink: 0;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
-  color: var(--ink-primary);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.strip-chip.is-active {
-  border-color: var(--vermilion);
-  background-color: var(--vermilion-tint);
-}
-
-.strip-chip-num {
-  height: 100%;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 7px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  background-color: var(--bg-buff-sunken);
-  color: var(--ink-primary);
-  border-right: 1px solid var(--rule-subtle);
-}
-
-.strip-chip.is-active .strip-chip-num {
-  background-color: var(--vermilion);
-  color: #FFFFFF;
-}
-
-.strip-chip-label {
-  padding: 0 9px;
-  white-space: nowrap;
-}
-
-/* ==========================================================================
-   Slide-Up Inspector Plate Dossier Sheet (Photo + Summary)
-   ========================================================================== */
-.dossier-sheet {
-  pointer-events: auto;
+.place-card {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  max-width: 560px;
+  left: 12px;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  max-width: 440px;
   margin: 0 auto;
-  background-color: var(--bg-buff);
-  border-top: 2px solid var(--rule-hairline);
-  border-left: 1px solid var(--rule-hairline);
-  border-right: 1px solid var(--rule-hairline);
-  box-shadow: var(--shadow-sheet);
-  z-index: 50;
-  transform: translateY(105%);
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-  max-height: 82dvh;
-  display: flex;
-  flex-direction: column;
+  background-color: var(--surface-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border-subtle);
+  z-index: 40;
+  overflow: hidden;
+  transform: translateY(120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
 }
 
-.dossier-sheet.is-open {
+.place-card.is-open {
   transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.dossier-top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 14px;
-  background-color: var(--bg-buff-sunken);
-  border-bottom: 1px solid var(--rule-hairline);
-}
-
-.dossier-plate-id {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.dossier-cat-pill {
-  padding: 2px 7px;
-  background-color: var(--vermilion);
-  color: #FFFFFF;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-}
-
-.dossier-close-btn {
+.card-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   width: 32px;
   height: 32px;
-  background-color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
-  color: var(--ink-primary);
+  border-radius: 50%;
+  background-color: rgba(15, 23, 42, 0.72);
+  color: #FFFFFF;
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 5;
 }
 
-.dossier-scroll-body {
-  padding: 14px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* Quarantined Chromolithograph Photo Plate (Raised from rw-lexicon-shoulder-and-plate) */
-.chromo-plate-frame {
-  padding: 5px;
-  background-color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
+.card-photo-wrap {
   position: relative;
+  width: 100%;
+  height: 168px;
+  background-color: var(--surface-subtle);
 }
 
-.chromo-plate-inner {
-  border: 1px solid var(--rule-subtle);
-  position: relative;
-  height: 188px;
-  background-color: var(--bg-buff-sunken);
-  overflow: hidden;
-}
-
-.chromo-plate-img {
+.card-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.chromo-plate-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 5px;
-  font-family: var(--font-mono);
+.card-category-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: rgba(15, 23, 42, 0.84);
+  color: #FFFFFF;
   font-size: 0.75rem;
-  color: var(--ink-secondary);
-}
-
-.inspected-stamp-badge {
-  color: var(--carbon-purple);
   font-weight: 700;
-  border: 1px solid var(--carbon-purple);
-  padding: 0 5px;
+  letter-spacing: 0.02em;
 }
 
-.dossier-heading {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--ink-primary);
-  margin-top: 2px;
-}
-
-.dossier-subtitle {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  margin-top: -6px;
-}
-
-/* Cadastral Telemetry Grid */
-.cadastral-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border: 1px solid var(--rule-hairline);
-  background-color: var(--bg-buff-elevated);
-}
-
-.metric-cell {
-  padding: 6px 8px;
-  border-right: 1px solid var(--rule-subtle);
+.card-content {
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
 
-.metric-cell:last-child {
-  border-right: none;
+.card-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.metric-label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  text-transform: uppercase;
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.card-distance {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  background-color: var(--surface-subtle);
+  padding: 2px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.card-role {
+  font-size: 0.84rem;
+  font-weight: 600;
   color: var(--ink-secondary);
 }
 
-.metric-val {
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--ink-primary);
-  margin-top: 2px;
+.card-summary {
+  font-size: 0.9rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.dossier-summary {
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--ink-primary);
-  max-width: 68ch;
-}
-
-.dossier-actions-row {
+.card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 4px;
+  margin-top: 6px;
 }
 
-.dossier-action-link {
+.card-btn-primary {
   flex: 1;
-  height: 40px;
-  background-color: var(--ink-primary);
-  color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
+  height: 38px;
+  border-radius: 10px;
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  cursor: pointer;
 }
 
-.dossier-secondary-btn {
-  height: 40px;
-  padding: 0 12px;
-  background-color: var(--bg-buff-elevated);
-  color: var(--ink-primary);
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
-  font-size: 0.84rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-/* ==========================================================================
-   Google Maps API Key & Free Setup Drawer
-   ========================================================================== */
-.drawer-backdrop {
-  pointer-events: auto;
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 26, 38, 0.58);
-  z-index: 60;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.22s ease, visibility 0.22s ease;
-}
-
-.drawer-backdrop.is-open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.api-drawer {
-  width: 100%;
-  max-width: 540px;
-  max-height: 88dvh;
-  background-color: var(--bg-buff);
-  border-top: 2px solid var(--rule-hairline);
-  border-left: 1px solid var(--rule-hairline);
-  border-right: 1px solid var(--rule-hairline);
-  box-shadow: var(--shadow-sheet);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.api-drawer-body {
-  padding: 16px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.cost-callout-box {
-  padding: 10px 12px;
-  background-color: var(--verdigris-tint);
-  border: 1px solid var(--verdigris);
-  color: var(--ink-primary);
-  font-size: 0.88rem;
-  line-height: 1.45;
-}
-
-.cost-callout-box strong {
-  color: var(--verdigris);
-}
-
-.field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field-label {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--ink-primary);
-}
-
-.key-input-row {
-  display: flex;
-  gap: 6px;
-}
-
-.key-input {
-  flex: 1;
-  height: 40px;
-  padding: 0 10px;
-  background-color: var(--bg-buff-elevated);
-  border: 1px solid var(--rule-hairline);
-  color: var(--ink-primary);
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-}
-
-.save-key-btn {
-  height: 40px;
+.card-btn-secondary {
+  height: 38px;
   padding: 0 14px;
-  background-color: var(--vermilion);
-  color: #FFFFFF;
-  border: 1px solid var(--rule-hairline);
-  font-family: var(--font-body);
+  border-radius: 10px;
+  background-color: var(--surface-subtle);
+  color: var(--ink-primary);
   font-size: 0.85rem;
   font-weight: 700;
-  cursor: pointer;
-}
-
-.steps-list {
-  padding-left: 18px;
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: var(--ink-secondary);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.steps-list li strong {
-  color: var(--ink-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Status Toast */
 .status-toast {
   position: fixed;
-  top: calc(var(--header-h) + 10px);
+  top: 64px;
   left: 50%;
-  transform: translateX(-50%) translateY(-12px);
-  background-color: var(--ink-primary);
-  color: var(--bg-buff-elevated);
-  border: 1px solid var(--vermilion);
-  padding: 7px 14px;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+  transform: translateX(-50%) translateY(-8px);
+  background-color: var(--surface-pill);
+  color: var(--ink-on-dark);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
   font-weight: 600;
-  z-index: 80;
+  box-shadow: var(--shadow-float);
+  z-index: 60;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  box-shadow: var(--shadow-badge);
-  max-width: 92vw;
-  text-align: center;
 }
 
 .status-toast.is-visible {
@@ -995,23 +518,12 @@ html, body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Desktop Responsive Adaptation */
 @media (min-width: 768px) {
-  .dossier-sheet {
-    left: auto;
-    right: 20px;
-    bottom: calc(var(--dock-h) + 16px);
-    width: 400px;
-    border: 1px solid var(--rule-hairline);
-    transform: translateX(115%);
-  }
-  .dossier-sheet.is-open {
-    transform: translateX(0);
-  }
-  .bottom-dock {
-    max-width: 680px;
-    margin: 0 auto 14px;
-    border: 1px solid var(--rule-hairline);
-    box-shadow: var(--shadow-badge);
+  .place-card {
+    left: 16px;
+    right: auto;
+    bottom: 16px;
+    width: 380px;
+    margin: 0;
   }
 }

@@ -34,48 +34,108 @@ function createRooftopPillHTML(landmark: Landmark, isSelected: boolean): string 
   `;
 }
 
+let collisionRafId: number | null = null;
+
+export function schedulePillCollisionResolution(): void {
+  if (collisionRafId !== null) return;
+  collisionRafId = requestAnimationFrame(() => {
+    collisionRafId = null;
+    resolvePillCollisions();
+  });
+}
+
+/**
+ * Pure mathematical collision resolver that uses the untransformed anchor point
+ * and static offsetWidth/offsetHeight so CSS transitions never cause a feedback
+ * loop or label trembling during zoom.
+ */
 export function resolvePillCollisions(): void {
-  const pills = Array.from(document.querySelectorAll<HTMLElement>('.rooftop-pill-anchor'));
-  pills.forEach((el) => {
-    el.style.opacity = '1';
-    el.style.transform = el.classList.contains('is-selected')
-      ? 'translate(-50%, -106%) scale(1.06)'
-      : 'translate(-50%, -100%)';
-  });
+  const pills = Array.from(
+    document.querySelectorAll<HTMLElement>('.rooftop-pill-anchor:not(.is-exiting)')
+  );
 
-  const ordered = pills.sort((a, b) => {
-    const aSel = a.classList.contains('is-selected') ? 1 : 0;
-    const bSel = b.classList.contains('is-selected') ? 1 : 0;
-    if (aSel !== bSel) return bSel - aSel;
-    return b.getBoundingClientRect().top - a.getBoundingClientRect().top;
-  });
+  interface PillItem {
+    el: HTMLElement;
+    anchorX: number;
+    anchorY: number;
+    width: number;
+    height: number;
+    isSelected: boolean;
+  }
 
-  const placedBoxes: DOMRect[] = [];
-  for (const el of ordered) {
+  const items: PillItem[] = [];
+  for (const el of pills) {
     const pillBox = el.querySelector<HTMLElement>('.rooftop-pill');
-    if (!pillBox) continue;
-    let rect = pillBox.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) continue;
+    const parent = el.parentElement;
+    if (!pillBox || !parent) continue;
 
+    const width = pillBox.offsetWidth;
+    const height = pillBox.offsetHeight;
+    if (width === 0 || height === 0) continue;
+
+    // Read the parent marker wrapper's screen position, which is independent of the pill's CSS transition
+    const parentRect = parent.getBoundingClientRect();
+    items.push({
+      el,
+      anchorX: parentRect.left,
+      anchorY: parentRect.top,
+      width,
+      height,
+      isSelected: el.classList.contains('is-selected')
+    });
+  }
+
+  // Sort selected first, then bottom-to-top so southern labels stay anchored to their roof
+  items.sort((a, b) => {
+    if (a.isSelected !== b.isSelected) return a.isSelected ? -1 : 1;
+    return b.anchorY - a.anchorY;
+  });
+
+  interface Box {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  }
+
+  const placedBoxes: Box[] = [];
+
+  for (const item of items) {
     let shiftY = 0;
     let attempts = 0;
+
+    const getBox = (sy: number): Box => ({
+      left: item.anchorX - item.width / 2,
+      right: item.anchorX + item.width / 2,
+      top: item.anchorY - item.height - 12 + sy,
+      bottom: item.anchorY - 12 + sy
+    });
+
+    let candidate = getBox(shiftY);
+
     while (
       attempts < 3 &&
       placedBoxes.some(
         (b) =>
-          rect.left < b.right - 2 &&
-          rect.right > b.left + 2 &&
-          rect.top < b.bottom + 2 &&
-          rect.bottom > b.top - 2
+          candidate.left < b.right - 3 &&
+          candidate.right > b.left + 3 &&
+          candidate.top < b.bottom + 3 &&
+          candidate.bottom > b.top - 3
       )
     ) {
-      shiftY -= 32;
-      el.style.transform = `translate(-50%, calc(-100% + ${shiftY}px))`;
-      rect = pillBox.getBoundingClientRect();
+      shiftY -= 30;
+      candidate = getBox(shiftY);
       attempts++;
     }
 
-    placedBoxes.push(rect);
+    placedBoxes.push(candidate);
+
+    const prevShift = item.el.dataset.shiftY;
+    const nextShift = String(shiftY);
+    if (prevShift !== nextShift) {
+      item.el.dataset.shiftY = nextShift;
+      item.el.style.setProperty('--pill-shift-y', `${shiftY}px`);
+    }
   }
 }
 
@@ -108,11 +168,13 @@ export const App: React.FC = () => {
   const leafletContainerRef = useRef<HTMLDivElement | null>(null);
 
   const googleMapRef = useRef<any>(null);
-  const googleOverlaysRef = useRef<any[]>([]);
+  const googleOverlaysMapRef = useRef<Map<string, any>>(new Map());
+  const googleExitTimersRef = useRef<Map<string, number>>(new Map());
   const googleUserOverlayRef = useRef<any>(null);
 
   const leafletMapRef = useRef<L.Map | null>(null);
-  const leafletMarkersRef = useRef<L.Marker[]>([]);
+  const leafletMarkersMapRef = useRef<Map<string, L.Marker>>(new Map());
+  const leafletExitTimersRef = useRef<Map<string, number>>(new Map());
   const leafletUserMarkerRef = useRef<L.Marker | null>(null);
 
   const wikiCacheRef = useRef<Map<string, any>>(new Map());
@@ -180,7 +242,6 @@ export const App: React.FC = () => {
       const filtered = pages.filter((p) => {
         if (!p.coordinates?.length) return false;
         const text = `${p.title} ${p.description || ''}`.toLowerCase();
-        // Exclude non-physical or event articles while keeping monuments, statues, squares, parks, stations, and buildings
         if (
           text.includes('medieval term') ||
           text.includes('disambiguation') ||
@@ -241,7 +302,7 @@ export const App: React.FC = () => {
 
       mergeDiscoveredLandmarks(discovered);
       if (!silent) {
-        showToast(`Updated landmarks for current view`);
+        showToast('Updated landmarks for current view');
       }
     } catch (err) {
       console.error(err);
@@ -259,7 +320,6 @@ export const App: React.FC = () => {
     setCurrentZoom(zoom);
     setViewportBounds(bounds);
 
-    // Automatically fetch Wikipedia landmarks when zooming in or panning to an unqueried area
     if (autoScanTimerRef.current) window.clearTimeout(autoScanTimerRef.current);
     autoScanTimerRef.current = window.setTimeout(() => {
       const diagMeters = computeDistanceMeters(
@@ -295,7 +355,9 @@ export const App: React.FC = () => {
         const map = L.map(leafletContainerRef.current, {
           center: [initialSquare.center.lat, initialSquare.center.lng],
           zoom: getMobileAwareZoom(initialSquare.zoom),
-          zoomControl: false
+          zoomControl: false,
+          zoomAnimation: true,
+          markerZoomAnimation: true
         });
 
         L.tileLayer(
@@ -327,7 +389,7 @@ export const App: React.FC = () => {
               west: b.getWest()
             }
           );
-          requestAnimationFrame(resolvePillCollisions);
+          schedulePillCollisionResolution();
         };
 
         map.on('moveend zoomend', updateFromLeaflet);
@@ -392,7 +454,7 @@ export const App: React.FC = () => {
               }
             );
           }
-          requestAnimationFrame(resolvePillCollisions);
+          schedulePillCollisionResolution();
         });
 
         googleMapRef.current = map;
@@ -402,7 +464,6 @@ export const App: React.FC = () => {
         initLeafletFallback();
       });
 
-    // MutationObserver in case Google Maps injects an error dialog asynchronously
     let observer: MutationObserver | null = null;
     if (googleContainerRef.current) {
       observer = new MutationObserver(() => {
@@ -421,12 +482,12 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Render rooftop pills whenever visibleLandmarks, selectedId, userLocation, or engine changes
+  // Reconcile rooftop pills without destroying existing markers so zoom transitions stay smooth
   useEffect(() => {
+    const visibleIds = new Set(visibleLandmarks.map((l) => l.id));
+
     if (engine === 'google' && googleMapRef.current && window.google?.maps) {
-      googleOverlaysRef.current.forEach((ov) => ov.setMap(null));
-      googleOverlaysRef.current = [];
-      if (googleUserOverlayRef.current) googleUserOverlayRef.current.setMap(null);
+      const map = googleMapRef.current;
 
       class RooftopOverlay extends window.google.maps.OverlayView {
         pos: any;
@@ -443,7 +504,17 @@ export const App: React.FC = () => {
         onAdd() {
           this.div = document.createElement('div');
           this.div.style.position = 'absolute';
+          this.div.style.left = '0px';
+          this.div.style.top = '0px';
+          this.div.style.willChange = 'transform';
           this.div.innerHTML = this.html;
+          const anchor = this.div.querySelector<HTMLElement>('.rooftop-pill-anchor');
+          if (anchor) {
+            anchor.classList.add('is-entering');
+            requestAnimationFrame(() => {
+              anchor.classList.remove('is-entering');
+            });
+          }
           if (this.onClick) {
             this.div.addEventListener('click', (e) => {
               e.stopPropagation();
@@ -457,10 +528,9 @@ export const App: React.FC = () => {
           if (!proj || !this.div) return;
           const pt = proj.fromLatLngToDivPixel(this.pos);
           if (pt) {
-            this.div.style.left = `${pt.x}px`;
-            this.div.style.top = `${pt.y}px`;
+            this.div.style.transform = `translate3d(${pt.x.toFixed(1)}px, ${pt.y.toFixed(1)}px, 0)`;
           }
-          requestAnimationFrame(resolvePillCollisions);
+          schedulePillCollisionResolution();
         }
         onRemove() {
           if (this.div?.parentNode) this.div.parentNode.removeChild(this.div);
@@ -468,62 +538,150 @@ export const App: React.FC = () => {
         }
       }
 
-      const userOv = new RooftopOverlay(
-        userLocation,
-        `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
-        null
-      );
-      (userOv as any).setMap(googleMapRef.current);
-      googleUserOverlayRef.current = userOv;
-
-      visibleLandmarks.forEach((lm) => {
-        const ov = new RooftopOverlay(
-          { lat: lm.lat, lng: lm.lng },
-          createRooftopPillHTML(lm, selectedId === lm.id),
-          () => handleSelectLandmark(lm.id)
+      if (!googleUserOverlayRef.current) {
+        const userOv = new RooftopOverlay(
+          userLocation,
+          `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
+          null
         );
-        (ov as any).setMap(googleMapRef.current);
-        googleOverlaysRef.current.push(ov);
+        (userOv as any).setMap(map);
+        googleUserOverlayRef.current = userOv;
+      } else {
+        googleUserOverlayRef.current.pos = new window.google.maps.LatLng(
+          userLocation.lat,
+          userLocation.lng
+        );
+        googleUserOverlayRef.current.draw();
+      }
+
+      // Fade out and remove overlays that are no longer visible
+      googleOverlaysMapRef.current.forEach((ov, id) => {
+        if (!visibleIds.has(id)) {
+          if (!googleExitTimersRef.current.has(id)) {
+            const anchor = ov.div?.querySelector?.('.rooftop-pill-anchor');
+            if (anchor) anchor.classList.add('is-exiting');
+            const timer = window.setTimeout(() => {
+              ov.setMap(null);
+              googleOverlaysMapRef.current.delete(id);
+              googleExitTimersRef.current.delete(id);
+            }, 220);
+            googleExitTimersRef.current.set(id, timer);
+          }
+        }
       });
 
-      window.setTimeout(resolvePillCollisions, 80);
+      // Add new overlays or update selection state on existing ones
+      visibleLandmarks.forEach((lm) => {
+        const existingTimer = googleExitTimersRef.current.get(lm.id);
+        if (existingTimer) {
+          window.clearTimeout(existingTimer);
+          googleExitTimersRef.current.delete(lm.id);
+        }
+
+        const existingOv = googleOverlaysMapRef.current.get(lm.id);
+        if (existingOv) {
+          const anchor = existingOv.div?.querySelector?.('.rooftop-pill-anchor');
+          if (anchor) {
+            anchor.classList.remove('is-exiting');
+            anchor.classList.toggle('is-selected', selectedId === lm.id);
+          }
+          existingOv.onClick = () => handleSelectLandmark(lm.id);
+        } else {
+          const ov = new RooftopOverlay(
+            { lat: lm.lat, lng: lm.lng },
+            createRooftopPillHTML(lm, selectedId === lm.id),
+            () => handleSelectLandmark(lm.id)
+          );
+          (ov as any).setMap(map);
+          googleOverlaysMapRef.current.set(lm.id, ov);
+        }
+      });
+
+      schedulePillCollisionResolution();
       return;
     }
 
     if (engine === 'leaflet' && leafletMapRef.current) {
       const map = leafletMapRef.current;
-      leafletMarkersRef.current.forEach((m) => map.removeLayer(m));
-      leafletMarkersRef.current = [];
-      if (leafletUserMarkerRef.current) map.removeLayer(leafletUserMarkerRef.current);
 
-      const userIcon = L.divIcon({
-        className: 'rooftop-marker-wrap',
-        html: `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-      });
-      leafletUserMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
-        icon: userIcon,
-        zIndexOffset: 1000
-      }).addTo(map);
-
-      visibleLandmarks.forEach((lm, idx) => {
-        const icon = L.divIcon({
+      if (!leafletUserMarkerRef.current) {
+        const userIcon = L.divIcon({
           className: 'rooftop-marker-wrap',
-          html: createRooftopPillHTML(lm, selectedId === lm.id),
-          iconSize: [0, 0],
-          iconAnchor: [0, 0]
+          html: `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
         });
-        const marker = L.marker([lm.lat, lm.lng], {
-          icon,
-          zIndexOffset: selectedId === lm.id ? 950 : 500 - idx * 10
+        leafletUserMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
+          icon: userIcon,
+          zIndexOffset: 1000
         }).addTo(map);
+      } else {
+        leafletUserMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+      }
 
-        marker.on('click', () => handleSelectLandmark(lm.id));
-        leafletMarkersRef.current.push(marker);
+      // Fade out and remove markers that are no longer visible
+      leafletMarkersMapRef.current.forEach((marker, id) => {
+        if (!visibleIds.has(id)) {
+          if (!leafletExitTimersRef.current.has(id)) {
+            const el = marker.getElement();
+            const anchor = el?.querySelector('.rooftop-pill-anchor');
+            if (anchor) anchor.classList.add('is-exiting');
+            const timer = window.setTimeout(() => {
+              map.removeLayer(marker);
+              leafletMarkersMapRef.current.delete(id);
+              leafletExitTimersRef.current.delete(id);
+            }, 220);
+            leafletExitTimersRef.current.set(id, timer);
+          }
+        }
       });
 
-      window.setTimeout(resolvePillCollisions, 60);
+      // Add new markers or update selection state on existing ones without recreating DOM nodes
+      visibleLandmarks.forEach((lm, idx) => {
+        const existingTimer = leafletExitTimersRef.current.get(lm.id);
+        if (existingTimer) {
+          window.clearTimeout(existingTimer);
+          leafletExitTimersRef.current.delete(lm.id);
+        }
+
+        const existingMarker = leafletMarkersMapRef.current.get(lm.id);
+        if (existingMarker) {
+          const el = existingMarker.getElement();
+          const anchor = el?.querySelector('.rooftop-pill-anchor');
+          if (anchor) {
+            anchor.classList.remove('is-exiting');
+            anchor.classList.toggle('is-selected', selectedId === lm.id);
+          }
+          existingMarker.setZIndexOffset(selectedId === lm.id ? 950 : 500 - idx * 10);
+          existingMarker.off('click');
+          existingMarker.on('click', () => handleSelectLandmark(lm.id));
+        } else {
+          const icon = L.divIcon({
+            className: 'rooftop-marker-wrap',
+            html: createRooftopPillHTML(lm, selectedId === lm.id),
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+          });
+          const marker = L.marker([lm.lat, lm.lng], {
+            icon,
+            zIndexOffset: selectedId === lm.id ? 950 : 500 - idx * 10
+          }).addTo(map);
+
+          const el = marker.getElement();
+          const anchor = el?.querySelector('.rooftop-pill-anchor');
+          if (anchor) {
+            anchor.classList.add('is-entering');
+            requestAnimationFrame(() => {
+              anchor.classList.remove('is-entering');
+            });
+          }
+
+          marker.on('click', () => handleSelectLandmark(lm.id));
+          leafletMarkersMapRef.current.set(lm.id, marker);
+        }
+      });
+
+      schedulePillCollisionResolution();
     }
   }, [visibleLandmarks, selectedId, userLocation, engine, mapLoaded]);
 
@@ -539,7 +697,6 @@ export const App: React.FC = () => {
       leafletMapRef.current.panTo([lm.lat, lm.lng], { animate: true, duration: 0.4 });
     }
 
-    // Fetch exterior-first swipeable photo gallery if not already cached
     const cacheKey = lm.wikiTitle || lm.id;
     if (!wikiCacheRef.current.has(cacheKey)) {
       try {

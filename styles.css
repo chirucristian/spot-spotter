@@ -1,0 +1,1017 @@
+/* ==========================================================================
+   Spot Spotter — Architectural Cadastral Blueprint & Field Survey Atlas
+   ========================================================================== */
+
+:root {
+  /* Daylight Cyanotype Blueprint & Cadastral Slate Palette */
+  --bg-buff: #E4EDF4;
+  --bg-buff-elevated: #F2F7FB;
+  --bg-buff-sunken: #D2E0EC;
+  --ink-primary: #0F1A26;
+  --ink-secondary: #2A3B4E;
+  --ink-muted: #455970;
+  --rule-hairline: #0F1A26;
+  --rule-subtle: #96ADC2;
+
+  /* Cadastral Structural Inks (All >= 4.5:1 WCAG AA contrast with #FFFFFF) */
+  --vermilion: #B8291C;
+  --vermilion-tint: #FCEAE8;
+  --ochre: #9A6300;
+  --ochre-tint: #FDF4E2;
+  --cobalt: #164488;
+  --cobalt-tint: #E5EFFB;
+  --verdigris: #1C5A37;
+  --verdigris-tint: #E3F3EA;
+  --carbon-purple: #532B78;
+
+  /* Typography */
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shadows (Soft offset + blur, never zero-blur block shadows) */
+  --shadow-badge: 0 3px 10px rgba(15, 26, 38, 0.18), 0 1px 3px rgba(15, 26, 38, 0.12);
+  --shadow-badge-active: 0 8px 22px rgba(184, 41, 28, 0.3), 0 2px 6px rgba(15, 26, 38, 0.22);
+  --shadow-sheet: 0 -8px 32px rgba(15, 26, 38, 0.24);
+
+  /* Layout metrics */
+  --header-h: 94px;
+  --dock-h: 110px;
+}
+
+[data-theme="night"] {
+  --bg-buff: #0E1621;
+  --bg-buff-elevated: #152130;
+  --bg-buff-sunken: #091018;
+  --ink-primary: #ECF3F9;
+  --ink-secondary: #B8CAE0;
+  --ink-muted: #869EB8;
+  --rule-hairline: #3C526B;
+  --rule-subtle: #243549;
+
+  --vermilion: #D93B2B;
+  --vermilion-tint: #331614;
+  --ochre: #C98A14;
+  --ochre-tint: #2B210E;
+  --cobalt: #2D6BC4;
+  --cobalt-tint: #12233B;
+  --verdigris: #2B7A4B;
+  --verdigris-tint: #11291B;
+  --carbon-purple: #A982CE;
+
+  --shadow-badge: 0 4px 14px rgba(0, 0, 0, 0.58), 0 1px 4px rgba(0, 0, 0, 0.42);
+  --shadow-badge-active: 0 8px 26px rgba(217, 59, 43, 0.38), 0 2px 8px rgba(0, 0, 0, 0.65);
+  --shadow-sheet: 0 -10px 36px rgba(0, 0, 0, 0.7);
+}
+
+/* Browser Surface Theming */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+::selection {
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+}
+
+html, body {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-buff);
+  color: var(--ink-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--vermilion);
+  user-select: none;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-buff-sunken);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-secondary);
+  border-radius: 0;
+}
+
+/* Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 2px;
+}
+
+/* Tabular Data Numerals */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   App Shell
+   ========================================================================== */
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ==========================================================================
+   Top Surveyor Header Bar & Lexicon Guide Rule
+   ========================================================================== */
+.survey-header {
+  pointer-events: auto;
+  background-color: var(--bg-buff);
+  border-bottom: 1px solid var(--rule-hairline);
+  box-shadow: var(--shadow-badge);
+  z-index: 30;
+}
+
+.header-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  gap: 8px;
+  min-height: 54px;
+}
+
+.brand-cluster {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cadastral-seal {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--rule-hairline);
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-titles {
+  min-width: 0;
+  flex: 1;
+}
+
+.app-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.square-selector-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.square-select {
+  appearance: none;
+  background-color: var(--bg-buff-elevated);
+  color: var(--ink-primary);
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 2px 24px 2px 8px;
+  cursor: pointer;
+  max-width: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230F1A26' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+}
+
+[data-theme="night"] .square-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ECF3F9' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  height: 38px;
+  min-width: 38px;
+  padding: 0 10px;
+  background-color: var(--bg-buff-elevated);
+  color: var(--ink-primary);
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.icon-btn:hover {
+  background-color: var(--bg-buff-sunken);
+}
+
+.icon-btn:active {
+  transform: translateY(1px);
+}
+
+.icon-btn.active-mode {
+  background-color: var(--cobalt-tint);
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+}
+
+.engine-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.engine-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--verdigris);
+}
+
+.engine-dot.gmaps {
+  background-color: var(--cobalt);
+}
+
+/* Lexicon Guide-Word Bar (Raised from rw-lexicon-shoulder-and-plate) */
+.lexicon-guide-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background-color: var(--bg-buff-sunken);
+  border-top: 1px solid var(--rule-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-secondary);
+  gap: 8px;
+}
+
+.guide-span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.guide-coords {
+  flex-shrink: 0;
+  color: var(--ink-primary);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Map Stage & Canvases
+   ========================================================================== */
+.map-stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 1;
+  background-color: var(--bg-buff-sunken);
+}
+
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-canvas.hidden {
+  display: none !important;
+}
+
+/* Cadastral Blueprint Filter for Leaflet OpenStreetMap Tiles */
+#leaflet-map .leaflet-tile-pane {
+  filter: contrast(1.06) brightness(0.97) saturate(0.82);
+}
+
+[data-theme="night"] #leaflet-map .leaflet-tile-pane {
+  filter: invert(0.92) hue-rotate(195deg) contrast(1.12) brightness(0.86);
+}
+
+/* Compact attribution above dock */
+.leaflet-control-attribution {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  background: rgba(228, 237, 244, 0.88) !important;
+  color: #2A3B4E !important;
+  border-top: 1px solid #96ADC2;
+  bottom: var(--dock-h) !important;
+}
+
+[data-theme="night"] .leaflet-control-attribution {
+  background: rgba(14, 22, 33, 0.88) !important;
+  color: #B8CAE0 !important;
+}
+
+/* ==========================================================================
+   Building Callout Badges Over Structures (Cadastral + Japanese High Density)
+   ========================================================================== */
+.building-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.cadastral-callout {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -100%);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), z-index 0s;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.cadastral-callout:hover,
+.cadastral-callout.is-selected {
+  transform: translate(-50%, -104%) scale(1.05);
+  z-index: 900 !important;
+}
+
+.callout-box {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  background-color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  box-shadow: var(--shadow-badge);
+  width: max-content;
+  min-width: 152px;
+  max-width: 248px;
+}
+
+.cadastral-callout.is-selected .callout-box {
+  border-color: var(--vermilion);
+  box-shadow: var(--shadow-badge-active);
+  outline: 1px solid var(--vermilion);
+}
+
+/* Category Color Cell */
+.callout-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: var(--vermilion);
+  border-right: 1px solid var(--rule-hairline);
+}
+
+.callout-cat-civic .callout-num { background-color: var(--vermilion); }
+.callout-cat-law .callout-num { background-color: var(--cobalt); }
+.callout-cat-culture .callout-num { background-color: var(--ochre); color: #FFFFFF; }
+.callout-cat-sacred .callout-num { background-color: var(--verdigris); }
+
+/* Building Title & Category Strip */
+.callout-body {
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.callout-type-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ink-secondary);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.callout-name {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.18;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Distance / Inspected Cell */
+.callout-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 6px;
+  background-color: var(--bg-buff-sunken);
+  border-left: 1px solid var(--rule-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+}
+
+.callout-stamp {
+  font-size: 0.75rem;
+  color: var(--carbon-purple);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Architectural Pointer Stem & Star-Atlas Magnitude Anchor Dot */
+.callout-stem {
+  width: 2px;
+  height: 10px;
+  background-color: var(--rule-hairline);
+}
+
+.cadastral-callout.is-selected .callout-stem {
+  background-color: var(--vermilion);
+}
+
+.callout-anchor-dot {
+  border-radius: 50%;
+  background-color: var(--vermilion);
+  border: 2px solid var(--bg-buff-elevated);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.mag-1 .callout-anchor-dot { width: 13px; height: 13px; }
+.mag-2 .callout-anchor-dot { width: 10px; height: 10px; }
+.mag-3 .callout-anchor-dot { width: 8px; height: 8px; }
+
+/* User GPS Beacon */
+.user-gps-beacon {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+}
+
+.user-gps-core {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--cobalt);
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+}
+
+.user-gps-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--cobalt);
+  background-color: rgba(22, 68, 136, 0.2);
+  animation: pulseRing 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+
+/* ==========================================================================
+   Bottom Thumb-Zone Dock (Smartphone Ergonomics)
+   ========================================================================== */
+.bottom-dock {
+  pointer-events: auto;
+  background-color: var(--bg-buff);
+  border-top: 1px solid var(--rule-hairline);
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 30;
+  box-shadow: 0 -4px 16px rgba(15, 26, 38, 0.12);
+}
+
+.dock-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pinpoint-btn {
+  flex: 1;
+  height: 42px;
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 0 14px;
+  box-shadow: 0 2px 6px rgba(184, 41, 28, 0.25);
+  transition: filter 0.15s ease, transform 0.12s ease;
+}
+
+.pinpoint-btn:hover {
+  filter: brightness(1.06);
+}
+
+.pinpoint-btn:active {
+  transform: translateY(1px);
+}
+
+.scan-btn {
+  height: 42px;
+  padding: 0 12px;
+  background-color: var(--bg-buff-elevated);
+  color: var(--ink-primary);
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.scan-btn:hover {
+  background-color: var(--bg-buff-sunken);
+}
+
+/* Horizontal Building Index Strip */
+.landmark-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.landmark-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.strip-chip {
+  flex-shrink: 0;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  color: var(--ink-primary);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.strip-chip.is-active {
+  border-color: var(--vermilion);
+  background-color: var(--vermilion-tint);
+}
+
+.strip-chip-num {
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 7px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background-color: var(--bg-buff-sunken);
+  color: var(--ink-primary);
+  border-right: 1px solid var(--rule-subtle);
+}
+
+.strip-chip.is-active .strip-chip-num {
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+}
+
+.strip-chip-label {
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Slide-Up Inspector Plate Dossier Sheet (Photo + Summary)
+   ========================================================================== */
+.dossier-sheet {
+  pointer-events: auto;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 560px;
+  margin: 0 auto;
+  background-color: var(--bg-buff);
+  border-top: 2px solid var(--rule-hairline);
+  border-left: 1px solid var(--rule-hairline);
+  border-right: 1px solid var(--rule-hairline);
+  box-shadow: var(--shadow-sheet);
+  z-index: 50;
+  transform: translateY(105%);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  max-height: 82dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dossier-sheet.is-open {
+  transform: translateY(0);
+}
+
+.dossier-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background-color: var(--bg-buff-sunken);
+  border-bottom: 1px solid var(--rule-hairline);
+}
+
+.dossier-plate-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dossier-cat-pill {
+  padding: 2px 7px;
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.dossier-close-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  color: var(--ink-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dossier-scroll-body {
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Quarantined Chromolithograph Photo Plate (Raised from rw-lexicon-shoulder-and-plate) */
+.chromo-plate-frame {
+  padding: 5px;
+  background-color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  position: relative;
+}
+
+.chromo-plate-inner {
+  border: 1px solid var(--rule-subtle);
+  position: relative;
+  height: 188px;
+  background-color: var(--bg-buff-sunken);
+  overflow: hidden;
+}
+
+.chromo-plate-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.chromo-plate-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-secondary);
+}
+
+.inspected-stamp-badge {
+  color: var(--carbon-purple);
+  font-weight: 700;
+  border: 1px solid var(--carbon-purple);
+  padding: 0 5px;
+}
+
+.dossier-heading {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  margin-top: 2px;
+}
+
+.dossier-subtitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  margin-top: -6px;
+}
+
+/* Cadastral Telemetry Grid */
+.cadastral-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--rule-hairline);
+  background-color: var(--bg-buff-elevated);
+}
+
+.metric-cell {
+  padding: 6px 8px;
+  border-right: 1px solid var(--rule-subtle);
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-cell:last-child {
+  border-right: none;
+}
+
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+
+.metric-val {
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-top: 2px;
+}
+
+.dossier-summary {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-primary);
+  max-width: 68ch;
+}
+
+.dossier-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.dossier-action-link {
+  flex: 1;
+  height: 40px;
+  background-color: var(--ink-primary);
+  color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.dossier-secondary-btn {
+  height: 40px;
+  padding: 0 12px;
+  background-color: var(--bg-buff-elevated);
+  color: var(--ink-primary);
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Google Maps API Key & Free Setup Drawer
+   ========================================================================== */
+.drawer-backdrop {
+  pointer-events: auto;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 26, 38, 0.58);
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.drawer-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.api-drawer {
+  width: 100%;
+  max-width: 540px;
+  max-height: 88dvh;
+  background-color: var(--bg-buff);
+  border-top: 2px solid var(--rule-hairline);
+  border-left: 1px solid var(--rule-hairline);
+  border-right: 1px solid var(--rule-hairline);
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.api-drawer-body {
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cost-callout-box {
+  padding: 10px 12px;
+  background-color: var(--verdigris-tint);
+  border: 1px solid var(--verdigris);
+  color: var(--ink-primary);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.cost-callout-box strong {
+  color: var(--verdigris);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.key-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.key-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 10px;
+  background-color: var(--bg-buff-elevated);
+  border: 1px solid var(--rule-hairline);
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+.save-key-btn {
+  height: 40px;
+  padding: 0 14px;
+  background-color: var(--vermilion);
+  color: #FFFFFF;
+  border: 1px solid var(--rule-hairline);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.steps-list {
+  padding-left: 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.steps-list li strong {
+  color: var(--ink-primary);
+}
+
+/* Status Toast */
+.status-toast {
+  position: fixed;
+  top: calc(var(--header-h) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  background-color: var(--ink-primary);
+  color: var(--bg-buff-elevated);
+  border: 1px solid var(--vermilion);
+  padding: 7px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  z-index: 80;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-badge);
+  max-width: 92vw;
+  text-align: center;
+}
+
+.status-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Desktop Responsive Adaptation */
+@media (min-width: 768px) {
+  .dossier-sheet {
+    left: auto;
+    right: 20px;
+    bottom: calc(var(--dock-h) + 16px);
+    width: 400px;
+    border: 1px solid var(--rule-hairline);
+    transform: translateX(115%);
+  }
+  .dossier-sheet.is-open {
+    transform: translateX(0);
+  }
+  .bottom-dock {
+    max-width: 680px;
+    margin: 0 auto 14px;
+    border: 1px solid var(--rule-hairline);
+    box-shadow: var(--shadow-badge);
+  }
+}

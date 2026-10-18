@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="day">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#E4EDF4" />
+  <title>Spot Spotter — Civic Square &amp; Building Field Atlas</title>
+
+  <!-- Fonts: Bricolage Grotesque, Atkinson Hyperlegible, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS for zero-key live map rendering -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Full-Viewport Interactive Map Stage -->
+  <main class="map-stage" aria-label="Interactive Civic Square Map">
+    <div id="leaflet-map" class="map-canvas"></div>
+    <div id="google-map" class="map-canvas hidden"></div>
+  </main>
+
+  <!-- Foreground Surveyor App Shell -->
+  <div class="app-shell">
+    <!-- Top Surveyor Header Bar -->
+    <header class="survey-header">
+      <div class="header-main-row">
+        <div class="brand-cluster">
+          <div class="cadastral-seal" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square">
+              <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="brand-titles">
+            <h1 class="app-title">Spot Spotter</h1>
+            <div class="square-selector-wrap">
+              <label for="square-select" class="sr-only" hidden>Select Civic Square</label>
+              <select id="square-select" class="square-select" aria-label="Choose Square or GPS Mode">
+                <option value="parliament-london">Parliament Square · London</option>
+                <option value="constitution-bucharest">Piața Constituției · Bucharest</option>
+                <option value="signoria-florence">Piazza della Signoria · Florence</option>
+                <option value="grand-place-brussels">Grand-Place · Brussels</option>
+                <option value="live-gps">My Live GPS Location</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button type="button" id="api-key-btn" class="icon-btn" title="Configure Google Maps API Key">
+            <span class="engine-pill">
+              <span id="engine-dot" class="engine-dot"></span>
+              <span id="engine-label">Google Maps Key</span>
+            </span>
+          </button>
+          <button type="button" id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Daylight or Night Survey Theme" title="Toggle Daylight / Night Mode">
+            <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lexicon Guide-Word Span & Live Coordinates -->
+      <div class="lexicon-guide-bar">
+        <div id="guide-span" class="guide-span">SPAN: [01] PALACE OF WESTMINSTER — [06] CENTRAL HALL</div>
+        <div id="guide-coords" class="guide-coords tabular">51.5007°N · 0.1266°W</div>
+      </div>
+    </header>
+
+    <!-- Bottom Thumb-Zone Dock -->
+    <footer class="bottom-dock">
+      <div id="landmark-strip" class="landmark-strip" role="region" aria-label="Surrounding Buildings Index"></div>
+
+      <div class="dock-controls-row">
+        <button type="button" id="pinpoint-me-btn" class="pinpoint-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+          </svg>
+          <span>Pinpoint Me &amp; Spot Around</span>
+        </button>
+
+        <button type="button" id="scan-here-btn" class="scan-btn" title="Scan buildings around the current map center">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>Scan Map Area</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Slide-Up Inspector Plate Dossier Sheet -->
+  <aside id="dossier-sheet" class="dossier-sheet" aria-labelledby="dossier-title" aria-hidden="true">
+    <div class="dossier-top-bar">
+      <div class="dossier-plate-id">
+        <span id="dossier-num" class="tabular">PLATE #01</span>
+        <span id="dossier-cat" class="dossier-cat-pill">PARLIAMENT</span>
+      </div>
+      <button type="button" id="dossier-close-btn" class="dossier-close-btn" aria-label="Close Building Dossier">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="dossier-scroll-body">
+      <!-- Quarantined Chromolithograph Photo Frame -->
+      <figure class="chromo-plate-frame">
+        <div class="chromo-plate-inner">
+          <img id="dossier-img" class="chromo-plate-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall_%28cropped%29.jpg/960px-Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall_%28cropped%29.jpg" alt="Photograph of Palace of Westminster" loading="lazy" />
+        </div>
+        <figcaption class="chromo-plate-caption">
+          <span id="dossier-source">SOURCE: ARCHITECTURAL FIELD ARCHIVE</span>
+          <span id="dossier-stamp" class="inspected-stamp-badge">INSPECTED ✓</span>
+        </figcaption>
+      </figure>
+
+      <h2 id="dossier-title" class="dossier-heading">Palace of Westminster</h2>
+      <p id="dossier-role" class="dossier-subtitle">Parliament · House of Commons &amp; Lords</p>
+
+      <div class="cadastral-metrics-grid">
+        <div class="metric-cell">
+          <span class="metric-label">Distance</span>
+          <span id="dossier-distance" class="metric-val tabular">140 m</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Bearing</span>
+          <span id="dossier-bearing" class="metric-val tabular">112° ESE</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Footprint</span>
+          <span id="dossier-coords" class="metric-val tabular">51.4995°N</span>
+        </div>
+      </div>
+
+      <p id="dossier-summary" class="dossier-summary">The meeting place of the Parliament of the United Kingdom (the House of Commons and the House of Lords). Rebuilt in Perpendicular Gothic style by Charles Barry and Augustus Pugin after the fire of 1834, its 300-meter Thames facade and Elizabeth Tower (Big Ben) anchor the eastern flank of Parliament Square.</p>
+
+      <div class="dossier-actions-row">
+        <a id="dossier-gmaps-link" class="dossier-action-link" href="#" target="_blank" rel="noopener noreferrer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>Open in Google Maps</span>
+        </a>
+        <a id="dossier-wiki-link" class="dossier-secondary-btn" href="#" target="_blank" rel="noopener noreferrer">
+          <span>Full Entry ↗</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Google Maps API Key & Setup Guide Drawer -->
+  <div id="api-drawer-backdrop" class="drawer-backdrop" aria-hidden="true">
+    <section class="api-drawer" role="dialog" aria-labelledby="api-drawer-title">
+      <div class="dossier-top-bar">
+        <div class="dossier-plate-id">
+          <span>ENGINE CONFIGURATION · GOOGLE MAPS API</span>
+        </div>
+        <button type="button" id="api-drawer-close" class="dossier-close-btn" aria-label="Close API Key Drawer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="api-drawer-body">
+        <h2 id="api-drawer-title" class="dossier-heading">Google Maps Live Data &amp; Free Setup</h2>
+
+        <div class="cost-callout-box">
+          <strong>Do I need to pay money? No!</strong> Google Cloud provides a <strong>$200/month free recurring credit</strong> (~28,000 free map loads every month), and Spot Spotter also includes a <strong>100% Free Built-In Discovery Mode</strong> (OpenStreetMap + Wikipedia) so it works immediately with $0 spent.
+        </div>
+
+        <div class="field-group">
+          <label for="gmaps-key-input" class="field-label">GOOGLE MAPS JAVASCRIPT API KEY (OPTIONAL)</label>
+          <div class="key-input-row">
+            <input type="password" id="gmaps-key-input" class="key-input" placeholder="AIzaSy..." autocomplete="off" />
+            <button type="button" id="save-gmaps-key-btn" class="save-key-btn">Activate Key</button>
+          </div>
+          <button type="button" id="clear-gmaps-key-btn" class="dossier-secondary-btn" style="margin-top: 4px; height: 32px; font-size: 0.76rem;">
+            Use Free Zero-Key Engine Instead
+          </button>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label">HOW TO GET YOUR FREE GOOGLE MAPS API KEY IN 2 MINUTES:</span>
+          <ol class="steps-list">
+            <li>Visit the <a href="https://console.cloud.google.com/google/maps-apis/start" target="_blank" rel="noopener">Google Cloud Maps Console</a> and create or select a project.</li>
+            <li>Enable two APIs under <strong>APIs &amp; Services → Library</strong>: <strong>Maps JavaScript API</strong> and <strong>Places API (New)</strong>.</li>
+            <li>Go to <strong>Credentials → Create Credentials → API Key</strong>, copy the key starting with <code>AIza...</code>, and paste it above.</li>
+            <li><em>Tip for zero charges:</em> Set a daily quota limit or budget alert in Google Cloud Billing so you never exceed the free $200 monthly credit.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="status-toast" class="status-toast" role="status" aria-live="polite"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>

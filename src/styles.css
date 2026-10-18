@@ -392,9 +392,34 @@ html, body, #root {
 .card-photo-wrap {
   position: relative;
   width: 100%;
-  height: 175px;
+  height: 190px;
   background-color: var(--surface-subtle);
   flex-shrink: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.card-photo-wrap:active {
+  cursor: grabbing;
+}
+
+.card-photo-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.card-photo-track.is-dragging {
+  transition: none;
+}
+
+.card-photo-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .card-photo {
@@ -402,6 +427,85 @@ html, body, #root {
   height: 100%;
   object-fit: cover;
   display: block;
+  pointer-events: none;
+}
+
+.card-photo-counter {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: rgba(15, 23, 42, 0.82);
+  color: #FFFFFF;
+  font-size: 0.76rem;
+  font-weight: 700;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(15, 23, 42, 0.72);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.carousel-nav-btn:hover {
+  background-color: rgba(15, 23, 42, 0.92);
+}
+
+.carousel-nav-btn:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.carousel-nav-btn.prev {
+  left: 10px;
+}
+
+.carousel-nav-btn.next {
+  right: 10px;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: rgba(15, 23, 42, 0.65);
+  z-index: 4;
+}
+
+.carousel-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.48);
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.carousel-dot.is-active {
+  background-color: #FFFFFF;
+  transform: scale(1.22);
 }
 
 .card-category-badge {
@@ -414,6 +518,7 @@ html, body, #root {
   color: #FFFFFF;
   font-size: 0.76rem;
   font-weight: 700;
+  z-index: 4;
 }
 
 .card-distance-badge {
@@ -426,6 +531,7 @@ html, body, #root {
   color: var(--ink-primary);
   font-size: 0.76rem;
   font-weight: 700;
+  z-index: 4;
 }
 
 .card-content {

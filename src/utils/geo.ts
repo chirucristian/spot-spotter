@@ -97,3 +97,174 @@ export function parseRichWikipediaSummary(
     highlights
   };
 }
+
+const JUNK_IMAGE_PATTERNS =
+  /\.(svg|gif|png|tif|tiff|ogg|webm|pdf)(\?|$)|coat_of_arms|wappen|blason|stema|flag_of|logo|icon|locator|location_map|_map|plan_of|floor_plan|footprint|grundriss|cross_section|diagram|signature|autograph|stamp|coin|medal|portrait_of|bust_of|tomb_of|grave_of|plaque|engraving|lithograph|etching|sketch|luonnos|alkuperäispiirustus|pianta_del|collage|tapestry|bayeux|kirkko3|ceausescu|ceaușescu|bourdon|martyrdom|caravaggio|botticelli|canaletto/i;
+
+const EXTERIOR_CUES =
+  /exterior|facade|façade|outside|external|front|view|veduta|square|piazza|piata|piața|place|platz|plaza|aerial|ilmakuva|sky-foto|panoram|seen_from|from_the|from_westminster|main_building|päärakennus|talo|linna|palatul|catedrala|westminster_station|town_hall|townhall|stadhuis|hotel_de_ville|maison_du_roi|ducs_de_brabant|tribunale|loggia_dei_lanzi|uffizi|guildhall|supreme_court/i;
+
+const INTERIOR_OR_DETAIL_CUES =
+  /interior|inside|indoor|hall|sala|salone|room|chamber|chapel|crypt|nave|naos|choir|altar|pulpit|organ|ceiling|vault|fresco|mosaic|stained_glass|window|staircase|stairs|lobby|corridor|cafe|library_-_1|courtroom|statue|sculpture|detail|relief|cristogramma|virtù|portalini|bunker|cellar/i;
+
+export function isUsableBuildingPhoto(urlOrTitle: string, caption = ''): boolean {
+  if (!urlOrTitle) return false;
+  const combined = `${decodeURIComponent(urlOrTitle)} ${caption}`;
+  return !JUNK_IMAGE_PATTERNS.test(combined);
+}
+
+export function scoreExteriorPhoto(
+  urlOrTitle: string,
+  caption: string,
+  buildingName: string,
+  isLead = false
+): number {
+  const text = `${decodeURIComponent(urlOrTitle)} ${caption}`.toLowerCase();
+  let score = 0;
+
+  if (EXTERIOR_CUES.test(text)) {
+    score += 55;
+  }
+
+  const nameTokens = buildingName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 3);
+
+  const matchedTokens = nameTokens.filter((tok) => text.includes(tok));
+  score += matchedTokens.length * 14;
+
+  if (INTERIOR_OR_DETAIL_CUES.test(text)) {
+    score -= 65;
+  } else if (isLead) {
+    score += 25;
+  }
+
+  return score;
+}
+
+function normalizePhotoKey(url: string): string {
+  try {
+    const clean = decodeURIComponent(url.split('?')[0]);
+    const parts = clean.split('/');
+    const last = parts[parts.length - 1] || clean;
+    return last.replace(/^\d+px-/, '').toLowerCase();
+  } catch {
+    return url.toLowerCase();
+  }
+}
+
+/**
+ * Fetches an ordered array of building photos for the carousel, guaranteeing
+ * that the first picture (index 0) is an outside/exterior shot whenever available.
+ */
+export async function fetchBuildingPhotoGallery(
+  wikiTitle: string,
+  buildingName: string,
+  curatedPhotos?: string[],
+  fallbackImg?: string
+): Promise<string[]> {
+  const lockedExteriorFirst =
+    curatedPhotos && curatedPhotos.length > 0 ? curatedPhotos[0] : undefined;
+
+  const candidates: Array<{ url: string; score: number }> = [];
+
+  if (curatedPhotos && curatedPhotos.length > 0) {
+    curatedPhotos.forEach((url, idx) => {
+      candidates.push({ url, score: 200 - idx * 10 });
+    });
+  } else if (fallbackImg && isUsableBuildingPhoto(fallbackImg)) {
+    candidates.push({
+      url: fallbackImg,
+      score: scoreExteriorPhoto(fallbackImg, '', buildingName, true)
+    });
+  }
+
+  // 1. Query Wikipedia REST media-list for article photos
+  if (wikiTitle) {
+    try {
+      const res = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/page/media-list/${wikiTitle}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const items: any[] = Array.isArray(data?.items) ? data.items : [];
+        items.forEach((item, idx) => {
+          if (item.type !== 'image' || item.showInGallery === false) return;
+          const title = item.title || '';
+          const caption = item.caption?.text || '';
+          if (!isUsableBuildingPhoto(title, caption)) return;
+
+          const srcset = Array.isArray(item.srcset) ? item.srcset : [];
+          const bestSrc = srcset[srcset.length - 1]?.src || item.src;
+          if (!bestSrc) return;
+
+          const fullUrl = bestSrc.startsWith('//')
+            ? `https:${bestSrc.split('?')[0]}`
+            : bestSrc.split('?')[0];
+
+          if (!isUsableBuildingPhoto(fullUrl, caption)) return;
+
+          const score = scoreExteriorPhoto(
+            `${title} ${fullUrl}`,
+            caption,
+            buildingName,
+            idx === 0 || item.section_id === 0
+          );
+          candidates.push({ url: fullUrl, score });
+        });
+      }
+    } catch (_) {
+      // Ignore network errors and fall back to existing candidates
+    }
+  }
+
+  // 2. If we still have fewer than 3 photos, supplement from Wikimedia Commons search
+  if (candidates.length < 3 && buildingName) {
+    try {
+      const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(
+        `filetype:bitmap ${buildingName}`
+      )}&gsrlimit=6&prop=imageinfo&iiprop=url&iiurlwidth=960&format=json&origin=*`;
+      const res = await fetch(commonsUrl);
+      if (res.ok) {
+        const data = await res.json();
+        const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
+        pages.forEach((p) => {
+          const title = p.title || '';
+          const thumbUrl = (p.imageinfo?.[0]?.thumburl || p.imageinfo?.[0]?.url || '').split('?')[0];
+          if (!thumbUrl || !isUsableBuildingPhoto(title, thumbUrl)) return;
+          const score = scoreExteriorPhoto(title, '', buildingName, false);
+          candidates.push({ url: thumbUrl, score });
+        });
+      }
+    } catch (_) {}
+  }
+
+  // Sort highest exterior score first
+  candidates.sort((a, b) => b.score - a.score);
+
+  // Deduplicate by normalized filename while keeping lockedExteriorFirst at index 0
+  const result: string[] = [];
+  const seenKeys = new Set<string>();
+
+  if (lockedExteriorFirst) {
+    result.push(lockedExteriorFirst);
+    seenKeys.add(normalizePhotoKey(lockedExteriorFirst));
+  }
+
+  for (const c of candidates) {
+    const key = normalizePhotoKey(c.url);
+    if (!seenKeys.has(key)) {
+      seenKeys.add(key);
+      result.push(c.url);
+    }
+    if (result.length >= 6) break;
+  }
+
+  if (result.length === 0 && fallbackImg) {
+    return [fallbackImg];
+  }
+
+  return result;
+}

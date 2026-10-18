@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { CIVIC_SQUARES, DEFAULT_GMAPS_KEY } from './data/squares';
 import { Landmark } from './types';
-import { computeDistanceMeters, inferCategory, parseRichWikipediaSummary } from './utils/geo';
+import {
+  computeDistanceMeters,
+  fetchBuildingPhotoGallery,
+  inferCategory,
+  isUsableBuildingPhoto,
+  parseRichWikipediaSummary
+} from './utils/geo';
 import { BuildingCard } from './components/BuildingCard';
 
 declare global {
@@ -335,22 +341,29 @@ export const App: React.FC = () => {
       leafletMapRef.current.panTo([lm.lat, lm.lng], { animate: true, duration: 0.4 });
     }
 
-    // Fetch higher-res Wikipedia thumbnail or rich extract if not already cached
-    if (lm.wikiTitle && !wikiCacheRef.current.has(lm.wikiTitle)) {
+    // Fetch exterior-first swipeable photo gallery if not already cached
+    const cacheKey = lm.wikiTitle || lm.id;
+    if (!wikiCacheRef.current.has(cacheKey)) {
       try {
-        const res = await fetch(
-          `https://en.wikipedia.org/api/rest_v1/page/summary/${lm.wikiTitle}`
+        const gallery = await fetchBuildingPhotoGallery(
+          lm.wikiTitle,
+          lm.name,
+          lm.photos,
+          lm.fallbackImg
         );
-        if (res.ok) {
-          const data = await res.json();
-          wikiCacheRef.current.set(lm.wikiTitle, data);
-          if (data.thumbnail?.source) {
-            setLandmarks((prev) =>
-              prev.map((item) =>
-                item.id === lm.id ? { ...item, fallbackImg: data.thumbnail.source } : item
-              )
-            );
-          }
+        wikiCacheRef.current.set(cacheKey, gallery);
+        if (gallery.length > 0) {
+          setLandmarks((prev) =>
+            prev.map((item) =>
+              item.id === lm.id
+                ? {
+                    ...item,
+                    fallbackImg: gallery[0],
+                    photos: gallery
+                  }
+                : item
+            )
+          );
         }
       } catch (_) {}
     }
@@ -368,7 +381,12 @@ export const App: React.FC = () => {
 
     setActiveSquareKey(squareKey);
     setUserLocation({ ...sq.center });
-    setLandmarks(sq.landmarks.map((l) => ({ ...l })));
+    setLandmarks(
+      sq.landmarks.map((l) => ({
+        ...l,
+        photos: l.photos ? [...l.photos] : [l.fallbackImg]
+      }))
+    );
     setSelectedId(null);
 
     const isMobile = window.innerWidth < 520;
@@ -425,6 +443,11 @@ export const App: React.FC = () => {
           const cat = inferCategory(p.title, p.description || p.extract || '');
           const cleanName = p.title.replace(/\s*\([^)]*\)\s*/g, '');
           const parsed = parseRichWikipediaSummary(cleanName, p.description, p.extract);
+          const rawThumb = p.thumbnail?.source;
+          const usableThumb =
+            rawThumb && isUsableBuildingPhoto(rawThumb)
+              ? rawThumb
+              : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
 
           selected.push({
             id: `wiki-${p.pageid}`,
@@ -442,9 +465,7 @@ export const App: React.FC = () => {
             architect: parsed.architect,
             summary: parsed.summary,
             highlights: parsed.highlights,
-            fallbackImg:
-              p.thumbnail?.source ||
-              'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Helsinki_Cathedral_in_July_2004.jpg/960px-Helsinki_Cathedral_in_July_2004.jpg'
+            fallbackImg: usableThumb
           });
         }
         if (selected.length >= 6) break;

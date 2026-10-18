@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Landmark } from '../types';
 import { computeDistanceMeters, formatDistance } from '../utils/geo';
 
@@ -13,7 +13,102 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
   userLocation,
   onClose
 }) => {
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
+  const [dragOffsetX, setDragOffsetX] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+    setFailedUrls({});
+    setDragOffsetX(0);
+    setIsDragging(false);
+  }, [landmark?.id]);
+
   if (!landmark) return null;
+
+  const rawPhotos =
+    landmark.photos && landmark.photos.length > 0
+      ? landmark.photos
+      : [landmark.fallbackImg];
+
+  const validPhotos = rawPhotos.filter((url) => Boolean(url) && !failedUrls[url]);
+  const photos =
+    validPhotos.length > 0
+      ? validPhotos
+      : [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg'
+        ];
+
+  const safeIndex = Math.min(currentIndex, photos.length - 1);
+
+  const goPrev = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev <= 0 ? photos.length - 1 : prev - 1));
+  };
+
+  const goNext = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev >= photos.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (photos.length <= 1) return;
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (
+      !isDragging ||
+      touchStartXRef.current === null ||
+      touchStartYRef.current === null ||
+      photos.length <= 1
+    ) {
+      return;
+    }
+    const dx = e.touches[0].clientX - touchStartXRef.current;
+    const dy = e.touches[0].clientY - touchStartYRef.current;
+
+    // Only track horizontal swipe if horizontal movement dominates vertical scroll
+    if (Math.abs(dx) > Math.abs(dy)) {
+      setDragOffsetX(dx);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging || photos.length <= 1) return;
+    const threshold = 40;
+    if (dragOffsetX <= -threshold) {
+      setCurrentIndex((prev) => (prev >= photos.length - 1 ? 0 : prev + 1));
+    } else if (dragOffsetX >= threshold) {
+      setCurrentIndex((prev) => (prev <= 0 ? photos.length - 1 : prev - 1));
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    setDragOffsetX(0);
+    setIsDragging(false);
+  };
+
+  const handlePointerDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (photos.length <= 1) return;
+    touchStartXRef.current = e.clientX;
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || touchStartXRef.current === null || photos.length <= 1) return;
+    setDragOffsetX(e.clientX - touchStartXRef.current);
+  };
+
+  const handlePointerUp = () => {
+    if (!isDragging) return;
+    handleTouchEnd();
+  };
 
   const distMeters = computeDistanceMeters(
     userLocation.lat,
@@ -57,13 +152,106 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
       </button>
 
       <div className="card-layout">
-        <div className="card-photo-wrap">
-          <img
-            className="card-photo"
-            src={landmark.fallbackImg}
-            alt={landmark.name}
-            loading="lazy"
-          />
+        <div
+          className="card-photo-wrap"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handlePointerDown}
+          onMouseMove={handlePointerMove}
+          onMouseUp={handlePointerUp}
+          onMouseLeave={handlePointerUp}
+        >
+          <div
+            className={`card-photo-track ${isDragging ? 'is-dragging' : ''}`}
+            style={{
+              transform: `translate3d(calc(${-safeIndex * 100}% + ${dragOffsetX}px), 0, 0)`
+            }}
+          >
+            {photos.map((src, idx) => (
+              <div className="card-photo-slide" key={`${src}-${idx}`}>
+                <img
+                  className="card-photo"
+                  src={src}
+                  alt={`${landmark.name} — photo ${idx + 1} of ${photos.length}`}
+                  draggable={false}
+                  onError={() =>
+                    setFailedUrls((prev) => ({
+                      ...prev,
+                      [src]: true
+                    }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+
+          <span className="card-photo-counter">
+            {safeIndex === 0
+              ? `1 / ${photos.length} · Exterior`
+              : `${safeIndex + 1} / ${photos.length}`}
+          </span>
+
+          {photos.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="carousel-nav-btn prev"
+                onClick={goPrev}
+                aria-label="Previous photo"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="carousel-nav-btn next"
+                onClick={goNext}
+                aria-label="Next photo"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <div className="carousel-dots" role="tablist" aria-label="Building photos">
+                {photos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    role="tab"
+                    aria-selected={idx === safeIndex}
+                    aria-label={`View photo ${idx + 1}`}
+                    className={`carousel-dot ${idx === safeIndex ? 'is-active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentIndex(idx);
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
           <span className="card-category-badge">{landmark.catLabel}</span>
           <span className="card-distance-badge">{formatDistance(distMeters)}</span>
         </div>

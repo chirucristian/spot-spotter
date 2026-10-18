@@ -29,7 +29,13 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Underground crypt beneath the granite steps now used for exhibitions and concerts.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Helsinki_Cathedral_in_July_2004.jpg/960px-Helsinki_Cathedral_in_July_2004.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Helsinki_Cathedral_%283%29.JPG/960px-Exterior_of_Helsinki_Cathedral_%283%29.JPG',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Exterior_of_Helsinki_Cathedral_%288%29.JPG/960px-Exterior_of_Helsinki_Cathedral_%288%29.JPG',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg/960px-Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg'
+        ]
       },
       {
         id: 'government-palace-fi',
@@ -51,7 +57,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Pale ochre-and-white Empire facade balanced directly against the University across the plaza.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Government_Palace_Helsinki.jpg/960px-Government_Palace_Helsinki.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Valtioneuvoston_linna.jpg/1280px-Valtioneuvoston_linna.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Valtioneuvoston_linna.jpg/1280px-Valtioneuvoston_linna.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Finnish_Government_Palace_from_above_in_the_1960s.jpg/960px-Finnish_Government_Palace_from_above_in_the_1960s.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg/960px-Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg'
+        ]
       },
       {
         id: 'uni-helsinki-main',
@@ -73,7 +84,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Semi-circular Great Ceremonial Hall modeled on classical Greek amphitheaters.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Helsingin_yliopiston_p%C3%A4%C3%A4rakennus.jpg/960px-Helsingin_yliopiston_p%C3%A4%C3%A4rakennus.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg/1280px-University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg/1280px-University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg/960px-University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg/960px-Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg'
+        ]
       },
       {
         id: 'national-library-fi',
@@ -95,7 +111,13 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Underground Fabiania cave stacks carved 18 meters deep into solid granite bedrock.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/National_Library_of_Finland_2019.jpg/960px-National_Library_of_Finland_2019.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/National_Library_of_Finland.jpg/1280px-National_Library_of_Finland.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/National_Library_of_Finland.jpg/1280px-National_Library_of_Finland.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Kansalliskirjasto_-_National_Library_of_Finland%2C_Helsinki_%2852890137262%29.jpg/1280px-Kansalliskirjasto_-_National_Library_of_Finland%2C_Helsinki_%2852890137262%29.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/e/e5/Rotunda_Julkisivu.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Inside_view_of_National_Library_of_Finland_001_%282%29.jpg/960px-Inside_view_of_National_Library_of_Finland_001_%282%29.jpg'
+        ]
       },
       {
         id: 'sederholm-house',
@@ -117,7 +139,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Preserved as a historic anchor when Engel redesigned the surrounding square in the 1820s.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Sederholmin_talo.jpg/960px-Sederholmin_talo.jpg'
+          'https://upload.wikimedia.org/wikipedia/commons/8/83/Sederholmin_talo.jpg',
+        photos: [
+          'https://upload.wikimedia.org/wikipedia/commons/8/83/Sederholmin_talo.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg/960px-Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Sederholmin_talo_-_Marit_Henriksson.jpg/960px-Sederholmin_talo_-_Marit_Henriksson.jpg'
+        ]
       }
     ]
   },
@@ -148,7 +175,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Westminster Hall (1097) with the largest medieval hammerbeam timber roof in Northern Europe.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall_%28cropped%29.jpg/960px-Palace_of_Westminster_from_the_dome_on_Methodist_Central_Hall_%28cropped%29.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg/1280px-Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg/1280px-Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/42/London_Parliament_2007-1.jpg/1280px-London_Parliament_2007-1.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Palace_of_Westminster%2C_London_-_Feb_2007.jpg/1280px-Palace_of_Westminster%2C_London_-_Feb_2007.jpg'
+        ]
       },
       {
         id: 'supreme-court-uk',
@@ -170,7 +202,11 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Three modern appellate courtrooms open to the public and live-streamed.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Middlesex_Guildhall_2009-09-21.jpg/960px-Middlesex_Guildhall_2009-09-21.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/London%2C_The_Supreme_Court_--_2016_--_4814.jpg/1280px-London%2C_The_Supreme_Court_--_2016_--_4814.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/London%2C_The_Supreme_Court_--_2016_--_4814.jpg/1280px-London%2C_The_Supreme_Court_--_2016_--_4814.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Supreme_Court_of_the_United_Kingdom_-_Library_-_1.jpg/1280px-Supreme_Court_of_the_United_Kingdom_-_Library_-_1.jpg'
+        ]
       },
       {
         id: 'westminster-abbey',
@@ -192,7 +228,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Coronation Chair (1296) and Cosmati pavement in front of the High Altar.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Westminster_Abbey_West_Door.jpg/800px-Westminster_Abbey_West_Door.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Westminster_Abbey%2C_Westminster.jpg/1280px-Westminster_Abbey%2C_Westminster.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Westminster_Abbey%2C_Westminster.jpg/1280px-Westminster_Abbey%2C_Westminster.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Westminster_Abbey_-_51370229194.jpg/1280px-Westminster_Abbey_-_51370229194.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Chamber_of_the_Pyx.jpg/1280px-Chamber_of_the_Pyx.jpg'
+        ]
       },
       {
         id: 'hm-treasury',
@@ -214,7 +255,10 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Sculptural allegories of Science, Art, Education, and Local Government over the Great George Street facade.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/HM_Treasury_building.jpg/960px-HM_Treasury_building.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Government_Offices_Great_George_Street.jpg/1280px-Government_Offices_Great_George_Street.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Government_Offices_Great_George_Street.jpg/1280px-Government_Offices_Great_George_Street.jpg'
+        ]
       },
       {
         id: 'portcullis-house',
@@ -236,7 +280,13 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Underground secure pedestrian tunnel linking MPs directly to the House of Commons chamber.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Portcullis_House_from_London_Eye.jpg/800px-Portcullis_House_from_London_Eye.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Westminster_Station_Building.jpg/1280px-Westminster_Station_Building.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Westminster_Station_Building.jpg/1280px-Westminster_Station_Building.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Portcullis.house.bigben.arp.jpg/1280px-Portcullis.house.bigben.arp.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Portcullis_House_from_the_Houses_of_Parliament.jpg/1280px-Portcullis_House_from_the_Houses_of_Parliament.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Portcullis_House_Interior_Cafe_2015-09-19_%2827694442083%29.jpg/1280px-Portcullis_House_Interior_Cafe_2015-09-19_%2827694442083%29.jpg'
+        ]
       }
     ]
   },
@@ -267,7 +317,13 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Forms the western terminus of the 3.5-kilometer Bulevardul Unirii civic axis.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Bucharest_-_Palace_of_the_Parliament_%282022%29.jpg/960px-Bucharest_-_Palace_of_the_Parliament_%282022%29.jpg'
+          'https://thumb.wikimedia.org/wikipedia/en/thumb/1/18/Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg/1280px-Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/en/thumb/1/18/Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg/1280px-Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/en/thumb/0/00/Palatul_Parlamentului_I_%2842630333435%29.jpg/960px-Palatul_Parlamentului_I_%2842630333435%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Bucuresti_palatul_parlamentului_view.jpg/960px-Bucuresti_palatul_parlamentului_view.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/EPP_Congress_2361_%288096737560%29.jpg/1280px-EPP_Congress_2361_%288096737560%29.jpg'
+        ]
       },
       {
         id: 'palace-of-justice-ro',
@@ -289,7 +345,11 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Restored monumental oak vaults and Neo-Romanian decorative ceilings by Ion Mincu.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Palatul_de_Justitie_Bucuresti.jpg/960px-Palatul_de_Justitie_Bucuresti.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg/1280px-Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg/1280px-Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Antoniu_-_Palatul_de_Justi%C5%A3ie.jpg/1280px-Antoniu_-_Palatul_de_Justi%C5%A3ie.jpg'
+        ]
       },
       {
         id: 'ministry-of-finance-ro',
@@ -311,7 +371,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Direct view line down Bulevardul Unirii’s 43 monumental fountains.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Piata_Constitutiei_Bucuresti.jpg/960px-Piata_Constitutiei_Bucuresti.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Piata_Constitutiei_si_Bulevardul_Unirii.jpg/960px-Piata_Constitutiei_si_Bulevardul_Unirii.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Piata_Constitutiei_si_Bulevardul_Unirii.jpg/960px-Piata_Constitutiei_si_Bulevardul_Unirii.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Bulevardul_Unirii_-_panoramio_%282%29.jpg/1280px-Bulevardul_Unirii_-_panoramio_%282%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Bucuresti_palatul_parlamentului_view.jpg/960px-Bucuresti_palatul_parlamentului_view.jpg'
+        ]
       },
       {
         id: 'national-cathedral-ro',
@@ -333,7 +398,11 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Curved colonnaded esplanade accommodating over 100,000 pilgrims.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Catedrala_Mantuirii_Neamului_2021.jpg/800px-Catedrala_Mantuirii_Neamului_2021.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/National_Cathedral_of_Romania_%282025_November%29.jpg/1280px-National_Cathedral_of_Romania_%282025_November%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/National_Cathedral_of_Romania_%282025_November%29.jpg/1280px-National_Cathedral_of_Romania_%282025_November%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Catedrala_M%C3%A2ntuirii_Neamului_%28Iulie_2019%29.jpg/1280px-Catedrala_M%C3%A2ntuirii_Neamului_%28Iulie_2019%29.jpg'
+        ]
       }
     ]
   },
@@ -361,10 +430,16 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         highlights: [
           'Replica of Michelangelo’s David (stood here in the original from 1504 to 1873) flanking the main portal.',
           'Off-center 94-meter Arnolfo Tower containing the "Alberghetto" cell where Cosimo the Elder and Savonarola were imprisoned.',
-          'Frescoed first courtyardRedesigned by Michelozzo in 1453 with Verrocchio’s Putto with Dolphin fountain.'
+          'Frescoed first courtyard redesigned by Michelozzo in 1453 with Verrocchio’s Putto with Dolphin fountain.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Palazzo_Vecchio_from_Piazza_della_Signoria.jpg/800px-Palazzo_Vecchio_from_Piazza_della_Signoria.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg/1280px-Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg/1280px-Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Palazzovecchio-florence.jpg/500px-Palazzovecchio-florence.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Piazza_della_signoria%2C_palazzo_vecchio%2C_cristogramma%2C_1528%2C_con_iscrizione_cambiata_nel_1551%2C_01.jpg/1280px-Piazza_della_signoria%2C_palazzo_vecchio%2C_cristogramma%2C_1528%2C_con_iscrizione_cambiata_nel_1551%2C_01.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Palacio_Viejo%2C_Florencia%2C_Italia%2C_2022-09-18%2C_DD_86.jpg/1280px-Palacio_Viejo%2C_Florencia%2C_Italia%2C_2022-09-18%2C_DD_86.jpg'
+        ]
       },
       {
         id: 'tribunale-mercanzia',
@@ -386,7 +461,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Rusticated sandstone facade with pointed Gothic bifora windows.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Tribunale_della_mercanzia_01.JPG/800px-Tribunale_della_mercanzia_01.JPG'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Tribunale_di_Mercatanzia.jpg/960px-Tribunale_di_Mercatanzia.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Tribunale_di_Mercatanzia.jpg/960px-Tribunale_di_Mercatanzia.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Piazza_della_signoria_9-10%2C_tribunale_della_mercanzia%2C_portalini_01.jpg/960px-Piazza_della_signoria_9-10%2C_tribunale_della_mercanzia%2C_portalini_01.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Piazza_della_signoria_9-10%2C_tribunale_della_mercanzia%2C_replica_di_cristo_benedicente_in_campo_gigliato_tra_stemmi_di_firenze.jpg/960px-Piazza_della_signoria_9-10%2C_tribunale_della_mercanzia%2C_replica_di_cristo_benedicente_in_campo_gigliato_tra_stemmi_di_firenze.jpg'
+        ]
       },
       {
         id: 'loggia-dei-lanzi',
@@ -408,7 +488,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Four allegorical trefoil reliefs of the Cardinal Virtues designed by Agnolo Gaddi above the arches.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Loggia_dei_Lanzi_Florence.jpg/960px-Loggia_dei_Lanzi_Florence.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg/1280px-Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg/1280px-Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Piazza_della_Signoria%2C_Loggia_de%27_Lanzi%2C_virt%C3%B9_07_fortezza_di_Giovanni_Fetti_e_Jacopo_di_Piero_Guidi%2C_1394_circa.jpg/1280px-Piazza_della_Signoria%2C_Loggia_de%27_Lanzi%2C_virt%C3%B9_07_fortezza_di_Giovanni_Fetti_e_Jacopo_di_Piero_Guidi%2C_1394_circa.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Piazza_della_Signoria%2C_Loggia_de%27_Lanzi%2C_virt%C3%B9_05_giustizia_di_Giovanni_d%27Ambrogio%2C_1394.jpg/1280px-Piazza_della_Signoria%2C_Loggia_de%27_Lanzi%2C_virt%C3%B9_05_giustizia_di_Giovanni_d%27Ambrogio%2C_1394.jpg'
+        ]
       },
       {
         id: 'uffizi-gallery',
@@ -430,7 +515,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Top-floor loggia converted by Francesco I de’ Medici in 1581 into the oldest public art museum in Europe.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Uffizi_Gallery_Florence.jpg/800px-Uffizi_Gallery_Florence.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg/960px-Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg/960px-Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Firenze_-_Florence_-_Galleria_degli_Uffizi_-_Vasari_Corridor_1566_-_View_NNE_through_the_Uffizi_Courtyard_towards_Palazzo_Vecchio.jpg/960px-Firenze_-_Florence_-_Galleria_degli_Uffizi_-_Vasari_Corridor_1566_-_View_NNE_through_the_Uffizi_Courtyard_towards_Palazzo_Vecchio.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Florence%2C_Italy_-_panoramio_%28125%29.jpg/1280px-Florence%2C_Italy_-_panoramio_%28125%29.jpg'
+        ]
       }
     ]
   },
@@ -461,7 +551,11 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Nearly 300 nineteenth-century carved stone statues of Dukes and Duchesses of Brabant across the facade.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Bruxelles_Grand-Place_Hotel_de_Ville.jpg/800px-Bruxelles_Grand-Place_Hotel_de_Ville.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg/1280px-Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg/1280px-Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Brussels_Town_Hall_-_cca_1880.jpg/1280px-Brussels_Town_Hall_-_cca_1880.jpg'
+        ]
       },
       {
         id: 'maison-du-roi',
@@ -483,7 +577,11 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Houses the original 1619 Manneken Pis bronze statue and its wardrobe of over 1,000 costumes.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Maison_du_Roi_Bruxelles.jpg/960px-Maison_du_Roi_Bruxelles.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg/1280px-Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg/1280px-Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Grand-Place_%28Brussels%29_-_View_showing_Maison_du_Roi_on_the_left_and_Maison_des_Ducs_de_Brabant_on_the_right.jpg/960px-Grand-Place_%28Brussels%29_-_View_showing_Maison_du_Roi_on_the_left_and_Maison_des_Ducs_de_Brabant_on_the_right.jpg'
+        ]
       },
       {
         id: 'maison-des-ducs-brabant',
@@ -505,7 +603,12 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'Arched pediment relief by Jan van Delen depicting Peace, Abundance, and Commerce.'
         ],
         fallbackImg:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Maison_des_Ducs_de_Brabant_Bruxelles.jpg/960px-Maison_des_Ducs_de_Brabant_Bruxelles.jpg'
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg/960px-Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg/960px-Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Main_facade_on_the_Grand-Place_with_cobblestone_square_and_tourists.jpg/960px-Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Main_facade_on_the_Grand-Place_with_cobblestone_square_and_tourists.jpg',
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Bruxelles_Grand-Place_Maison_des_Ducs_de_Brabant_3.jpg/960px-Bruxelles_Grand-Place_Maison_des_Ducs_de_Brabant_3.jpg'
+        ]
       }
     ]
   }

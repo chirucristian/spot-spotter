@@ -20,6 +20,8 @@ export interface Landmark {
   /** 2-3 quick bullet highlights when looking at the facade */
   highlights: string[];
   fallbackImg: string;
+  /** Ordered gallery of building photos; index 0 is always an exterior/outside view */
+  photos?: string[];
 }
 
 export interface CivicSquare {

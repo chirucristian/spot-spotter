@@ -35,7 +35,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Exterior_of_Helsinki_Cathedral_%283%29.JPG/960px-Exterior_of_Helsinki_Cathedral_%283%29.JPG',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Exterior_of_Helsinki_Cathedral_%288%29.JPG/960px-Exterior_of_Helsinki_Cathedral_%288%29.JPG',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg/960px-Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg'
-        ]
+        ],
+        importance: 98
       },
       {
         id: 'government-palace-fi',
@@ -62,7 +63,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Valtioneuvoston_linna.jpg/1280px-Valtioneuvoston_linna.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Finnish_Government_Palace_from_above_in_the_1960s.jpg/960px-Finnish_Government_Palace_from_above_in_the_1960s.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg/960px-Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg'
-        ]
+        ],
+        importance: 86
       },
       {
         id: 'uni-helsinki-main',
@@ -89,7 +91,34 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg/1280px-University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg/960px-University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg/960px-Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg'
-        ]
+        ],
+        importance: 85
+      },
+      {
+        id: 'alexander-ii-statue',
+        name: 'Statue of Alexander II',
+        role: 'Central Monument of Senate Square',
+        category: 'culture',
+        catLabel: 'Monument',
+        lat: 60.1695,
+        lng: 24.9522,
+        wikiTitle: 'Alexander_II_(statue_in_Helsinki)',
+        whyItMatters: 'The 1894 bronze monument at the exact geometric center of Senate Square, honoring the "Good Tsar" who convened the Diet of Finland.',
+        styleAndEra: 'Realist Bronze & Red Granite · 1894',
+        architect: 'Walter Runeberg & Johannes Takanen',
+        summary:
+          'Unveiled on 29 April 1894 through a nationwide public fundraising campaign, the monument depicts Grand Duke Alexander II in the uniform of a Finnish Guards officer addressing the Diet of 1863. Surrounding the red granite pedestal stand four allegorical bronze figures representing Law (Lex), Light (Lux), Peace (Pax), and Labor (Labor).',
+        highlights: [
+          'Allegorical figure of "Lex" (Law) armed with a sword, shield, and lion skin — a famous symbol of Finnish constitutional resistance.',
+          'Measures 10.67 meters in total height with the bronze Tsar statue standing 3.23 meters tall.',
+          'Became the focal point for silent floral protests against Russification in 1899.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/11-07-29-helsinki-by-RalfR-149.jpg/960px-11-07-29-helsinki-by-RalfR-149.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/11-07-29-helsinki-by-RalfR-149.jpg/960px-11-07-29-helsinki-by-RalfR-149.jpg'
+        ],
+        importance: 68
       },
       {
         id: 'national-library-fi',
@@ -117,7 +146,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Kansalliskirjasto_-_National_Library_of_Finland%2C_Helsinki_%2852890137262%29.jpg/1280px-Kansalliskirjasto_-_National_Library_of_Finland%2C_Helsinki_%2852890137262%29.jpg',
           'https://upload.wikimedia.org/wikipedia/commons/e/e5/Rotunda_Julkisivu.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Inside_view_of_National_Library_of_Finland_001_%282%29.jpg/960px-Inside_view_of_National_Library_of_Finland_001_%282%29.jpg'
-        ]
+        ],
+        importance: 75
       },
       {
         id: 'sederholm-house',
@@ -144,7 +174,138 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://upload.wikimedia.org/wikipedia/commons/8/83/Sederholmin_talo.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg/960px-Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Sederholmin_talo_-_Marit_Henriksson.jpg/960px-Sederholmin_talo_-_Marit_Henriksson.jpg'
-        ]
+        ],
+        importance: 52
+      },
+      {
+        id: 'uspenski-cathedral',
+        name: 'Uspenski Cathedral',
+        role: 'Eastern Orthodox Cathedral on Katajanokka',
+        category: 'sacred',
+        catLabel: 'Cathedral',
+        lat: 60.1683,
+        lng: 24.9600,
+        wikiTitle: 'Uspenski_Cathedral',
+        whyItMatters: 'The largest Orthodox church in Western and Northern Europe, crowning the hillside of Katajanokka with 13 golden cupolas.',
+        styleAndEra: 'Russian Revival · 1862–1868',
+        architect: 'Alexey Gornostayev',
+        summary:
+          'Set atop a rocky granite bluff overlooking the harbor and city center, Uspenski Cathedral was built from 700,000 red bricks brought from the bombed fortress of Bomarsund in Åland. Its thirteen onion domes coated in 22-karat gold represent Christ and the twelve Apostles.',
+        highlights: [
+          'Thirteen gilded onion domes crowning red brick walls salvaged from Bomarsund Fortress.',
+          'Soaring interior vault supported by four monolithic granite columns carved from single boulders.',
+          'Panoramic terrace overlooking Helsinki’s South Harbor and Senate Square.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG/960px-Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG/960px-Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG'
+        ],
+        importance: 95
+      },
+      {
+        id: 'presidential-palace-fi',
+        name: 'Presidential Palace',
+        role: 'Official Residence of the President of Finland',
+        category: 'civic',
+        catLabel: 'Palace',
+        lat: 60.1683,
+        lng: 24.9563,
+        wikiTitle: 'Presidential_Palace,_Helsinki',
+        whyItMatters: 'Official state residence of the President of Finland facing the Market Square waterfront.',
+        styleAndEra: 'Empire Neoclassical · 1820 / 1845',
+        architect: 'Pehr Granstedt & Carl Ludvig Engel',
+        summary:
+          'Originally built in 1820 as a salt warehouse and residence for merchant J.H. Heidenstrauch, the building was purchased in 1837 and remodeled by Carl Ludvig Engel into the Imperial Palace of the Russian Tsars in Finland. Since 1919 it has served as the official representation residence of the President of Finland.',
+        highlights: [
+          'Hosts the famous Independence Day Reception ("Linnan juhlat") every 6 December.',
+          'Hall of Mirrors and octagonal Yellow Salon overlooking the South Harbor.',
+          'Guard post at the main gate manned by the Jaeger Regiment.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Presidentinlinna%2C_IMG_0548.jpg/960px-Presidentinlinna%2C_IMG_0548.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Presidentinlinna%2C_IMG_0548.jpg/960px-Presidentinlinna%2C_IMG_0548.jpg'
+        ],
+        importance: 90
+      },
+      {
+        id: 'havis-amanda',
+        name: 'Havis Amanda',
+        role: 'Art Nouveau Bronze Mermaid Fountain',
+        category: 'culture',
+        catLabel: 'Fountain',
+        lat: 60.1675,
+        lng: 24.9514,
+        wikiTitle: 'Havis_Amanda',
+        whyItMatters: 'Helsinki’s beloved 1908 bronze sea-nymph fountain symbolizing the rebirth of the Baltic city from the sea.',
+        styleAndEra: 'Art Nouveau Sculpture · 1908',
+        architect: 'Ville Vallgren & Eliel Saarinen',
+        summary:
+          'Cast in Paris in 1906 by Finnish sculptor Ville Vallgren and unveiled at Market Square in 1908, Havis Amanda depicts a mermaid rising from seaweed on a granite fountain basin surrounded by four spouting fish and four bronze sea lions.',
+        highlights: [
+          'Centerpiece of the annual Vappu (May Day) student celebration when tens of thousands gather to place a white student cap on her head.',
+          'Red granite basin designed in collaboration with architect Eliel Saarinen.',
+          'Stands at the gateway between Market Square (Kauppatori) and Esplanadi Park.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg/960px-%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg/960px-%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg'
+        ],
+        importance: 72
+      },
+      {
+        id: 'ateneum-museum',
+        name: 'Ateneum Art Museum',
+        role: 'Finnish National Gallery · Classical Art',
+        category: 'culture',
+        catLabel: 'Museum',
+        lat: 60.1700,
+        lng: 24.9442,
+        wikiTitle: 'Ateneum',
+        whyItMatters: 'Home to Finland’s flagship national collection of Golden Age art on the south side of Railway Square.',
+        styleAndEra: 'Neo-Renaissance · 1887',
+        architect: 'Theodor Höijer',
+        summary:
+          'Opened in 1887 to house both the Finnish Art Society’s galleries and the schools of drawing and applied arts, the Ateneum bears the Latin motto "Concordia res parvae crescunt" ("In harmony small things grow") across its pediment.',
+        highlights: [
+          'Four caryatids above the main entrance symbolizing Architecture, Painting, Sculpture, and Music.',
+          'Portrait busts of Raphael, Phidias, and Bramante framed between the second-floor windows.',
+          'Houses iconic works by Akseli Gallen-Kallela, Albert Edelfelt, Helene Schjerfbeck, and Vincent van Gogh.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Helsinki_July_2013-26a.jpg/960px-Helsinki_July_2013-26a.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Helsinki_July_2013-26a.jpg/960px-Helsinki_July_2013-26a.jpg'
+        ],
+        importance: 88
+      },
+      {
+        id: 'helsinki-central-station',
+        name: 'Helsinki Central Station',
+        role: 'National Romantic Granite Terminal & Clock Tower',
+        category: 'civic',
+        catLabel: 'Landmark',
+        lat: 60.1719,
+        lng: 24.9414,
+        wikiTitle: 'Helsinki_Central_Station',
+        whyItMatters: 'Eliel Saarinen’s world-famous granite railway terminal flanked by the giant Lantern-Carrier statues.',
+        styleAndEra: 'National Romantic / Art Deco · 1919',
+        architect: 'Eliel Saarinen',
+        summary:
+          'Clad in Finnish Hanko granite and crowned by a 48.5-meter copper-roofed clock tower, Helsinki Central Station is one of the defining landmarks of 20th-century Nordic architecture, welcoming over 200,000 daily passengers.',
+        highlights: [
+          'Four monumental granite "Lyhdynkantajat" (Lantern-Carriers) sculpted by Emil Wikström flanking the main arched portal.',
+          '48.5-meter clock tower overlooking Railway Square.',
+          'Private Presidential Waiting Room with original furniture designed by Eliel Saarinen.'
+        ],
+        fallbackImg:
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/HelsinkiStationEntranceAndClockTower.jpg/960px-HelsinkiStationEntranceAndClockTower.jpg',
+        photos: [
+          'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/HelsinkiStationEntranceAndClockTower.jpg/960px-HelsinkiStationEntranceAndClockTower.jpg'
+        ],
+        importance: 94
       }
     ]
   },

@@ -288,7 +288,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
           {/* Facade & Structural Highlights */}
           {landmark.highlights && landmark.highlights.length > 0 && (
             <div className="card-highlights">
-              <h3 className="highlights-heading">What to spot on this building</h3>
+              <h3 className="highlights-heading">Key details to spot</h3>
               <ul className="highlights-list">
                 {landmark.highlights.map((item, idx) => (
                   <li key={idx}>{item}</li>

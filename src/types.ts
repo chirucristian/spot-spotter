@@ -22,6 +22,8 @@ export interface Landmark {
   fallbackImg: string;
   /** Ordered gallery of building photos; index 0 is always an exterior/outside view */
   photos?: string[];
+  /** Prominence score (1-100) used for zoom-adaptive filtering */
+  importance?: number;
 }
 
 export interface CivicSquare {

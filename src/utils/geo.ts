@@ -1,4 +1,11 @@
-import { LandmarkCategory } from '../types';
+import { Landmark, LandmarkCategory } from '../types';
+
+export interface MapBoundsBox {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
 
 export function computeDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371000;
@@ -27,9 +34,10 @@ export function inferCategory(title: string, desc = ''): { category: LandmarkCat
     t.includes('government') ||
     t.includes('city hall') ||
     t.includes('town hall') ||
-    t.includes('senate')
+    t.includes('senate') ||
+    t.includes('bank of')
   ) {
-    return { category: 'civic', catLabel: 'Civic Building' };
+    return { category: 'civic', catLabel: t.includes('palace') ? 'Palace' : 'Civic Landmark' };
   }
   if (
     t.includes('cathedral') ||
@@ -38,9 +46,136 @@ export function inferCategory(title: string, desc = ''): { category: LandmarkCat
     t.includes('basilica') ||
     t.includes('chapel')
   ) {
-    return { category: 'sacred', catLabel: 'Sacred' };
+    return { category: 'sacred', catLabel: t.includes('cathedral') ? 'Cathedral' : 'Sacred Landmark' };
+  }
+  if (t.includes('statue') || t.includes('monument') || t.includes('memorial') || t.includes('sculpture')) {
+    return { category: 'culture', catLabel: 'Monument' };
+  }
+  if (t.includes('fountain')) {
+    return { category: 'culture', catLabel: 'Fountain' };
+  }
+  if (t.includes('square') || t.includes('piazza') || t.includes('plaza') || t.includes('park') || t.includes('esplanade')) {
+    return { category: 'culture', catLabel: t.includes('park') || t.includes('esplanade') ? 'Park' : 'Square' };
+  }
+  if (t.includes('museum') || t.includes('gallery') || t.includes('library') || t.includes('theatre') || t.includes('theater')) {
+    return { category: 'culture', catLabel: t.includes('library') ? 'Library' : 'Museum & Culture' };
   }
   return { category: 'culture', catLabel: 'Landmark' };
+}
+
+/**
+ * Computes a 1–100 prominence score for any Wikipedia landmark/building so that
+ * zoomed-out views surface major city icons and zoomed-in views include local details.
+ */
+export function computeLandmarkImportance(
+  title: string,
+  description = '',
+  extract = '',
+  articleLength = 2500,
+  hasThumbnail = false
+): number {
+  const text = `${title} ${description} ${extract.slice(0, 220)}`.toLowerCase();
+
+  // Base prominence from Wikipedia article byte length (roughly 12..58)
+  let score = Math.min(58, Math.max(12, Math.round(Math.sqrt(articleLength) / 2.6)));
+
+  if (hasThumbnail) {
+    score += 14;
+  }
+
+  // Major city/national landmark keywords
+  if (
+    /\b(cathedral|parliament|palace|castle|fortress|citadel|national|supreme court|central station|city hall|town hall|basilica|abbey|opera house)\b/.test(
+      text
+    )
+  ) {
+    score += 24;
+  } else if (
+    /\b(monument|statue|memorial|sculpture|fountain|square|piazza|plaza|museum|gallery|library|university|theatre|theater|church|bridge|arch|tower|esplanade|botanical)\b/.test(
+      text
+    )
+  ) {
+    score += 14;
+  }
+
+  return Math.max(15, Math.min(97, score));
+}
+
+function lerp(a: number, b: number, t: number): number {
+  const clamped = Math.max(0, Math.min(1, t));
+  return a + (b - a) * clamped;
+}
+
+/**
+ * Filters the pool of discovered landmarks based on the current map zoom level
+ * and visible viewport bounds:
+ * - Zoomed in (zoom >= 17.5): includes everything in the area (buildings, statues, fountains, local landmarks)
+ * - Zoomed out (zoom <= 13.5): includes only the most important headline landmarks in the view
+ * - In between (zoom 13.5..17.5): smoothly interpolates minimum importance, max count, and spacing
+ */
+export function filterLandmarksForZoomAndBounds(
+  pool: Landmark[],
+  zoom: number,
+  bounds: MapBoundsBox | null,
+  selectedId: string | null
+): Landmark[] {
+  // 1. Filter to current viewport bounds (with a small 10% margin so edge pills don't pop)
+  let inView = pool;
+  if (bounds) {
+    const latMargin = Math.max(0.001, (bounds.north - bounds.south) * 0.12);
+    const lngMargin = Math.max(0.001, (bounds.east - bounds.west) * 0.12);
+    inView = pool.filter(
+      (lm) =>
+        lm.id === selectedId ||
+        (lm.lat <= bounds.north + latMargin &&
+          lm.lat >= bounds.south - latMargin &&
+          lm.lng <= bounds.east + lngMargin &&
+          lm.lng >= bounds.west - lngMargin)
+    );
+  }
+
+  // 2. Compute smooth zoom-interpolation factor t in [0, 1] from zoom 13.5 (zoomed out) to 18.0 (zoomed in)
+  const t = (zoom - 13.5) / (18.0 - 13.5);
+
+  const minImportance = Math.round(lerp(82, 0, t));
+  const maxCount = Math.round(lerp(5, 32, t));
+  const minSpacingMeters = Math.round(lerp(420, 8, t));
+
+  // Sort by importance descending (keeping selected landmark first if present)
+  const sorted = [...inView].sort((a, b) => {
+    if (a.id === selectedId) return -1;
+    if (b.id === selectedId) return 1;
+    return (b.importance ?? 60) - (a.importance ?? 60);
+  });
+
+  const picked: Landmark[] = [];
+
+  for (const lm of sorted) {
+    if (lm.id === selectedId) {
+      picked.push(lm);
+      continue;
+    }
+
+    const imp = lm.importance ?? 60;
+    // Allow slightly lower-importance items only if we haven't even reached 4 landmarks in view
+    if (imp < minImportance && picked.length >= 4) {
+      continue;
+    }
+
+    const tooClose = picked.some(
+      (existing) =>
+        existing.id !== selectedId &&
+        computeDistanceMeters(lm.lat, lm.lng, existing.lat, existing.lng) < minSpacingMeters
+    );
+
+    if (!tooClose) {
+      picked.push(lm);
+    }
+
+    if (picked.length >= maxCount) break;
+  }
+
+  return picked;
 }
 
 /**

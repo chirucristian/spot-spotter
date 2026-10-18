@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import { CIVIC_SQUARES, DEFAULT_GMAPS_KEY } from './data/squares';
 import { Landmark } from './types';
 import {
+  MapBoundsBox,
   computeDistanceMeters,
+  computeLandmarkImportance,
   fetchBuildingPhotoGallery,
+  filterLandmarksForZoomAndBounds,
   inferCategory,
   isUsableBuildingPhoto,
   parseRichWikipediaSummary
@@ -23,7 +26,6 @@ function createRooftopPillHTML(landmark: Landmark, isSelected: boolean): string 
   return `
     <div class="rooftop-pill-anchor ${catClass} ${isSelected ? 'is-selected' : ''}" data-landmark-id="${landmark.id}">
       <div class="rooftop-pill">
-        <span class="pill-dot"></span>
         <span class="pill-name">${landmark.name}</span>
       </div>
       <div class="pill-pointer"></div>
@@ -78,16 +80,25 @@ export function resolvePillCollisions(): void {
 }
 
 function getMobileAwareZoom(baseZoom: number): number {
-  return window.innerWidth < 520 ? Math.max(15.6, baseZoom - 0.8) : baseZoom;
+  return window.innerWidth < 520 ? Math.max(15.8, baseZoom - 0.6) : baseZoom;
 }
+
+const INITIAL_POOL: Landmark[] = Object.values(CIVIC_SQUARES).flatMap((sq) =>
+  sq.landmarks.map((l) => ({
+    ...l,
+    importance: l.importance ?? 82
+  }))
+);
 
 export const App: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(
     CIVIC_SQUARES['senate-helsinki'].center
   );
-  const [landmarks, setLandmarks] = useState<Landmark[]>(
-    CIVIC_SQUARES['senate-helsinki'].landmarks
+  const [landmarkPool, setLandmarkPool] = useState<Landmark[]>(INITIAL_POOL);
+  const [currentZoom, setCurrentZoom] = useState<number>(
+    getMobileAwareZoom(CIVIC_SQUARES['senate-helsinki'].zoom)
   );
+  const [viewportBounds, setViewportBounds] = useState<MapBoundsBox | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [engine, setEngine] = useState<'google' | 'leaflet'>('google');
   const [mapLoaded, setMapLoaded] = useState<number>(0);
@@ -105,6 +116,8 @@ export const App: React.FC = () => {
   const leafletUserMarkerRef = useRef<L.Marker | null>(null);
 
   const wikiCacheRef = useRef<Map<string, any>>(new Map());
+  const queriedRegionsRef = useRef<Array<{ lat: number; lng: number; radius: number }>>([]);
+  const autoScanTimerRef = useRef<number | null>(null);
   const toastTimerRef = useRef<number | null>(null);
 
   const showToast = (msg: string) => {
@@ -113,6 +126,161 @@ export const App: React.FC = () => {
     toastTimerRef.current = window.setTimeout(() => {
       setToastMsg(null);
     }, 3200);
+  };
+
+  // Compute visible landmarks dynamically based on current zoom level and viewport bounds
+  const visibleLandmarks = useMemo(
+    () =>
+      filterLandmarksForZoomAndBounds(
+        landmarkPool,
+        currentZoom,
+        viewportBounds,
+        selectedId
+      ),
+    [landmarkPool, currentZoom, viewportBounds, selectedId]
+  );
+
+  const mergeDiscoveredLandmarks = (discovered: Landmark[]) => {
+    if (discovered.length === 0) return;
+    setLandmarkPool((prev) => {
+      const next = [...prev];
+      for (const item of discovered) {
+        const alreadyExists = next.some(
+          (existing) =>
+            existing.wikiTitle === item.wikiTitle ||
+            existing.name.toLowerCase() === item.name.toLowerCase() ||
+            computeDistanceMeters(existing.lat, existing.lng, item.lat, item.lng) < 18
+        );
+        if (!alreadyExists) {
+          next.push(item);
+        }
+      }
+      return next;
+    });
+  };
+
+  const spotBuildingsAround = async (
+    lat: number,
+    lng: number,
+    radiusMeters = 850,
+    silent = false
+  ) => {
+    const clampedRadius = Math.max(300, Math.min(10000, Math.round(radiusMeters)));
+
+    if (!silent) {
+      showToast('Spotting landmarks & buildings in view...');
+    }
+
+    try {
+      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=750&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
+
+      const filtered = pages.filter((p) => {
+        if (!p.coordinates?.length) return false;
+        const text = `${p.title} ${p.description || ''}`.toLowerCase();
+        // Exclude non-physical or event articles while keeping monuments, statues, squares, parks, stations, and buildings
+        if (
+          text.includes('medieval term') ||
+          text.includes('disambiguation') ||
+          text.includes('election') ||
+          text.includes('bombing of') ||
+          text.includes('battle of')
+        ) {
+          return false;
+        }
+        return true;
+      });
+
+      const discovered: Landmark[] = [];
+      for (const p of filtered) {
+        const c = p.coordinates[0];
+        const cat = inferCategory(p.title, p.description || p.extract || '');
+        const cleanName = p.title.replace(/\s*\([^)]*\)\s*/g, '');
+        const parsed = parseRichWikipediaSummary(cleanName, p.description, p.extract);
+        const rawThumb = p.thumbnail?.source;
+        const hasValidThumb = Boolean(rawThumb && isUsableBuildingPhoto(rawThumb));
+        const usableThumb = hasValidThumb
+          ? rawThumb
+          : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
+
+        const importance = computeLandmarkImportance(
+          cleanName,
+          p.description || '',
+          p.extract || '',
+          p.length || 2500,
+          hasValidThumb
+        );
+
+        discovered.push({
+          id: `wiki-${p.pageid}`,
+          name: cleanName,
+          role: p.description
+            ? p.description.charAt(0).toUpperCase() + p.description.slice(1)
+            : 'Notable Building & Landmark',
+          category: cat.category,
+          catLabel: cat.catLabel,
+          lat: c.lat,
+          lng: c.lon,
+          wikiTitle: encodeURIComponent(p.title.replace(/\s+/g, '_')),
+          whyItMatters: parsed.whyItMatters,
+          styleAndEra: parsed.styleAndEra,
+          architect: parsed.architect,
+          summary: parsed.summary,
+          highlights: parsed.highlights,
+          fallbackImg: usableThumb,
+          importance
+        });
+      }
+
+      if (discovered.length === 0) {
+        if (!silent) showToast('No landmarks found in this view.');
+        return;
+      }
+
+      mergeDiscoveredLandmarks(discovered);
+      if (!silent) {
+        showToast(`Updated landmarks for current view`);
+      }
+    } catch (err) {
+      console.error(err);
+      if (!silent) {
+        showToast('Could not fetch live landmarks right now.');
+      }
+    }
+  };
+
+  const syncViewportState = (
+    center: { lat: number; lng: number },
+    zoom: number,
+    bounds: MapBoundsBox
+  ) => {
+    setCurrentZoom(zoom);
+    setViewportBounds(bounds);
+
+    // Automatically fetch Wikipedia landmarks when zooming in or panning to an unqueried area
+    if (autoScanTimerRef.current) window.clearTimeout(autoScanTimerRef.current);
+    autoScanTimerRef.current = window.setTimeout(() => {
+      const diagMeters = computeDistanceMeters(
+        bounds.south,
+        bounds.west,
+        bounds.north,
+        bounds.east
+      );
+      const radius = Math.max(400, Math.min(8000, Math.round(diagMeters / 2)));
+
+      const alreadyQueried = queriedRegionsRef.current.some(
+        (q) =>
+          computeDistanceMeters(center.lat, center.lng, q.lat, q.lng) < q.radius * 0.35 &&
+          Math.abs(q.radius - radius) < q.radius * 0.45
+      );
+
+      if (!alreadyQueried) {
+        queriedRegionsRef.current.push({ lat: center.lat, lng: center.lng, radius });
+        spotBuildingsAround(center.lat, center.lng, radius, true);
+      }
+    }, 320);
   };
 
   // Load Google Maps SDK by default, fallback to Leaflet if demo key is throttled
@@ -146,11 +314,25 @@ export const App: React.FC = () => {
           }
         ).addTo(map);
 
-        map.on('moveend zoomend', () => {
+        const updateFromLeaflet = () => {
+          const b = map.getBounds();
+          const c = map.getCenter();
+          syncViewportState(
+            { lat: c.lat, lng: c.lng },
+            map.getZoom(),
+            {
+              north: b.getNorth(),
+              south: b.getSouth(),
+              east: b.getEast(),
+              west: b.getWest()
+            }
+          );
           requestAnimationFrame(resolvePillCollisions);
-        });
+        };
 
+        map.on('moveend zoomend', updateFromLeaflet);
         leafletMapRef.current = map;
+        window.setTimeout(updateFromLeaflet, 60);
       }
       setMapLoaded((n) => n + 1);
     };
@@ -193,6 +375,23 @@ export const App: React.FC = () => {
         });
 
         map.addListener('idle', () => {
+          const b = map.getBounds();
+          const c = map.getCenter();
+          const z = map.getZoom();
+          if (b && c && typeof z === 'number') {
+            const ne = b.getNorthEast();
+            const sw = b.getSouthWest();
+            syncViewportState(
+              { lat: c.lat(), lng: c.lng() },
+              z,
+              {
+                north: ne.lat(),
+                south: sw.lat(),
+                east: ne.lng(),
+                west: sw.lng()
+              }
+            );
+          }
           requestAnimationFrame(resolvePillCollisions);
         });
 
@@ -222,7 +421,7 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Render rooftop pills whenever landmarks, selectedId, userLocation, or engine changes
+  // Render rooftop pills whenever visibleLandmarks, selectedId, userLocation, or engine changes
   useEffect(() => {
     if (engine === 'google' && googleMapRef.current && window.google?.maps) {
       googleOverlaysRef.current.forEach((ov) => ov.setMap(null));
@@ -277,7 +476,7 @@ export const App: React.FC = () => {
       (userOv as any).setMap(googleMapRef.current);
       googleUserOverlayRef.current = userOv;
 
-      landmarks.forEach((lm) => {
+      visibleLandmarks.forEach((lm) => {
         const ov = new RooftopOverlay(
           { lat: lm.lat, lng: lm.lng },
           createRooftopPillHTML(lm, selectedId === lm.id),
@@ -287,7 +486,7 @@ export const App: React.FC = () => {
         googleOverlaysRef.current.push(ov);
       });
 
-      window.setTimeout(resolvePillCollisions, 100);
+      window.setTimeout(resolvePillCollisions, 80);
       return;
     }
 
@@ -308,7 +507,7 @@ export const App: React.FC = () => {
         zIndexOffset: 1000
       }).addTo(map);
 
-      landmarks.forEach((lm, idx) => {
+      visibleLandmarks.forEach((lm, idx) => {
         const icon = L.divIcon({
           className: 'rooftop-marker-wrap',
           html: createRooftopPillHTML(lm, selectedId === lm.id),
@@ -324,12 +523,12 @@ export const App: React.FC = () => {
         leafletMarkersRef.current.push(marker);
       });
 
-      window.setTimeout(resolvePillCollisions, 80);
+      window.setTimeout(resolvePillCollisions, 60);
     }
-  }, [landmarks, selectedId, userLocation, engine, mapLoaded]);
+  }, [visibleLandmarks, selectedId, userLocation, engine, mapLoaded]);
 
   const handleSelectLandmark = async (landmarkId: string) => {
-    const lm = landmarks.find((l) => l.id === landmarkId);
+    const lm = landmarkPool.find((l) => l.id === landmarkId);
     if (!lm) return;
 
     setSelectedId(lm.id);
@@ -352,7 +551,7 @@ export const App: React.FC = () => {
         );
         wikiCacheRef.current.set(cacheKey, gallery);
         if (gallery.length > 0) {
-          setLandmarks((prev) =>
+          setLandmarkPool((prev) =>
             prev.map((item) =>
               item.id === lm.id
                 ? {
@@ -365,82 +564,6 @@ export const App: React.FC = () => {
           );
         }
       } catch (_) {}
-    }
-  };
-
-  const spotBuildingsAround = async (lat: number, lng: number) => {
-    showToast('Spotting notable buildings around this area...');
-
-    try {
-      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=550&ggslimit=16&prop=coordinates|pageimages|extracts|description&exintro=1&explaintext=1&exchars=750&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
-
-      const filtered = pages.filter((p) => {
-        if (!p.coordinates?.length) return false;
-        const text = `${p.title} ${p.description || ''}`.toLowerCase();
-        if (
-          text.includes('street') ||
-          text.includes('road') ||
-          text.includes('christmas market') ||
-          text.includes('avenue') ||
-          text.includes('railway station')
-        ) {
-          return false;
-        }
-        return true;
-      });
-
-      const selected: Landmark[] = [];
-      for (const p of filtered) {
-        const c = p.coordinates[0];
-        const tooClose = selected.some(
-          (s) => computeDistanceMeters(c.lat, c.lon, s.lat, s.lng) < 45
-        );
-        if (!tooClose) {
-          const cat = inferCategory(p.title, p.description || p.extract || '');
-          const cleanName = p.title.replace(/\s*\([^)]*\)\s*/g, '');
-          const parsed = parseRichWikipediaSummary(cleanName, p.description, p.extract);
-          const rawThumb = p.thumbnail?.source;
-          const usableThumb =
-            rawThumb && isUsableBuildingPhoto(rawThumb)
-              ? rawThumb
-              : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
-
-          selected.push({
-            id: `wiki-${p.pageid}`,
-            name: cleanName,
-            role: p.description
-              ? p.description.charAt(0).toUpperCase() + p.description.slice(1)
-              : 'Notable Building & Landmark',
-            category: cat.category,
-            catLabel: cat.catLabel,
-            lat: c.lat,
-            lng: c.lon,
-            wikiTitle: encodeURIComponent(p.title.replace(/\s+/g, '_')),
-            whyItMatters: parsed.whyItMatters,
-            styleAndEra: parsed.styleAndEra,
-            architect: parsed.architect,
-            summary: parsed.summary,
-            highlights: parsed.highlights,
-            fallbackImg: usableThumb
-          });
-        }
-        if (selected.length >= 6) break;
-      }
-
-      if (selected.length === 0) {
-        showToast('No major landmarks found within 550m.');
-        return;
-      }
-
-      setLandmarks(selected);
-      setSelectedId(null);
-      showToast(`Spotted ${selected.length} buildings around this square`);
-    } catch (err) {
-      console.error(err);
-      showToast('Could not fetch live landmarks right now.');
     }
   };
 
@@ -462,7 +585,7 @@ export const App: React.FC = () => {
         } else if (leafletMapRef.current) {
           leafletMapRef.current.setView([lat, lng], 17);
         }
-        await spotBuildingsAround(lat, lng);
+        await spotBuildingsAround(lat, lng, 700, false);
       },
       () => {
         showToast('Location permission denied — pan the map and tap Spot Here.');
@@ -480,11 +603,24 @@ export const App: React.FC = () => {
       const c = leafletMapRef.current.getCenter();
       center = { lat: c.lat, lng: c.lng };
     }
+    const radius = viewportBounds
+      ? Math.max(
+          400,
+          Math.round(
+            computeDistanceMeters(
+              viewportBounds.south,
+              viewportBounds.west,
+              viewportBounds.north,
+              viewportBounds.east
+            ) / 2
+          )
+        )
+      : 800;
     setUserLocation(center);
-    spotBuildingsAround(center.lat, center.lng);
+    spotBuildingsAround(center.lat, center.lng, radius, false);
   };
 
-  const selectedLandmark = landmarks.find((l) => l.id === selectedId) || null;
+  const selectedLandmark = landmarkPool.find((l) => l.id === selectedId) || null;
 
   return (
     <>
@@ -506,7 +642,7 @@ export const App: React.FC = () => {
           type="button"
           id="scan-area-btn"
           className="floating-action-pill"
-          title="Spot buildings in this map view"
+          title="Spot landmarks and buildings in this map view"
           onClick={handleSpotCurrentView}
         >
           <svg

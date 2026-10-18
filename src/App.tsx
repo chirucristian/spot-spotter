@@ -82,7 +82,6 @@ function getMobileAwareZoom(baseZoom: number): number {
 }
 
 export const App: React.FC = () => {
-  const [activeSquareKey, setActiveSquareKey] = useState<string>('senate-helsinki');
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(
     CIVIC_SQUARES['senate-helsinki'].center
   );
@@ -369,46 +368,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSquareChange = (squareKey: string) => {
-    if (squareKey === 'live-gps') {
-      setActiveSquareKey('live-gps');
-      pinpointMe();
-      return;
-    }
-
-    const sq = CIVIC_SQUARES[squareKey];
-    if (!sq) return;
-
-    setActiveSquareKey(squareKey);
-    setUserLocation({ ...sq.center });
-    setLandmarks(
-      sq.landmarks.map((l) => ({
-        ...l,
-        photos: l.photos ? [...l.photos] : [l.fallbackImg]
-      }))
-    );
-    setSelectedId(null);
-
-    const isMobile = window.innerWidth < 520;
-    if (engine === 'google' && googleMapRef.current && window.google?.maps) {
-      if (isMobile && sq.landmarks.length > 1) {
-        const bounds = new window.google.maps.LatLngBounds();
-        sq.landmarks.forEach((l) => bounds.extend({ lat: l.lat, lng: l.lng }));
-        googleMapRef.current.fitBounds(bounds, { top: 80, right: 65, bottom: 70, left: 65 });
-      } else {
-        googleMapRef.current.setCenter(sq.center);
-        googleMapRef.current.setZoom(sq.zoom);
-      }
-    } else if (leafletMapRef.current) {
-      if (isMobile && sq.landmarks.length > 1) {
-        const bounds = L.latLngBounds(sq.landmarks.map((l) => [l.lat, l.lng] as [number, number]));
-        leafletMapRef.current.fitBounds(bounds, { padding: [65, 65] });
-      } else {
-        leafletMapRef.current.setView([sq.center.lat, sq.center.lng], sq.zoom);
-      }
-    }
-  };
-
   const spotBuildingsAround = async (lat: number, lng: number) => {
     showToast('Spotting notable buildings around this area...');
 
@@ -496,7 +455,6 @@ export const App: React.FC = () => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setUserLocation({ lat, lng });
-        setActiveSquareKey('live-gps');
 
         if (engine === 'google' && googleMapRef.current) {
           googleMapRef.current.setCenter({ lat, lng });
@@ -507,7 +465,7 @@ export const App: React.FC = () => {
         await spotBuildingsAround(lat, lng);
       },
       () => {
-        showToast('Location permission denied — use the dropdown or pan the map.');
+        showToast('Location permission denied — pan the map and tap Spot Here.');
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -544,37 +502,6 @@ export const App: React.FC = () => {
       </main>
 
       <header className="floating-top-bar">
-        <div className="location-pill">
-          <span className="app-mark" aria-hidden="true">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2L19 21L12 17L5 21L12 2Z"></path>
-            </svg>
-          </span>
-          <select
-            id="square-select"
-            className="square-select"
-            aria-label="Select Square or Live GPS"
-            value={activeSquareKey}
-            onChange={(e) => handleSquareChange(e.target.value)}
-          >
-            <option value="senate-helsinki">Senate Square · Helsinki</option>
-            <option value="parliament-london">Parliament Square · London</option>
-            <option value="constitution-bucharest">Piața Constituției · Bucharest</option>
-            <option value="signoria-florence">Piazza della Signoria · Florence</option>
-            <option value="grand-place-brussels">Grand-Place · Brussels</option>
-            <option value="live-gps">My Live Location</option>
-          </select>
-        </div>
-
         <button
           type="button"
           id="scan-area-btn"

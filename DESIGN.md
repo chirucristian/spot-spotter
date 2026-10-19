@@ -24,15 +24,16 @@
   - Culture / Monument (`--dot-culture`): `#F59E0B`
 
 ## 3. Typography & Scale
-- **Font Family:** `'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif`
+- **Font Family:** `'Bricolage Grotesque', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, sans-serif`
+- **Numeric Discipline:** `font-variant-numeric: tabular-nums` on distances, compass bearings, photo counters, and landmark steppers.
 - **Type Scale:**
-  - Card Title: `1.15rem` (`800` weight, `-0.02em` tracking)
+  - Card Title: `1.2rem` (`800` weight, `-0.02em` tracking, `text-wrap: balance`)
   - Body Base: `16px` (`1rem`)
-  - Square Selector & Summary: `0.9rem` (`1.5` line-height)
-  - Action Buttons & Role: `0.85rem` / `0.84rem` (`700` / `600` weight)
-  - Rooftop Pill Name & Distance Badge: `0.82rem` (`700` weight)
-  - Status Toast: `0.8rem` (`600` weight)
-  - Crowded Pill & Category Badge: `0.76rem` / `0.75rem` (`700` weight)
+  - Architectural Summary & Spatial Lead: `0.91rem` / `0.88rem` (`1.56` / `1.48` line-height, `66ch` max measure)
+  - Action Buttons & Role: `0.85rem` / `0.84rem` (`700` weight)
+  - Rooftop Pill Name & Ledger Values: `0.82rem` / `0.8rem` (`700` weight)
+  - Status Toast & Category Filter Chips: `0.8rem` / `0.78rem` (`600` / `700` weight)
+  - Photo Counter, Distance/Bearing Badge & Category Badge: `0.76rem` (`700` weight)
 
 ## 4. Shape & Elevation
 - **Border Radius Scale:**

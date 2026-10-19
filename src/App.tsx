@@ -7,6 +7,7 @@ import {
   computeDistanceMeters,
   computeLandmarkImportance,
   fetchBuildingPhotoGallery,
+  fetchFullWikipediaEnrichment,
   filterLandmarksForZoomAndBounds,
   inferCategory,
   isUsableBuildingPhoto,
@@ -151,6 +152,7 @@ const INITIAL_POOL: Landmark[] = Object.values(CIVIC_SQUARES).flatMap((sq) =>
 );
 
 export const App: React.FC = () => {
+  const [isScanning, setIsScanning] = useState<boolean>(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(
     CIVIC_SQUARES['senate-helsinki'].center
   );
@@ -230,11 +232,12 @@ export const App: React.FC = () => {
     const clampedRadius = Math.max(300, Math.min(10000, Math.round(radiusMeters)));
 
     if (!silent) {
+      setIsScanning(true);
       showToast('Spotting landmarks & buildings in view...');
     }
 
     try {
-      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=750&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
+      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
       const res = await fetch(url);
       const data = await res.json();
       const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
@@ -289,6 +292,7 @@ export const App: React.FC = () => {
           styleAndEra: parsed.styleAndEra,
           architect: parsed.architect,
           summary: parsed.summary,
+          historicalContext: parsed.historicalContext,
           highlights: parsed.highlights,
           fallbackImg: usableThumb,
           importance
@@ -302,12 +306,16 @@ export const App: React.FC = () => {
 
       mergeDiscoveredLandmarks(discovered);
       if (!silent) {
-        showToast('Updated landmarks for current view');
+        showToast(`Spotted ${discovered.length} landmarks in this area`);
       }
     } catch (err) {
       console.error(err);
       if (!silent) {
         showToast('Could not fetch live landmarks right now.');
+      }
+    } finally {
+      if (!silent) {
+        setIsScanning(false);
       }
     }
   };
@@ -698,31 +706,57 @@ export const App: React.FC = () => {
     }
 
     const cacheKey = lm.wikiTitle || lm.id;
-    if (!wikiCacheRef.current.has(cacheKey)) {
+    const needsPhotos = !wikiCacheRef.current.has(cacheKey);
+    const needsEnrichment = Boolean(lm.wikiTitle && !lm.enriched);
+
+    if (needsPhotos || needsEnrichment) {
       try {
-        const gallery = await fetchBuildingPhotoGallery(
-          lm.wikiTitle,
-          lm.name,
-          lm.photos,
-          lm.fallbackImg
-        );
-        wikiCacheRef.current.set(cacheKey, gallery);
-        if (gallery.length > 0) {
-          setLandmarkPool((prev) =>
-            prev.map((item) =>
-              item.id === lm.id
+        const [gallery, enrichedPatch] = await Promise.all([
+          needsPhotos
+            ? fetchBuildingPhotoGallery(
+                lm.wikiTitle,
+                lm.name,
+                lm.photos,
+                lm.fallbackImg
+              )
+            : Promise.resolve<string[]>(wikiCacheRef.current.get(cacheKey) || []),
+          needsEnrichment
+            ? fetchFullWikipediaEnrichment(lm.wikiTitle, lm.name, lm.role)
+            : Promise.resolve(null)
+        ]);
+
+        if (needsPhotos) {
+          wikiCacheRef.current.set(cacheKey, gallery);
+        }
+
+        setLandmarkPool((prev) =>
+          prev.map((item) => {
+            if (item.id !== lm.id) return item;
+            return {
+              ...item,
+              ...(enrichedPatch || {}),
+              ...(gallery.length > 0
                 ? {
-                    ...item,
                     fallbackImg: gallery[0],
                     photos: gallery
                   }
-                : item
-            )
-          );
-        }
+                : {})
+            };
+          })
+        );
       } catch (_) {}
     }
   };
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedId) {
+        setSelectedId(null);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedId]);
 
   const pinpointMe = () => {
     if (!navigator.geolocation) {
@@ -798,8 +832,9 @@ export const App: React.FC = () => {
         <button
           type="button"
           id="scan-area-btn"
-          className="floating-action-pill"
+          className={`floating-action-pill ${isScanning ? 'is-scanning' : ''}`}
           title="Spot landmarks and buildings in this map view"
+          disabled={isScanning}
           onClick={handleSpotCurrentView}
         >
           <svg
@@ -815,7 +850,7 @@ export const App: React.FC = () => {
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span>Spot Here</span>
+          <span>{isScanning ? 'Spotting…' : 'Spot Here'}</span>
         </button>
       </header>
 
@@ -848,6 +883,8 @@ export const App: React.FC = () => {
       <BuildingCard
         landmark={selectedLandmark}
         userLocation={userLocation}
+        visibleLandmarks={visibleLandmarks}
+        onSelectLandmark={handleSelectLandmark}
         onClose={() => setSelectedId(null)}
       />
 

@@ -17,6 +17,8 @@ export interface Landmark {
   architect: string;
   /** Rich multi-sentence historical & architectural summary */
   summary: string;
+  /** Optional second paragraph with deeper historical or architectural context */
+  historicalContext?: string;
   /** 2-3 quick bullet highlights when looking at the facade */
   highlights: string[];
   fallbackImg: string;
@@ -24,6 +26,8 @@ export interface Landmark {
   photos?: string[];
   /** Prominence score (1-100) used for zoom-adaptive filtering */
   importance?: number;
+  /** Whether full Wikipedia article intro has been fetched */
+  enriched?: boolean;
 }
 
 export interface CivicSquare {

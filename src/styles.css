@@ -13,17 +13,11 @@
   --ink-on-dark: #FFFFFF;
   --border-subtle: #E2E8F0;
 
-  /* Category Indicator Dots */
-  --dot-civic: #EF4444;
-  --dot-law: #3B82F6;
-  --dot-sacred: #10B981;
-  --dot-culture: #F59E0B;
-
   --font-sans: 'Bricolage Grotesque', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --shadow-float: 0 8px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
   --shadow-pill: 0 4px 12px rgba(15, 23, 42, 0.25), 0 1px 3px rgba(15, 23, 42, 0.14);
-  --shadow-pill-active: 0 6px 18px rgba(15, 23, 42, 0.34), 0 2px 6px rgba(15, 23, 42, 0.2);
+  --shadow-pill-active: 0 6px 18px rgba(220, 38, 38, 0.38), 0 2px 6px rgba(15, 23, 42, 0.2);
 }
 
 *, *::before, *::after {
@@ -48,6 +42,10 @@ html, body, #root {
   background-color: #E2E8F0;
   -webkit-font-smoothing: antialiased;
   user-select: none;
+}
+
+a {
+  text-underline-offset: 3px;
 }
 
 :focus-visible {
@@ -84,7 +82,7 @@ html, body, #root {
 }
 
 /* ==========================================================================
-   Minimal Floating Top Bar
+   Floating Top Bar (Spot Here Action)
    ========================================================================== */
 .floating-top-bar {
   position: fixed;
@@ -116,15 +114,21 @@ html, body, #root {
   cursor: pointer;
   box-shadow: var(--shadow-float);
   flex-shrink: 0;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
 }
 
-.floating-action-pill:hover {
+.floating-action-pill:hover:not(:disabled) {
   background-color: #1E293B;
 }
 
-.floating-action-pill:active {
+.floating-action-pill:active:not(:disabled) {
   transform: scale(0.97);
+}
+
+.floating-action-pill:disabled,
+.floating-action-pill.is-scanning {
+  opacity: 0.82;
+  cursor: wait;
 }
 
 /* ==========================================================================
@@ -180,8 +184,8 @@ html, body, #root {
   user-select: none;
   opacity: 1;
   transition:
-    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .rooftop-pill-anchor:hover,
@@ -200,7 +204,6 @@ html, body, #root {
 .rooftop-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   padding: 5px 11px;
   border-radius: 999px;
   background-color: var(--surface-pill);
@@ -208,7 +211,7 @@ html, body, #root {
   box-shadow: var(--shadow-pill);
   border: 1.5px solid rgba(255, 255, 255, 0.92);
   white-space: nowrap;
-  max-width: 195px;
+  max-width: 205px;
 }
 
 .rooftop-pill-anchor.is-selected .rooftop-pill {
@@ -287,15 +290,15 @@ html, body, #root {
 }
 
 /* ==========================================================================
-   Rich Architectural Dossier Card (Photo + Hook + Facts + Summary + Highlights)
+   Architectural Dossier Sheet (Hairline-Ruled, Zero Nested Cards)
    ========================================================================== */
 .place-card {
   position: fixed;
   left: 12px;
   right: 12px;
   bottom: max(12px, env(safe-area-inset-bottom, 12px));
-  max-width: 460px;
-  max-height: 78dvh;
+  max-width: 470px;
+  max-height: 80dvh;
   margin: 0 auto;
   background-color: var(--surface-card);
   border-radius: 20px;
@@ -305,16 +308,16 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: cardSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: cardSlideUp 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes cardSlideUp {
   from {
-    transform: translateY(24px);
+    transform: translateY(20px);
     opacity: 0;
   }
   to {
-            transform: translateY(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
@@ -323,29 +326,49 @@ html, body, #root {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: rgba(15, 23, 42, 0.76);
+  background-color: rgba(15, 23, 42, 0.8);
   color: #FFFFFF;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 5;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.card-close-btn:hover {
+  background-color: var(--surface-pill);
+}
+
+.card-close-btn:active {
+  transform: scale(0.94);
 }
 
 .card-layout {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+.card-layout::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card-layout::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+  border-radius: 999px;
 }
 
 .card-photo-wrap {
   position: relative;
   width: 100%;
-  height: 190px;
+  height: 200px;
   background-color: var(--surface-subtle);
   flex-shrink: 0;
   overflow: hidden;
@@ -361,7 +384,7 @@ html, body, #root {
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
@@ -383,6 +406,15 @@ html, body, #root {
   pointer-events: none;
 }
 
+.card-photo-scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 68px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.56), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
 .card-photo-counter {
   position: absolute;
   top: 10px;
@@ -393,6 +425,7 @@ html, body, #root {
   color: #FFFFFF;
   font-size: 0.76rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   z-index: 4;
   pointer-events: none;
 }
@@ -401,10 +434,10 @@ html, body, #root {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background-color: rgba(15, 23, 42, 0.72);
+  background-color: rgba(15, 23, 42, 0.76);
   color: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.35);
   display: inline-flex;
@@ -416,7 +449,7 @@ html, body, #root {
 }
 
 .carousel-nav-btn:hover {
-  background-color: rgba(15, 23, 42, 0.92);
+  background-color: rgba(15, 23, 42, 0.94);
 }
 
 .carousel-nav-btn:active {
@@ -441,7 +474,7 @@ html, body, #root {
   gap: 6px;
   padding: 4px 8px;
   border-radius: 999px;
-  background-color: rgba(15, 23, 42, 0.65);
+  background-color: rgba(15, 23, 42, 0.68);
   z-index: 4;
 }
 
@@ -467,10 +500,12 @@ html, body, #root {
   left: 12px;
   padding: 4px 10px;
   border-radius: 999px;
-  background-color: rgba(15, 23, 42, 0.86);
+  background-color: rgba(15, 23, 42, 0.88);
   color: #FFFFFF;
   font-size: 0.76rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
   z-index: 4;
 }
 
@@ -480,24 +515,33 @@ html, body, #root {
   right: 12px;
   padding: 4px 10px;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.94);
+  background-color: rgba(255, 255, 255, 0.96);
   color: var(--ink-primary);
   font-size: 0.76rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   z-index: 4;
 }
 
 .card-content {
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: 10px;
 }
 
 .card-header-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  min-width: 0;
 }
 
 .card-title {
@@ -506,6 +550,7 @@ html, body, #root {
   color: var(--ink-primary);
   letter-spacing: -0.02em;
   line-height: 1.2;
+  text-wrap: balance;
 }
 
 .card-role {
@@ -514,93 +559,217 @@ html, body, #root {
   color: var(--ink-secondary);
 }
 
-/* 1-Sentence Spatial Orientation Callout */
-.card-why-box {
-  background-color: var(--surface-subtle);
-  border-radius: 10px;
-  padding: 8px 11px;
-  font-size: 0.85rem;
-  line-height: 1.42;
-  color: var(--ink-primary);
+.card-utility-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
-.why-label {
+.card-icon-pill {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background-color: var(--surface-subtle);
+  color: var(--ink-primary);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.card-icon-pill:hover {
+  background-color: #E2E8F0;
+}
+
+.card-icon-pill:active {
+  transform: scale(0.96);
+}
+
+.card-icon-pill.is-active {
+  background-color: var(--surface-pill-active);
+  color: var(--ink-on-dark);
+  border-color: var(--surface-pill-active);
+}
+
+.card-stepper {
+  height: 32px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.stepper-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ink-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.stepper-btn:hover {
+  background-color: #E2E8F0;
+}
+
+.stepper-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+  padding: 0 3px;
+}
+
+/* 1-Sentence Spatial Orientation Lead */
+.card-lead {
+  font-size: 0.88rem;
+  line-height: 1.48;
+  color: var(--ink-primary);
+  max-width: 66ch;
+  user-select: text;
+}
+
+.lead-prefix {
+  font-weight: 800;
   color: var(--surface-pill-active);
 }
 
-/* Architectural Style & Architect Strip */
-.card-facts-strip {
+/* Hairline-Ruled Architectural Ledger (No nested cards) */
+.card-ledger {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 9px 0;
+  gap: 10px;
 }
 
-.fact-pill {
-  background-color: var(--surface-subtle);
-  border-radius: 10px;
-  padding: 7px 10px;
+.ledger-cell {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
+  min-width: 0;
 }
 
-.fact-key {
-  font-size: 0.75rem;
+.ledger-cell + .ledger-cell {
+  border-left: 1px solid var(--border-subtle);
+  padding-left: 10px;
+}
+
+.ledger-term {
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--ink-muted);
 }
 
-.fact-val {
-  font-size: 0.82rem;
+.ledger-desc {
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--ink-primary);
-  line-height: 1.25;
+  line-height: 1.28;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Historical & Architectural Narrative */
+.card-narrative {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .card-summary {
-  font-size: 0.9rem;
+  font-size: 0.91rem;
   color: var(--ink-secondary);
-  line-height: 1.55;
+  line-height: 1.56;
+  max-width: 68ch;
   user-select: text;
 }
 
-/* Facade Highlights List */
+.card-summary-extended {
+  padding-top: 2px;
+  color: var(--ink-secondary);
+}
+
+.summary-expand-btn {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.summary-expand-btn:hover {
+  color: var(--surface-pill-active);
+}
+
+.summary-expand-btn svg {
+  transition: transform 0.18s ease;
+}
+
+.summary-expand-btn svg.is-rotated {
+  transform: rotate(180deg);
+}
+
+/* Facade Highlights Section (Hairline-separated, not a nested box) */
 .card-highlights {
-  background-color: var(--surface-subtle);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .highlights-heading {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
   color: var(--ink-primary);
+  margin-top: 2px;
+  margin-bottom: 1px;
 }
 
 .highlights-list {
-  padding-left: 16px;
+  padding-left: 17px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 0.84rem;
-  line-height: 1.42;
+  gap: 5px;
+  font-size: 0.85rem;
+  line-height: 1.45;
   color: var(--ink-secondary);
+  max-width: 66ch;
+  user-select: text;
 }
 
 .card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-top: 2px;
+  padding-top: 4px;
 }
 
 .card-btn-primary {
   flex: 1;
-  height: 40px;
+  height: 42px;
   border-radius: 10px;
   background-color: var(--surface-pill);
   color: var(--ink-on-dark);
@@ -610,20 +779,40 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.card-btn-primary:hover {
+  background-color: #1E293B;
+}
+
+.card-btn-primary:active {
+  transform: scale(0.98);
 }
 
 .card-btn-secondary {
-  height: 40px;
-  padding: 0 14px;
+  height: 42px;
+  padding: 0 15px;
   border-radius: 10px;
   background-color: var(--surface-subtle);
   color: var(--ink-primary);
+  border: 1px solid var(--border-subtle);
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.card-btn-secondary:hover {
+  background-color: #E2E8F0;
+}
+
+.card-btn-secondary:active {
+  transform: scale(0.98);
 }
 
 /* Status Toast */
@@ -650,13 +839,26 @@ html, body, #root {
   transform: translateX(-50%) translateY(0);
 }
 
+@media (max-width: 420px) {
+  .card-ledger {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ledger-cell:nth-child(3) {
+    grid-column: 1 / -1;
+    border-left: none;
+    border-top: 1px solid var(--border-subtle);
+    padding-left: 0;
+    padding-top: 6px;
+  }
+}
+
 @media (min-width: 768px) {
   .place-card {
     left: 16px;
     right: auto;
     bottom: 16px;
-    width: 410px;
-    max-height: 82dvh;
+    width: 430px;
+    max-height: 84dvh;
     margin: 0;
   }
 }

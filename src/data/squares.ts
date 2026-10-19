@@ -23,6 +23,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Carl Ludvig Engel & Ernst Lohrmann',
         summary:
           'Built as a tribute to Grand Duke Nicholas I of Russia (and known as St. Nicholas’ Church until Finnish independence in 1917), Helsinki Cathedral crowns a monumental granite staircase above Senate Square. Its Greek-cross plan is symmetrical on all four sides, topped by a central green dome rising 62 meters above sea level and flanked by four smaller corner domes added by Ernst Lohrmann.',
+        historicalContext:
+          'Carl Ludvig Engel designed the cathedral as the visual climax of his Imperial Helsinki master plan, positioning it on elevated bedrock so its white colonnades and green cupolas served as the primary sea mark for ships entering the South Harbor. After Engel’s death in 1840, his successor Ernst Lohrmann added the four corner bell towers, the zinc Apostle sculptures, and two freestanding pavilions to stabilize the structure and accommodate large state congregations.',
         highlights: [
           'Twelve zinc statues of the Apostles on the roofline — one of the largest unified zinc sculpture ensembles in the world.',
           'Symmetrical Corinthian porticos facing all four cardinal directions.',
@@ -36,7 +38,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Exterior_of_Helsinki_Cathedral_%288%29.JPG/960px-Exterior_of_Helsinki_Cathedral_%288%29.JPG',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg/960px-Sky-foto_M%C3%B6ller_-_Aerial_photograph_of_Helsinki_Cathedral_from_above_it_in_1976.jpg'
         ],
-        importance: 98
+        importance: 98,
+        enriched: true
       },
       {
         id: 'government-palace-fi',
@@ -52,6 +55,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Carl Ludvig Engel',
         summary:
           'Originally erected between 1818 and 1822 to house the Imperial Senate of Finland after Helsinki replaced Turku as capital, the Government Palace sets the visual proportion for the entire square. Today it serves as the official seat of the Prime Minister’s Office, the Chancellor of Justice, and major departments of the Ministry of Finance.',
+        historicalContext:
+          'Over the course of two centuries, the building has been the stage for pivotal moments in Finnish constitutional history—including the 1904 assassination of Governor-General Nikolai Bobrikov on its second-floor main staircase by Eugen Schauman, and the December 1917 sessions that drafted Finland’s declaration of independence.',
         highlights: [
           'Central Corinthian pediment containing the oldest public clock face in Helsinki (installed by Jaakko Juusten in 1822).',
           'Grand Presidential Session Hall where bills are formally presented by the Council of State.',
@@ -64,7 +69,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Finnish_Government_Palace_from_above_in_the_1960s.jpg/960px-Finnish_Government_Palace_from_above_in_the_1960s.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg/960px-Eric_Sundstr%C3%B6m_-_Finnish_Government_Palace_lobby_in_1917.jpg'
         ],
-        importance: 86
+        importance: 86,
+        enriched: true
       },
       {
         id: 'uni-helsinki-main',
@@ -80,6 +86,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Carl Ludvig Engel & J.S. Sirén',
         summary:
           'Following the Great Fire of Turku in 1827, the Imperial Alexander University was relocated to Helsinki and placed directly opposite the Senate to symbolize the partnership of learning and governance. Completed by Engel in 1832, its Great Hall was severely damaged by aerial bombing in 1944 and meticulously reconstructed after the war.',
+        historicalContext:
+          'While its external volume mirrors the Government Palace across the square, Engel substituted Greek Ionic columns for the Senate’s Roman Corinthian order to signify that the university was a temple of Greek philosophy and science rather than imperial administration. In the 1930s, Parliament architect J.S. Sirén extended the building westward to fill the entire city block.',
         highlights: [
           'Eight-column Ionic facade contrasting subtly with the Corinthian columns of the Government Palace across the square.',
           'Inscription above the main frieze reading "Per Aspera Ad Astra" and honoring arts and sciences.',
@@ -92,7 +100,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg/960px-University_of_Helsinki%2C_Main_Building_%2852890135967%29.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg/960px-Helsinki_University_Finland_100_celebration_-_Marit_Henriksson.jpg'
         ],
-        importance: 85
+        importance: 85,
+        enriched: true
       },
       {
         id: 'alexander-ii-statue',
@@ -108,6 +117,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Walter Runeberg & Johannes Takanen',
         summary:
           'Unveiled on 29 April 1894 through a nationwide public fundraising campaign, the monument depicts Grand Duke Alexander II in the uniform of a Finnish Guards officer addressing the Diet of 1863. Surrounding the red granite pedestal stand four allegorical bronze figures representing Law (Lex), Light (Lux), Peace (Pax), and Labor (Labor).',
+        historicalContext:
+          'When Emperor Nicholas II issued the February Manifesto in 1899 curtailing Finland’s constitutional autonomy, citizens gathered at the pedestal of Alexander II—who had guaranteed Finland’s constitutional laws—and covered the statue in thousands of protest wreaths, turning an imperial monument into an enduring emblem of Finnish rule of law.',
         highlights: [
           'Allegorical figure of "Lex" (Law) armed with a sword, shield, and lion skin — a famous symbol of Finnish constitutional resistance.',
           'Measures 10.67 meters in total height with the bronze Tsar statue standing 3.23 meters tall.',
@@ -118,7 +129,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         photos: [
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/11-07-29-helsinki-by-RalfR-149.jpg/960px-11-07-29-helsinki-by-RalfR-149.jpg'
         ],
-        importance: 68
+        importance: 68,
+        enriched: true
       },
       {
         id: 'national-library-fi',
@@ -134,6 +146,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Carl Ludvig Engel & Gustaf Nyström',
         summary:
           'Standing immediately northwest of the Cathedral on Unioninkatu, the National Library of Finland is the country’s oldest and most important scholarly library. Built in 1844 with barrel-vaulted reading halls modeled on Roman baths, it was expanded in 1906 with a six-story semicircular Art Nouveau book-stack Rotunda.',
+        historicalContext:
+          'Because fire had destroyed the Royal Academy of Turku’s library in 1827, Engel engineered the new Helsinki library as a fireproof masonry monument set apart from neighboring buildings, with three magnificent skylit reading rooms arranged around a central domed hall.',
         highlights: [
           'Vaulted Cupola Hall featuring ceiling frescoes, marble-stuccoed Corinthian columns, and parquet floors.',
           '1906 cast-iron and glass Rotunda wing designed by Gustaf Nyström.',
@@ -147,7 +161,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://upload.wikimedia.org/wikipedia/commons/e/e5/Rotunda_Julkisivu.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Inside_view_of_National_Library_of_Finland_001_%282%29.jpg/960px-Inside_view_of_National_Library_of_Finland_001_%282%29.jpg'
         ],
-        importance: 75
+        importance: 75,
+        enriched: true
       },
       {
         id: 'sederholm-house',
@@ -163,6 +178,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         architect: 'Samuel Berner (attributed)',
         summary:
           'Built in 1757 by wealthy merchant and shipowner Johan Sederholm at the southeast corner of the square, this two-story stone residence survived the fires and the 1812 imperial rebuilding of Helsinki. After serving as a merchant residence, girls’ school, and municipal court, it was converted into part of the Helsinki City Museum.',
+        historicalContext:
+          'In 18th-century Swedish-ruled Helsinki, almost all town houses were built of timber; Sederholm’s two-story brick-and-stone mansion was regarded as so palatial that visiting royalty including King Gustaf III of Sweden lodged within its upper chambers.',
         highlights: [
           'Steep mansard roof and symmetrical 18th-century Swedish merchant windows.',
           'Ground-floor vaulted cellars that originally stored imported salt, wine, and grain.',
@@ -175,7 +192,8 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg/960px-Sederholmin_talo%2C_taustalla_Valtioneuvoston_kanslia.jpg',
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Sederholmin_talo_-_Marit_Henriksson.jpg/960px-Sederholmin_talo_-_Marit_Henriksson.jpg'
         ],
-        importance: 52
+        importance: 52,
+        enriched: true
       },
       {
         id: 'uspenski-cathedral',

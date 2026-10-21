@@ -1,13 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Landmark } from '../types';
-import {
-  computeBearingDegrees,
-  computeDistanceMeters,
-  formatCardinalDirection,
-  formatCompassBearing,
-  formatDistance,
-  formatWalkTime
-} from '../utils/geo';
+import { computeDistanceMeters, formatDistance } from '../utils/geo';
 
 interface BuildingCardProps {
   landmark: Landmark | null;
@@ -28,7 +21,6 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
   const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
   const [dragOffsetX, setDragOffsetX] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [isExpandedSummary, setIsExpandedSummary] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const touchStartXRef = useRef<number | null>(null);
@@ -40,7 +32,6 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     setFailedUrls({});
     setDragOffsetX(0);
     setIsDragging(false);
-    setIsExpandedSummary(false);
     setIsSpeaking(false);
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -149,9 +140,8 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     window.speechSynthesis.cancel();
     const narrative = [
       `${landmark.name}. ${landmark.role}.`,
-      landmark.whyItMatters,
-      landmark.summary,
-      landmark.historicalContext || ''
+      landmark.built ? `Built ${landmark.built}.` : '',
+      landmark.summary
     ]
       .filter(Boolean)
       .join(' ');
@@ -170,15 +160,6 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     landmark.lat,
     landmark.lng
   );
-  const bearingDeg = computeBearingDegrees(
-    userLocation.lat,
-    userLocation.lng,
-    landmark.lat,
-    landmark.lng
-  );
-  const compassLabel = formatCompassBearing(bearingDeg);
-  const cardinalFull = formatCardinalDirection(bearingDeg);
-  const walkLabel = formatWalkTime(distMeters);
 
   const landmarkIndex = visibleLandmarks.findIndex((l) => l.id === landmark.id);
   const canStepLandmarks = visibleLandmarks.length > 1 && landmarkIndex !== -1;
@@ -215,7 +196,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
         type="button"
         className="card-close-btn"
         onClick={onClose}
-        aria-label="Close building summary"
+        aria-label="Close building details"
       >
         <svg
           width="16"
@@ -268,14 +249,12 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
 
           <div className="card-photo-scrim" aria-hidden="true" />
 
-          <span className="card-photo-counter">
-            {safeIndex === 0
-              ? `1 / ${photos.length} · Exterior`
-              : `${safeIndex + 1} / ${photos.length}`}
-          </span>
-
           {photos.length > 1 && (
             <>
+              <span className="card-photo-counter">
+                {safeIndex + 1} / {photos.length}
+              </span>
+
               <button
                 type="button"
                 className="carousel-nav-btn prev"
@@ -314,43 +293,29 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
                   <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
               </button>
-
-              <div className="carousel-dots" role="tablist" aria-label="Building photos">
-                {photos.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    role="tab"
-                    aria-selected={idx === safeIndex}
-                    aria-label={`View photo ${idx + 1}`}
-                    className={`carousel-dot ${idx === safeIndex ? 'is-active' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentIndex(idx);
-                    }}
-                  />
-                ))}
-              </div>
             </>
           )}
 
-          <span className="card-category-badge">{landmark.catLabel}</span>
-          <span
-            className="card-distance-badge"
-            title={`Located ${formatDistance(distMeters)} ${cardinalFull} (${bearingDeg}°) from your pin`}
-          >
-            {formatDistance(distMeters)} · {compassLabel}
-          </span>
+          <div className="card-photo-badges">
+            <span className="card-category-badge">{landmark.catLabel}</span>
+            <span className="card-distance-badge">{formatDistance(distMeters)}</span>
+          </div>
         </div>
 
         <div className="card-content">
-          <div className="card-header-row">
-            <div className="card-header-group">
-              <h2 id="card-title" className="card-title">
-                {landmark.name}
-              </h2>
-              <p className="card-role">{landmark.role}</p>
-            </div>
+          <header className="card-header">
+            <h2 id="card-title" className="card-title">
+              {landmark.name}
+            </h2>
+            <p className="card-role">{landmark.role}</p>
+          </header>
+
+          {/* Single "Built" Metadata Field + Audio/Stepper Controls */}
+          <div className="card-meta-bar">
+            <dl className="card-built-field">
+              <dt className="built-label">Built</dt>
+              <dd className="built-value">{landmark.built}</dd>
+            </dl>
 
             <div className="card-utility-bar">
               {typeof window !== 'undefined' && 'speechSynthesis' in window && (
@@ -432,78 +397,8 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
             </div>
           </div>
 
-          {/* 1-Sentence Spatial / Civic Significance Lead */}
-          <p className="card-lead">
-            <strong className="lead-prefix">In the square:</strong> {landmark.whyItMatters}
-          </p>
-
-          {/* Hairline-Ruled Architectural Ledger (No nested cards) */}
-          <dl className="card-ledger">
-            <div className="ledger-cell">
-              <dt className="ledger-term">Style &amp; Era</dt>
-              <dd className="ledger-desc">{landmark.styleAndEra}</dd>
-            </div>
-            <div className="ledger-cell">
-              <dt className="ledger-term">Architect / Origin</dt>
-              <dd className="ledger-desc">{landmark.architect}</dd>
-            </div>
-            <div className="ledger-cell">
-              <dt className="ledger-term">Orientation</dt>
-              <dd className="ledger-desc">
-                {cardinalFull} · {walkLabel}
-              </dd>
-            </div>
-          </dl>
-
-          {/* Architectural & Historical Summary */}
-          <div className="card-narrative">
-            <p className="card-summary">{landmark.summary}</p>
-            {landmark.historicalContext && (
-              <>
-                {isExpandedSummary && (
-                  <p className="card-summary card-summary-extended">
-                    {landmark.historicalContext}
-                  </p>
-                )}
-                <button
-                  type="button"
-                  className="summary-expand-btn"
-                  onClick={() => setIsExpandedSummary((v) => !v)}
-                >
-                  <span>
-                    {isExpandedSummary
-                      ? 'Show concise summary'
-                      : 'Read deeper architectural & historical context'}
-                  </span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={isExpandedSummary ? 'is-rotated' : ''}
-                  >
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Facade & Structural Highlights */}
-          {landmark.highlights && landmark.highlights.length > 0 && (
-            <div className="card-highlights">
-              <h3 className="highlights-heading">Details to spot on site</h3>
-              <ul className="highlights-list">
-                {landmark.highlights.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Summary Only */}
+          <p className="card-summary">{landmark.summary}</p>
 
           <div className="card-actions">
             <a

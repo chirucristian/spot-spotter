@@ -18,18 +18,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1704,
         lng: 24.9522,
         wikiTitle: 'Helsinki_Cathedral',
-        whyItMatters: 'The towering white neoclassical centerpiece anchoring the northern crest of Senate Square.',
-        styleAndEra: 'Neoclassical · 1830–1852',
-        architect: 'Carl Ludvig Engel & Ernst Lohrmann',
+        built: '1830–1852',
         summary:
-          'Built as a tribute to Grand Duke Nicholas I of Russia (and known as St. Nicholas’ Church until Finnish independence in 1917), Helsinki Cathedral crowns a monumental granite staircase above Senate Square. Its Greek-cross plan is symmetrical on all four sides, topped by a central green dome rising 62 meters above sea level and flanked by four smaller corner domes added by Ernst Lohrmann.',
-        historicalContext:
-          'Carl Ludvig Engel designed the cathedral as the visual climax of his Imperial Helsinki master plan, positioning it on elevated bedrock so its white colonnades and green cupolas served as the primary sea mark for ships entering the South Harbor. After Engel’s death in 1840, his successor Ernst Lohrmann added the four corner bell towers, the zinc Apostle sculptures, and two freestanding pavilions to stabilize the structure and accommodate large state congregations.',
-        highlights: [
-          'Twelve zinc statues of the Apostles on the roofline — one of the largest unified zinc sculpture ensembles in the world.',
-          'Symmetrical Corinthian porticos facing all four cardinal directions.',
-          'Underground crypt beneath the granite steps now used for exhibitions and concerts.'
-        ],
+          'Built as the neoclassical centerpiece of Carl Ludvig Engel’s Imperial Helsinki master plan (and known as St. Nicholas’ Church until 1917), Helsinki Cathedral crowns a monumental granite staircase on the northern crest of Senate Square. Its symmetrical Greek-cross plan is topped by a central green dome rising 62 meters above sea level, flanked by four corner bell towers and twelve rooftop zinc statues of the Apostles added by Ernst Lohrmann.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg',
         photos: [
@@ -50,18 +41,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1695,
         lng: 24.9539,
         wikiTitle: 'Government_Palace_(Finland)',
-        whyItMatters: 'The executive seat of Finland’s government enclosing the entire eastern flank of the square.',
-        styleAndEra: 'Empire Neoclassical · 1822',
-        architect: 'Carl Ludvig Engel',
+        built: '1818–1822',
         summary:
-          'Originally erected between 1818 and 1822 to house the Imperial Senate of Finland after Helsinki replaced Turku as capital, the Government Palace sets the visual proportion for the entire square. Today it serves as the official seat of the Prime Minister’s Office, the Chancellor of Justice, and major departments of the Ministry of Finance.',
-        historicalContext:
-          'Over the course of two centuries, the building has been the stage for pivotal moments in Finnish constitutional history—including the 1904 assassination of Governor-General Nikolai Bobrikov on its second-floor main staircase by Eugen Schauman, and the December 1917 sessions that drafted Finland’s declaration of independence.',
-        highlights: [
-          'Central Corinthian pediment containing the oldest public clock face in Helsinki (installed by Jaakko Juusten in 1822).',
-          'Grand Presidential Session Hall where bills are formally presented by the Council of State.',
-          'Pale ochre-and-white Empire facade balanced directly against the University across the plaza.'
-        ],
+          'Enclosing the eastern flank of Senate Square, the Government Palace was designed by Carl Ludvig Engel to house the Imperial Senate of Finland after Helsinki replaced Turku as capital. Its Corinthian pediment holds the oldest public clock face in Helsinki (1822), and today the building serves as the official seat of the Prime Minister’s Office, the Chancellor of Justice, and the Council of State.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Valtioneuvoston_linna.jpg/1280px-Valtioneuvoston_linna.jpg',
         photos: [
@@ -81,18 +63,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1694,
         lng: 24.9502,
         wikiTitle: 'University_of_Helsinki',
-        whyItMatters: 'Forms the western academic pillar of Senate Square, deliberately mirroring the Government Palace opposite.',
-        styleAndEra: 'Neoclassical · 1832',
-        architect: 'Carl Ludvig Engel & J.S. Sirén',
+        built: '1828–1832',
         summary:
-          'Following the Great Fire of Turku in 1827, the Imperial Alexander University was relocated to Helsinki and placed directly opposite the Senate to symbolize the partnership of learning and governance. Completed by Engel in 1832, its Great Hall was severely damaged by aerial bombing in 1944 and meticulously reconstructed after the war.',
-        historicalContext:
-          'While its external volume mirrors the Government Palace across the square, Engel substituted Greek Ionic columns for the Senate’s Roman Corinthian order to signify that the university was a temple of Greek philosophy and science rather than imperial administration. In the 1930s, Parliament architect J.S. Sirén extended the building westward to fill the entire city block.',
-        highlights: [
-          'Eight-column Ionic facade contrasting subtly with the Corinthian columns of the Government Palace across the square.',
-          'Inscription above the main frieze reading "Per Aspera Ad Astra" and honoring arts and sciences.',
-          'Semi-circular Great Ceremonial Hall modeled on classical Greek amphitheaters.'
-        ],
+          'Following the Great Fire of Turku in 1827, the Imperial Alexander University was relocated to Helsinki and placed directly opposite the Government Palace to symbolize the partnership of learning and governance. Designed by Carl Ludvig Engel with a Greek Ionic colonnade and expanded in the 1930s by J.S. Sirén to fill the entire city block, its Great Ceremonial Hall was meticulously reconstructed after wartime bombing in 1944.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg/1280px-University_of_Helsinki%2C_Main_Building_%2852890870759%29.jpg',
         photos: [
@@ -112,18 +85,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1695,
         lng: 24.9522,
         wikiTitle: 'Alexander_II_(statue_in_Helsinki)',
-        whyItMatters: 'The 1894 bronze monument at the exact geometric center of Senate Square, honoring the "Good Tsar" who convened the Diet of Finland.',
-        styleAndEra: 'Realist Bronze & Red Granite · 1894',
-        architect: 'Walter Runeberg & Johannes Takanen',
+        built: '1894',
         summary:
-          'Unveiled on 29 April 1894 through a nationwide public fundraising campaign, the monument depicts Grand Duke Alexander II in the uniform of a Finnish Guards officer addressing the Diet of 1863. Surrounding the red granite pedestal stand four allegorical bronze figures representing Law (Lex), Light (Lux), Peace (Pax), and Labor (Labor).',
-        historicalContext:
-          'When Emperor Nicholas II issued the February Manifesto in 1899 curtailing Finland’s constitutional autonomy, citizens gathered at the pedestal of Alexander II—who had guaranteed Finland’s constitutional laws—and covered the statue in thousands of protest wreaths, turning an imperial monument into an enduring emblem of Finnish rule of law.',
-        highlights: [
-          'Allegorical figure of "Lex" (Law) armed with a sword, shield, and lion skin — a famous symbol of Finnish constitutional resistance.',
-          'Measures 10.67 meters in total height with the bronze Tsar statue standing 3.23 meters tall.',
-          'Became the focal point for silent floral protests against Russification in 1899.'
-        ],
+          'Standing at the exact geometric center of Senate Square, this bronze and red-granite monument by Walter Runeberg and Johannes Takanen honors Grand Duke Alexander II, who reconvened the Diet of Finland in 1863. Surrounding the pedestal stand four allegorical figures representing Law (Lex), Light (Lux), Peace (Pax), and Labor (Labor), which became focal points for peaceful civic protests defending Finnish constitutional autonomy in 1899.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/11-07-29-helsinki-by-RalfR-149.jpg/960px-11-07-29-helsinki-by-RalfR-149.jpg',
         photos: [
@@ -141,18 +105,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1703,
         lng: 24.9503,
         wikiTitle: 'National_Library_of_Finland',
-        whyItMatters: 'Considered Carl Ludvig Engel’s architectural masterpiece, housing Finland’s national cultural heritage.',
-        styleAndEra: 'Neoclassical & Art Nouveau · 1844 / 1906',
-        architect: 'Carl Ludvig Engel & Gustaf Nyström',
+        built: '1840–1844',
         summary:
-          'Standing immediately northwest of the Cathedral on Unioninkatu, the National Library of Finland is the country’s oldest and most important scholarly library. Built in 1844 with barrel-vaulted reading halls modeled on Roman baths, it was expanded in 1906 with a six-story semicircular Art Nouveau book-stack Rotunda.',
-        historicalContext:
-          'Because fire had destroyed the Royal Academy of Turku’s library in 1827, Engel engineered the new Helsinki library as a fireproof masonry monument set apart from neighboring buildings, with three magnificent skylit reading rooms arranged around a central domed hall.',
-        highlights: [
-          'Vaulted Cupola Hall featuring ceiling frescoes, marble-stuccoed Corinthian columns, and parquet floors.',
-          '1906 cast-iron and glass Rotunda wing designed by Gustaf Nyström.',
-          'Underground Fabiania cave stacks carved 18 meters deep into solid granite bedrock.'
-        ],
+          'Widely regarded as Carl Ludvig Engel’s architectural masterpiece, the National Library of Finland stands immediately northwest of the Cathedral with barrel-vaulted reading halls modeled on classical Roman temples. In 1906, architect Gustaf Nyström added the six-story semicircular Art Nouveau Rotunda wing to house its expanding national collections.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/National_Library_of_Finland.jpg/1280px-National_Library_of_Finland.jpg',
         photos: [
@@ -173,18 +128,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1687,
         lng: 24.9535,
         wikiTitle: 'Sederholm_House',
-        whyItMatters: 'The oldest surviving stone building in central Helsinki (1757), pre-dating Senate Square itself.',
-        styleAndEra: '18th-Century Rococo Classicism · 1757',
-        architect: 'Samuel Berner (attributed)',
+        built: '1757',
         summary:
-          'Built in 1757 by wealthy merchant and shipowner Johan Sederholm at the southeast corner of the square, this two-story stone residence survived the fires and the 1812 imperial rebuilding of Helsinki. After serving as a merchant residence, girls’ school, and municipal court, it was converted into part of the Helsinki City Museum.',
-        historicalContext:
-          'In 18th-century Swedish-ruled Helsinki, almost all town houses were built of timber; Sederholm’s two-story brick-and-stone mansion was regarded as so palatial that visiting royalty including King Gustaf III of Sweden lodged within its upper chambers.',
-        highlights: [
-          'Steep mansard roof and symmetrical 18th-century Swedish merchant windows.',
-          'Ground-floor vaulted cellars that originally stored imported salt, wine, and grain.',
-          'Preserved as a historic anchor when Engel redesigned the surrounding square in the 1820s.'
-        ],
+          'Erected in 1757 for wealthy merchant Johan Sederholm at the southeast corner of Senate Square, Sederholm House is the oldest surviving stone building in central Helsinki. Having survived the fires and the 1812 imperial rebuilding of the capital, the two-story Rococo-classical residence now houses exhibitions of the Helsinki City Museum.',
         fallbackImg:
           'https://upload.wikimedia.org/wikipedia/commons/8/83/Sederholmin_talo.jpg',
         photos: [
@@ -204,16 +150,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1683,
         lng: 24.9600,
         wikiTitle: 'Uspenski_Cathedral',
-        whyItMatters: 'The largest Orthodox church in Western and Northern Europe, crowning the hillside of Katajanokka with 13 golden cupolas.',
-        styleAndEra: 'Russian Revival · 1862–1868',
-        architect: 'Alexey Gornostayev',
+        built: '1862–1868',
         summary:
-          'Set atop a rocky granite bluff overlooking the harbor and city center, Uspenski Cathedral was built from 700,000 red bricks brought from the bombed fortress of Bomarsund in Åland. Its thirteen onion domes coated in 22-karat gold represent Christ and the twelve Apostles.',
-        highlights: [
-          'Thirteen gilded onion domes crowning red brick walls salvaged from Bomarsund Fortress.',
-          'Soaring interior vault supported by four monolithic granite columns carved from single boulders.',
-          'Panoramic terrace overlooking Helsinki’s South Harbor and Senate Square.'
-        ],
+          'Set atop a rocky granite bluff on the Katajanokka peninsula overlooking the harbor, Uspenski Cathedral is the largest Orthodox church in Western and Northern Europe. Designed by Alexey Gornostayev, it was built from 700,000 red bricks salvaged from the fortress of Bomarsund in Åland and crowned with thirteen 22-karat gilded onion domes representing Christ and the twelve Apostles.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG/960px-Catedral_Uspenski%2C_Helsinki%2C_Finlandia%2C_2012-08-14%2C_DD_03.JPG',
         photos: [
@@ -230,16 +169,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1683,
         lng: 24.9563,
         wikiTitle: 'Presidential_Palace,_Helsinki',
-        whyItMatters: 'Official state residence of the President of Finland facing the Market Square waterfront.',
-        styleAndEra: 'Empire Neoclassical · 1820 / 1845',
-        architect: 'Pehr Granstedt & Carl Ludvig Engel',
+        built: '1820',
         summary:
-          'Originally built in 1820 as a salt warehouse and residence for merchant J.H. Heidenstrauch, the building was purchased in 1837 and remodeled by Carl Ludvig Engel into the Imperial Palace of the Russian Tsars in Finland. Since 1919 it has served as the official representation residence of the President of Finland.',
-        highlights: [
-          'Hosts the famous Independence Day Reception ("Linnan juhlat") every 6 December.',
-          'Hall of Mirrors and octagonal Yellow Salon overlooking the South Harbor.',
-          'Guard post at the main gate manned by the Jaeger Regiment.'
-        ],
+          'Facing the South Harbor and Market Square waterfront, the Presidential Palace was originally built in 1820 as a merchant residence for J.H. Heidenstrauch before being remodeled in 1845 by Carl Ludvig Engel into an Imperial Palace. Since 1919 it has served as the official state residence of the President of Finland and hosts the annual Independence Day Reception.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Presidentinlinna%2C_IMG_0548.jpg/960px-Presidentinlinna%2C_IMG_0548.jpg',
         photos: [
@@ -256,16 +188,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1675,
         lng: 24.9514,
         wikiTitle: 'Havis_Amanda',
-        whyItMatters: 'Helsinki’s beloved 1908 bronze sea-nymph fountain symbolizing the rebirth of the Baltic city from the sea.',
-        styleAndEra: 'Art Nouveau Sculpture · 1908',
-        architect: 'Ville Vallgren & Eliel Saarinen',
+        built: '1908',
         summary:
-          'Cast in Paris in 1906 by Finnish sculptor Ville Vallgren and unveiled at Market Square in 1908, Havis Amanda depicts a mermaid rising from seaweed on a granite fountain basin surrounded by four spouting fish and four bronze sea lions.',
-        highlights: [
-          'Centerpiece of the annual Vappu (May Day) student celebration when tens of thousands gather to place a white student cap on her head.',
-          'Red granite basin designed in collaboration with architect Eliel Saarinen.',
-          'Stands at the gateway between Market Square (Kauppatori) and Esplanadi Park.'
-        ],
+          'Cast in Paris by Finnish sculptor Ville Vallgren and unveiled between Market Square and Esplanadi Park in 1908, Havis Amanda depicts a bronze mermaid rising from the waves atop a red granite basin designed with Eliel Saarinen, symbolizing the rebirth of Helsinki from the Baltic Sea.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg/960px-%22Havis_Amanda%22%2C_la_statue_de_la_fontaine_de_Vallgren_%28Helsinki%29_%282744386193%29.jpg',
         photos: [
@@ -282,16 +207,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1700,
         lng: 24.9442,
         wikiTitle: 'Ateneum',
-        whyItMatters: 'Home to Finland’s flagship national collection of Golden Age art on the south side of Railway Square.',
-        styleAndEra: 'Neo-Renaissance · 1887',
-        architect: 'Theodor Höijer',
+        built: '1887',
         summary:
-          'Opened in 1887 to house both the Finnish Art Society’s galleries and the schools of drawing and applied arts, the Ateneum bears the Latin motto "Concordia res parvae crescunt" ("In harmony small things grow") across its pediment.',
-        highlights: [
-          'Four caryatids above the main entrance symbolizing Architecture, Painting, Sculpture, and Music.',
-          'Portrait busts of Raphael, Phidias, and Bramante framed between the second-floor windows.',
-          'Houses iconic works by Akseli Gallen-Kallela, Albert Edelfelt, Helene Schjerfbeck, and Vincent van Gogh.'
-        ],
+          'Anchoring the southern side of Railway Square, the Neo-Renaissance Ateneum was designed by Theodor Höijer and opened in 1887 to house Finland’s national art collections and academies. Its facade features four caryatids symbolizing Architecture, Painting, Sculpture, and Music beneath the Latin inscription "Concordia res parvae crescunt."',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Helsinki_July_2013-26a.jpg/960px-Helsinki_July_2013-26a.jpg',
         photos: [
@@ -308,16 +226,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 60.1719,
         lng: 24.9414,
         wikiTitle: 'Helsinki_Central_Station',
-        whyItMatters: 'Eliel Saarinen’s world-famous granite railway terminal flanked by the giant Lantern-Carrier statues.',
-        styleAndEra: 'National Romantic / Art Deco · 1919',
-        architect: 'Eliel Saarinen',
+        built: '1909–1919',
         summary:
-          'Clad in Finnish Hanko granite and crowned by a 48.5-meter copper-roofed clock tower, Helsinki Central Station is one of the defining landmarks of 20th-century Nordic architecture, welcoming over 200,000 daily passengers.',
-        highlights: [
-          'Four monumental granite "Lyhdynkantajat" (Lantern-Carriers) sculpted by Emil Wikström flanking the main arched portal.',
-          '48.5-meter clock tower overlooking Railway Square.',
-          'Private Presidential Waiting Room with original furniture designed by Eliel Saarinen.'
-        ],
+          'Designed by Eliel Saarinen and clad in Finnish Hanko granite, Helsinki Central Station is one of the defining landmarks of 20th-century Nordic architecture. Its arched main portal is flanked by Emil Wikström’s four monumental Lantern-Carrier statues and crowned by a 48.5-meter copper-roofed clock tower.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/HelsinkiStationEntranceAndClockTower.jpg/960px-HelsinkiStationEntranceAndClockTower.jpg',
         photos: [
@@ -343,16 +254,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 51.4995,
         lng: -0.1248,
         wikiTitle: 'Palace_of_Westminster',
-        whyItMatters: 'The seat of the UK Parliament (House of Commons and House of Lords) framing the eastern side of the square.',
-        styleAndEra: 'Perpendicular Gothic Revival · 1840–1870',
-        architect: 'Sir Charles Barry & Augustus Pugin',
+        built: '1840–1870',
         summary:
-          'After a devastating fire destroyed the medieval royal palace in October 1834, Charles Barry won the competition for a grand Gothic Revival legislature, with Augustus Pugin designing its intricate interiors, spires, and furnishings. Only medieval Westminster Hall (1097) and the Jewel Tower survived the blaze and were integrated into the 1,100-room complex.',
-        highlights: [
-          'Elizabeth Tower (96m) at the north end housing the 13.7-tonne Great Bell ("Big Ben").',
-          'Victoria Tower (98.5m) at the southwest corner flying the Sovereign’s Royal Standard when in residence.',
-          'Westminster Hall (1097) with the largest medieval hammerbeam timber roof in Northern Europe.'
-        ],
+          'After fire destroyed the medieval royal palace in October 1834, Sir Charles Barry and Augustus Pugin designed this 1,100-room Perpendicular Gothic Revival complex along the River Thames to house the House of Commons and House of Lords, integrating medieval Westminster Hall (1097) and anchoring the skyline with the Elizabeth Tower ("Big Ben") and Victoria Tower.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg/1280px-Palace_of_Westminster_as_seen_from_Westminster_Bridge.jpg',
         photos: [
@@ -370,16 +274,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 51.5006,
         lng: -0.1277,
         wikiTitle: 'Middlesex_Guildhall',
-        whyItMatters: 'The highest court in the United Kingdom, occupying the western face of Parliament Square.',
-        styleAndEra: 'Art Nouveau Gothic Revival · 1913',
-        architect: 'James Glen Sivewright Gibson',
+        built: '1912–1913',
         summary:
-          'Standing directly across the square from Parliament, Middlesex Guildhall was completed in 1913 as the county council chamber and quarter sessions courthouse for Middlesex. In October 2009, following constitutional reform that separated the top judiciary from the House of Lords, it became the permanent home of the Supreme Court of the United Kingdom.',
-        highlights: [
-          'Richly carved Portland stone entrance frieze by Henry Charles Fehr depicting King John granting Magna Carta.',
-          'Central crenellated tower overlooking the Parliament Square statues.',
-          'Three modern appellate courtrooms open to the public and live-streamed.'
-        ],
+          'Standing on the western face of Parliament Square, Middlesex Guildhall was designed by James Glen Sivewright Gibson in an Art Nouveau Gothic style as the county council and courthouse for Middlesex. Since October 2009 it has served as the permanent home of the Supreme Court of the United Kingdom.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/London%2C_The_Supreme_Court_--_2016_--_4814.jpg/1280px-London%2C_The_Supreme_Court_--_2016_--_4814.jpg',
         photos: [
@@ -396,16 +293,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 51.4994,
         lng: -0.1273,
         wikiTitle: 'Westminster_Abbey',
-        whyItMatters: 'Britain’s coronation church since William the Conqueror in 1066, bordering the southern side of the square.',
-        styleAndEra: 'English Gothic · 1245–1745',
-        architect: 'Henry of Reyns, Henry Yevele & Nicholas Hawksmoor',
+        built: '1245–1517',
         summary:
-          'Formally titled the Collegiate Church of St Peter at Westminster, this royal peculiar (answering directly to the Sovereign rather than a bishop) was rebuilt in Anglo-French Gothic style by King Henry III starting in 1245. It is the burial place of 30 kings and queens and more than 3,300 historical figures including Isaac Newton, Charles Darwin, and Geoffrey Chaucer.',
-        highlights: [
-          'Twin iconic white Portland stone western towers completed by Nicholas Hawksmoor in 1745.',
-          'Lady Chapel of Henry VII (1503) famous for its gravity-defying fan-vaulted stone ceiling.',
-          'Coronation Chair (1296) and Cosmati pavement in front of the High Altar.'
-        ],
+          'Formally the Collegiate Church of St Peter at Westminster, this Anglo-French Gothic abbey was begun by King Henry III in 1245 on the site of Edward the Confessor’s 11th-century church, with its iconic western towers completed by Nicholas Hawksmoor in 1745. It has served as the coronation church of British monarchs since 1066 and the burial site of over 3,300 prominent figures.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Westminster_Abbey%2C_Westminster.jpg/1280px-Westminster_Abbey%2C_Westminster.jpg',
         photos: [
@@ -423,16 +313,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 51.5017,
         lng: -0.1272,
         wikiTitle: 'Government_Offices_Great_George_Street',
-        whyItMatters: 'Anchors the entire northern edge of Parliament Square, housing the UK Treasury above the Churchill War Rooms.',
-        styleAndEra: 'Edwardian Baroque · 1898–1917',
-        architect: 'John McKean Brydon',
+        built: '1898–1917',
         summary:
-          'Stretching from Whitehall to St James’s Park along the north side of Parliament Square, this monumental Portland stone complex houses His Majesty’s Treasury and UK Export Finance. Deep inside its reinforced concrete basement lies the preserved World War II bunker complex where Winston Churchill directed the war effort.',
-        highlights: [
-          'Circular central courtyard modeled after Christopher Wren’s unbuilt Whitehall palace plans.',
-          'Churchill War Rooms bunker preserved intact beneath the western wing.',
-          'Sculptural allegories of Science, Art, Education, and Local Government over the Great George Street facade.'
-        ],
+          'Stretching from Whitehall to St James’s Park along the northern edge of Parliament Square, this Edwardian Baroque Portland-stone complex by John McKean Brydon houses His Majesty’s Treasury above the preserved World War II Churchill War Rooms bunker.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Government_Offices_Great_George_Street.jpg/1280px-Government_Offices_Great_George_Street.jpg',
         photos: [
@@ -448,16 +331,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 51.5012,
         lng: -0.1249,
         wikiTitle: 'Portcullis_House',
-        whyItMatters: 'Modern parliamentary office and select committee hub directly above Westminster Underground station.',
-        styleAndEra: 'High-Tech Structural Expressionism · 2001',
-        architect: 'Michael Hopkins and Partners',
+        built: '1998–2001',
         summary:
-          'Opened in 2001 on the northeast corner of Parliament Square to provide offices for 213 Members of Parliament and public Select Committee hearing rooms. Because the Jubilee Line ticket hall sits directly underneath, the building’s entire weight is suspended from six external solid sandstone piers and a roof diagrid.',
-        highlights: [
-          'Fourteen passive-ventilation aluminum-bronze chimneys echoing the gothic pinnacles of Big Ben next door.',
-          'Glazed central courtyard roof made of English oak and stainless steel.',
-          'Underground secure pedestrian tunnel linking MPs directly to the House of Commons chamber.'
-        ],
+          'Designed by Michael Hopkins and Partners directly above Westminster Underground station, Portcullis House suspends its entire weight from six external sandstone piers and a roof diagrid, providing offices and Select Committee chambers for Members of Parliament.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Westminster_Station_Building.jpg/1280px-Westminster_Station_Building.jpg',
         photos: [
@@ -485,16 +361,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 44.4275,
         lng: 26.0875,
         wikiTitle: 'Palace_of_the_Parliament',
-        whyItMatters: 'The heaviest building in the world and seat of Romania’s bicameral Parliament dominating Constitution Square.',
-        styleAndEra: 'Totalitarian Neoclassical · 1984–1997',
-        architect: 'Anca Petrescu & team of 700 architects',
+        built: '1984–1997',
         summary:
-          'Measuring 270 by 240 meters, 86 meters high, and 92 meters deep underground, the Palace of the Parliament has a floor area of 365,000 square meters—second only to the Pentagon among administrative buildings worldwide. Built almost exclusively from Romanian materials (including 1 million cubic meters of Transylvanian marble), it houses the Chamber of Deputies, the Senate, and the Constitutional Court.',
-        highlights: [
-          'Weighs approximately 4.10 million tonnes due to massive marble, steel, and crystal interiors.',
-          'Contains 1,100 rooms, 4,500 crystal chandeliers, and eight underground levels including a nuclear bunker.',
-          'Forms the western terminus of the 3.5-kilometer Bulevardul Unirii civic axis.'
-        ],
+          'Dominating Piața Constituției at the western terminus of Bulevardul Unirii, the Palace of the Parliament is the heaviest building in the world and the second-largest administrative building by floor area (365,000 sq m). Built almost entirely from Romanian marble, steel, and crystal by a team of 700 architects led by Anca Petrescu, it houses Romania’s Senate, Chamber of Deputies, and Constitutional Court.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/en/thumb/1/18/Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg/1280px-Bucharest_-_Palace_of_the_Parliament_%282024%29_%282%29.jpg',
         photos: [
@@ -513,16 +382,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 44.4288,
         lng: 26.0987,
         wikiTitle: 'Palace_of_Justice,_Bucharest',
-        whyItMatters: 'Romania’s historic temple of law along the Dâmbovița River, housing the Bucharest Court of Appeal.',
-        styleAndEra: 'French Renaissance Revival · 1890–1895',
-        architect: 'Albert Ballu & Ion Mincu',
+        built: '1890–1895',
         summary:
-          'King Carol I laid the foundation stone of the Palace of Justice in 1890 to designs by French architect Albert Ballu (who also designed the Palace of Justice in Charleroi), with interiors completed by Romanian Neo-Romanian pioneer Ion Mincu. Its grand "Hall of Lost Steps" (Sala Pașilor Pierduți) covers nearly a quarter of the building’s footprint.',
-        highlights: [
-          'Six monumental rooftop statues representing Vigilance, Strength, Law, Justice, Eloquence, and Truth.',
-          'Central clock flanked by two additional allegories marking the imperative of timely justice.',
-          'Restored monumental oak vaults and Neo-Romanian decorative ceilings by Ion Mincu.'
-        ],
+          'Constructed along the banks of the Dâmbovița River to French Renaissance Revival designs by Albert Ballu with Neo-Romanian interiors by Ion Mincu, the Palace of Justice is crowned by six allegorical statues representing Law, Justice, Truth, Vigilance, Strength, and Eloquence, and houses the Bucharest Court of Appeal.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg/1280px-Bucharest_-_Palace_of_Justice_%28Justizpalast%29_-_no_filter_%2829340923631%29.jpg',
         photos: [
@@ -539,16 +401,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 44.4260,
         lng: 26.0928,
         wikiTitle: 'Piața_Constituției',
-        whyItMatters: 'Anchors the curved southern hemicycle of Piața Constituției directly facing the Parliament courtyard.',
-        styleAndEra: 'Monumental Civic Neoclassical · 1980s',
-        architect: 'Centrul Civic Design Institute',
+        built: '1980s',
         summary:
-          'Designed as part of the symmetrical semicircular plaza framing the view of the Palace of the Parliament, this colonnaded ministry complex houses Romania’s Ministry of Finance (Ministerul Finanțelor) and key treasury directorates.',
-        highlights: [
-          'Curved neoclassical colonnade following the geometry of the Piața Constituției hemicycle.',
-          'Symmetric twin facade mirrored across Bulevardul Libertății by the SRI/Ministry blocks.',
-          'Direct view line down Bulevardul Unirii’s 43 monumental fountains.'
-        ],
+          'Anchoring the curved southern hemicycle of Piața Constituției directly facing the Parliament courtyard, this colonnaded neoclassical ministry complex houses Romania’s Ministry of Finance and key state treasury directorates.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Piata_Constitutiei_si_Bulevardul_Unirii.jpg/960px-Piata_Constitutiei_si_Bulevardul_Unirii.jpg',
         photos: [
@@ -566,16 +421,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 44.4259,
         lng: 26.0825,
         wikiTitle: 'People%27s_Salvation_Cathedral',
-        whyItMatters: 'The tallest and largest Eastern Orthodox church building in the world by volume (127m high).',
-        styleAndEra: 'Neo-Byzantine & Brâncovenesc · 2010–2025',
-        architect: 'Constantin Amâiei (Vanel Exim)',
+        built: '2010–2025',
         summary:
-          'Rising on Dealul Arsenalului immediately behind the Palace of the Parliament courtyard, the National Cathedral of Romania fulfills a project first proposed after the 1877 War of Independence. Standing 127 meters tall to the top of its central golden cross, it combines Byzantine domes with traditional Romanian Brâncovenesc porches.',
-        highlights: [
-          'Houses the largest free-swinging church bell in the world (25.2 tonnes), cast in Innsbruck.',
-          'Interior covered in over 25,000 square meters of Venetian glass and gold leaf mosaic.',
-          'Curved colonnaded esplanade accommodating over 100,000 pilgrims.'
-        ],
+          'Rising 127 meters on Dealul Arsenalului immediately behind the Palace of the Parliament, the People’s Salvation Cathedral is the tallest and largest Eastern Orthodox church building in the world by volume, blending Neo-Byzantine domes with traditional Romanian Brâncovenesc architectural motifs.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/National_Cathedral_of_Romania_%282025_November%29.jpg/1280px-National_Cathedral_of_Romania_%282025_November%29.jpg',
         photos: [
@@ -601,16 +449,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 43.7693,
         lng: 11.2562,
         wikiTitle: 'Palazzo_Vecchio',
-        whyItMatters: 'The crenellated fortress-town hall that has governed Florence from Piazza della Signoria since 1299.',
-        styleAndEra: 'Tuscan Gothic & Renaissance · 1299',
-        architect: 'Arnolfo di Cambio & Giorgio Vasari',
+        built: '1299–1314',
         summary:
-          'Built in 1299 over the ruins of the ancient Roman theater of Florentia to house the Priors of the Guilds (the Signoria), Palazzo Vecchio is a rusticated stone fortress crowned by the 94-meter Torre di Arnolfo. Inside lies the Salone dei Cinquecento, built in 1495 for Savonarola’s 500-member Grand Council and later frescoed by Giorgio Vasari for Duke Cosimo I de’ Medici.',
-        highlights: [
-          'Replica of Michelangelo’s David (stood here in the original from 1504 to 1873) flanking the main portal.',
-          'Off-center 94-meter Arnolfo Tower containing the "Alberghetto" cell where Cosimo the Elder and Savonarola were imprisoned.',
-          'Frescoed first courtyard redesigned by Michelozzo in 1453 with Verrocchio’s Putto with Dolphin fountain.'
-        ],
+          'Built by Arnolfo di Cambio over the ruins of the Roman theater of Florentia to house the ruling Priors of the Guilds, Palazzo Vecchio is a rusticated stone fortress crowned by a 94-meter crenellated belfry and containing the monumental Salone dei Cinquecento frescoed by Giorgio Vasari.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg/1280px-Piazza_della_signoria%2C_palazzo_vecchio%2C_veduta_01.jpg',
         photos: [
@@ -629,16 +470,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 43.7697,
         lng: 11.2565,
         wikiTitle: 'Tribunale_della_Mercanzia',
-        whyItMatters: 'The medieval commercial supreme court where six foreign lawyers settled disputes among Florence’s guilds.',
-        styleAndEra: 'Florentine Gothic · 1359',
-        architect: 'Florentine Guild Masons',
+        built: '1359',
         summary:
-          'Founded in 1359 on the eastern side of Piazza della Signoria between Via dei Gondi and Via de’ Calzaiuoli, the Tribunale della Mercanzia adjudicated maritime, banking, and trade disputes between members of the Florentine guilds across Europe.',
-        highlights: [
-          'Upper facade carved with the 21 stone coats of arms of Florence’s 7 Major Guilds (Arti Maggiori) and 14 Minor Guilds.',
-          'Originally featured bronze statues by Donatello and Verrocchio in its ground-floor niches.',
-          'Rusticated sandstone facade with pointed Gothic bifora windows.'
-        ],
+          'Founded in 1359 on the eastern edge of Piazza della Signoria, the Tribunale della Mercanzia served as the supreme commercial court where foreign magistrates adjudicated maritime, banking, and trade disputes among Florence’s 21 major and minor guilds, whose carved stone coats of arms still line its upper frieze.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Tribunale_di_Mercatanzia.jpg/960px-Tribunale_di_Mercatanzia.jpg',
         photos: [
@@ -656,16 +490,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 43.7691,
         lng: 11.2555,
         wikiTitle: 'Loggia_dei_Lanzi',
-        whyItMatters: 'Open-air civic inauguration stage turned into the world’s premier outdoor Renaissance sculpture gallery.',
-        styleAndEra: 'Late Gothic / Proto-Renaissance · 1376–1382',
-        architect: 'Benci di Cione & Simone di Francesco Talenti',
+        built: '1376–1382',
         summary:
-          'Constructed between 1376 and 1382 as a covered ceremonial stage where the Florentine Republic swore in priors and received foreign ambassadors. Its wide semicircular arches anticipated the Renaissance, and under the Medici Grand Dukes it became an open-air showcase of political sculpture.',
-        highlights: [
-          'Benvenuto Cellini’s bronze Perseus with the Head of Medusa (1554) under the left arch.',
-          'Giambologna’s marble Rape of the Sabine Women (1583) carved from a single block under the right arch.',
-          'Four allegorical trefoil reliefs of the Cardinal Virtues designed by Agnolo Gaddi above the arches.'
-        ],
+          'Built between 1376 and 1382 by Benci di Cione and Simone Talenti as an open-air ceremonial arcade for swearing in priors of the Florentine Republic, the Loggia dei Lanzi later became a showcase of Renaissance sculpture housing Cellini’s bronze Perseus and Giambologna’s Rape of the Sabine Women.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg/1280px-Firenze%2C_loggia_dei_lanzi_%282020%29_01.jpg',
         photos: [
@@ -683,16 +510,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 43.7684,
         lng: 11.2553,
         wikiTitle: 'Uffizi',
-        whyItMatters: 'Built in 1560 to unite all 13 Florentine judicial and administrative magistracies ("uffizi") under one roof.',
-        styleAndEra: 'Mannerist Renaissance · 1560–1581',
-        architect: 'Giorgio Vasari, Alfonso Parigi & Bernardo Buontalenti',
+        built: '1560–1581',
         summary:
-          'Stretching south from Piazza della Signoria to the Arno River, the U-shaped Uffizi palace was commissioned by Cosimo I de’ Medici to consolidate Florence’s courts, guild tribunals, and state archives, while carrying the secret elevated Vasari Corridor across the Ponte Vecchio above.',
-        highlights: [
-          'Doric colonnaded canyon framing Piazza della Signoria at one end and the Arno River Serlian arch at the other.',
-          'Twenty-eight marble niches holding statues of Tuscany’s greatest artists, scientists, and jurists.',
-          'Top-floor loggia converted by Francesco I de’ Medici in 1581 into the oldest public art museum in Europe.'
-        ],
+          'Commissioned by Cosimo I de’ Medici and designed by Giorgio Vasari to unite all thirteen Florentine judicial and administrative magistracies ("uffizi") along a Doric-colonnaded courtyard between Piazza della Signoria and the Arno River, its top floor was converted in 1581 into Europe’s oldest public art museum.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg/960px-Piazzale_degli_Uffizi_perspective_view%2C_Florence%2C_Italy%2C_August_2025.jpg',
         photos: [
@@ -719,16 +539,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 50.8465,
         lng: 4.3521,
         wikiTitle: 'Brussels_Town_Hall',
-        whyItMatters: 'The sole medieval building on the Grand-Place to survive the 1695 French bombardment.',
-        styleAndEra: 'Brabantine Gothic · 1401–1455',
-        architect: 'Jacob van Thienen & Jan van Ruysbroeck',
+        built: '1401–1455',
         summary:
-          'Dominating the southern side of the UNESCO-listed Grand-Place, the Brussels Town Hall was built in two asymmetric Gothic wings between 1401 and 1444, with its openwork 96-meter belfry completed by Jan van Ruysbroeck in 1455. In August 1695, French Marshal de Villeroy’s artillery targeted its spire for 36 hours, destroying the surrounding square while the stone facade and tower held.',
-        highlights: [
-          '96-meter gothic spire crowned by a 5-meter gilded copper statue of St. Michael slaying a dragon (1454).',
-          'Famous asymmetrical main portal directly below the tower, which sits slightly off-center to the two wings.',
-          'Nearly 300 nineteenth-century carved stone statues of Dukes and Duchesses of Brabant across the facade.'
-        ],
+          'Dominating the southern side of the Grand-Place, the Brussels Town Hall is a masterpiece of Brabantine Gothic architecture crowned by Jan van Ruysbroeck’s 96-meter openwork belfry and a gilded statue of St. Michael. It was the sole medieval building on the square to survive the 36-hour French artillery bombardment of August 1695.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg/1280px-Brussels%2C_townhall_oeg2043-00090_foto3_2015-06-07_08.38.jpg',
         photos: [
@@ -745,16 +558,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 50.8469,
         lng: 4.3529,
         wikiTitle: 'Brussels_City_Museum',
-        whyItMatters: 'Originally the 13th-century bread hall ("Broodhuis"), later the royal tax and judicial court of the Dukes of Brabant.',
-        styleAndEra: 'Neo-Gothic · 1515 / Rebuilt 1873–1895',
-        architect: 'Antoon II Keldermans & Victor Jamaer',
+        built: '1515–1536',
         summary:
-          'Facing the Town Hall directly across the square, this building takes its Dutch name (Broodhuis) from the medieval bakers’ market that stood here, and its French name (Maison du Roi / King’s House) from Duke Charles V, whose administrative and judicial courts occupied the building from the 16th century. Today it houses the Brussels City Museum.',
-        highlights: [
-          'Double-tiered arcaded gallery and lace-like Neo-Gothic pinnacles restored by Victor Jamaer.',
-          'Where Counts Egmont and Horn spent their final night imprisoned before their execution on the square in 1568.',
-          'Houses the original 1619 Manneken Pis bronze statue and its wardrobe of over 1,000 costumes.'
-        ],
+          'Facing the Town Hall across the Grand-Place, the Maison du Roi ("King’s House", known in Dutch as the Broodhuis after the medieval bread market that stood on the site) served as the administrative and judicial court of the Dukes of Brabant under Emperor Charles V and was restored in flamboyant Neo-Gothic style by Victor Jamaer in the late 19th century.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg/1280px-Maison_du_Roi%2C_Brussels_%28DSCF1978%29.jpg',
         photos: [
@@ -771,16 +577,9 @@ export const CIVIC_SQUARES: Record<string, CivicSquare> = {
         lat: 50.8463,
         lng: 4.3531,
         wikiTitle: 'House_of_the_Dukes_of_Brabant',
-        whyItMatters: 'Six independent trade guildhalls unified behind a single palatial Baroque facade closing the eastern end of the square.',
-        styleAndEra: 'Italo-Flemish Baroque Classicism · 1697–1698',
-        architect: 'Willem de Bruyn',
+        built: '1697–1698',
         summary:
-          'Following the 1695 bombardment of Brussels, city architect Willem de Bruyn persuaded six separate trade guilds—the Tanners, Millers, Carpenters, Sculptors/Masons, Coopers, and Mercers—to rebuild their adjacent houses behind one grand pilastered palace front, topped by 19 busts of the Dukes of Brabant.',
-        highlights: [
-          'Nineteen gilded portrait busts of the historical Dukes of Brabant mounted along the second-story frieze.',
-          'Six separate street entrances (Nos. 14–19): La Fortune, Le Moulin à Vent, Le Pot d’Étain, La Colline, La Bourse, and L’Ermitage.',
-          'Arched pediment relief by Jan van Delen depicting Peace, Abundance, and Commerce.'
-        ],
+          'Closing the eastern end of the Grand-Place, the Maison des Ducs de Brabant unites six separate trade guildhalls—the Tanners, Millers, Carpenters, Sculptors, Coopers, and Mercers—behind a single palatial Baroque facade designed by Willem de Bruyn after the 1695 bombardment and adorned with nineteen portrait busts of the Dukes of Brabant.',
         fallbackImg:
           'https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg/960px-Maison_des_Ducs_de_Brabant_%28Brussels%29_-_Full_frontal_facade_and_Grand-Place_square_with_tourists.jpg',
         photos: [

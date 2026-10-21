@@ -9,18 +9,10 @@ export interface Landmark {
   lat: number;
   lng: number;
   wikiTitle: string;
-  /** Quick 1-sentence spatial/purpose hook */
-  whyItMatters: string;
-  /** Architectural style & era */
-  styleAndEra: string;
-  /** Architect or builder */
-  architect: string;
+  /** Year or period built */
+  built: string;
   /** Rich multi-sentence historical & architectural summary */
   summary: string;
-  /** Optional second paragraph with deeper historical or architectural context */
-  historicalContext?: string;
-  /** 2-3 quick bullet highlights when looking at the facade */
-  highlights: string[];
   fallbackImg: string;
   /** Ordered gallery of building photos; index 0 is always an exterior/outside view */
   photos?: string[];

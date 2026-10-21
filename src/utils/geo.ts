@@ -22,44 +22,6 @@ export function formatDistance(meters: number): string {
   return meters < 1000 ? `${meters} m` : `${(meters / 1000).toFixed(1)} km`;
 }
 
-export function computeBearingDegrees(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const toDeg = (r: number) => (r * 180) / Math.PI;
-  const dLon = toRad(lon2 - lon1);
-  const y = Math.sin(dLon) * Math.cos(toRad(lat2));
-  const x =
-    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
-    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
-  return Math.round((toDeg(Math.atan2(y, x)) + 360) % 360);
-}
-
-export function formatCompassBearing(degrees: number): string {
-  const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-  const idx = Math.round(((degrees % 360) / 45)) % 8;
-  return `${dirs[idx]} · ${degrees}°`;
-}
-
-export function formatCardinalDirection(degrees: number): string {
-  const dirs = [
-    'North',
-    'North-East',
-    'East',
-    'South-East',
-    'South',
-    'South-West',
-    'West',
-    'North-West'
-  ];
-  const idx = Math.round(((degrees % 360) / 45)) % 8;
-  return dirs[idx];
-}
-
-export function formatWalkTime(meters: number): string {
-  if (meters < 45) return '<1 min walk';
-  const mins = Math.max(1, Math.round(meters / 78));
-  return mins <= 25 ? `~${mins} min walk` : `${(meters / 1000).toFixed(1)} km away`;
-}
-
 export function inferCategory(title: string, desc = ''): { category: LandmarkCategory; catLabel: string } {
   const t = `${title} ${desc}`.toLowerCase();
   if (t.includes('court') || t.includes('justice') || t.includes('law') || t.includes('tribunal') || t.includes('university')) {
@@ -124,14 +86,12 @@ export function computeLandmarkImportance(
 ): number {
   const text = `${title} ${description} ${extract.slice(0, 220)}`.toLowerCase();
 
-  // Base prominence from Wikipedia article byte length (roughly 12..58)
   let score = Math.min(58, Math.max(12, Math.round(Math.sqrt(articleLength) / 2.6)));
 
   if (hasThumbnail) {
     score += 14;
   }
 
-  // Major city/national landmark keywords
   if (
     /\b(cathedral|parliament|palace|castle|fortress|citadel|national|supreme court|central station|city hall|town hall|basilica|abbey|opera house)\b/.test(
       text
@@ -156,10 +116,7 @@ function lerp(a: number, b: number, t: number): number {
 
 /**
  * Filters the pool of discovered landmarks based on the current map zoom level
- * and visible viewport bounds:
- * - Zoomed in (zoom >= 17.5): includes everything in the area (buildings, statues, fountains, local landmarks)
- * - Zoomed out (zoom <= 13.5): includes only the most important headline landmarks in the view
- * - In between (zoom 13.5..17.5): smoothly interpolates minimum importance, max count, and spacing
+ * and visible viewport bounds.
  */
 export function filterLandmarksForZoomAndBounds(
   pool: Landmark[],
@@ -167,7 +124,6 @@ export function filterLandmarksForZoomAndBounds(
   bounds: MapBoundsBox | null,
   selectedId: string | null
 ): Landmark[] {
-  // 1. Filter to current viewport bounds (with a small 12% margin so edge pills don't pop)
   let inView = pool;
   if (bounds) {
     const latMargin = Math.max(0.001, (bounds.north - bounds.south) * 0.12);
@@ -182,14 +138,12 @@ export function filterLandmarksForZoomAndBounds(
     );
   }
 
-  // 2. Compute smooth zoom-interpolation factor t in [0, 1] from zoom 13.5 (zoomed out) to 18.0 (zoomed in)
   const t = (zoom - 13.5) / (18.0 - 13.5);
 
   const minImportance = Math.round(lerp(82, 0, t));
   const maxCount = Math.round(lerp(5, 32, t));
   const minSpacingMeters = Math.round(lerp(420, 8, t));
 
-  // Sort by importance descending (keeping selected landmark first if present)
   const sorted = [...inView].sort((a, b) => {
     if (a.id === selectedId) return -1;
     if (b.id === selectedId) return 1;
@@ -205,7 +159,6 @@ export function filterLandmarksForZoomAndBounds(
     }
 
     const imp = lm.importance ?? 60;
-    // Allow slightly lower-importance items only if we haven't even reached 4 landmarks in view
     if (imp < minImportance && picked.length >= 4) {
       continue;
     }
@@ -238,7 +191,6 @@ function cleanWikiProse(raw: string): string {
 }
 
 function splitIntoSentences(text: string): string[] {
-  // Protect common abbreviations and single-letter initials before splitting
   const protectedText = text
     .replace(/\b(St|Dr|Mr|Mrs|Ms|Prof|Jr|Sr|Rev|Gen|Col|Capt|Lt|Sgt|No|ca|cf|approx|est|vol|fig|inc|ltd)\.\s+/gi, '$1\u0000 ')
     .replace(/\b([A-Z])\.\s+/g, '$1\u0000 ');
@@ -249,88 +201,64 @@ function splitIntoSentences(text: string): string[] {
     .filter((s) => s.length > 22);
 }
 
-function extractStyleAndEra(text: string, description = ''): string {
+/**
+ * Extracts the construction year or range (e.g., "1830–1852", "1757", "19th century")
+ * from Wikipedia prose and short description.
+ */
+export function extractBuiltYear(text: string, description = ''): string {
   const combined = `${description} ${text}`;
-  const stylePatterns: Array<[RegExp, string]> = [
-    [/\b(neoclassical|neo-classical|empire style)\b/i, 'Neoclassical'],
-    [/\b(gothic revival|neo-gothic|neogothic)\b/i, 'Gothic Revival'],
-    [/\b(perpendicular gothic|brabantine gothic|florentine gothic|gothic)\b/i, 'Gothic'],
-    [/\b(baroque revival|edwardian baroque|baroque)\b/i, 'Baroque'],
-    [/\b(neo-renaissance|renaissance revival|mannerist|renaissance)\b/i, 'Renaissance'],
-    [/\b(art nouveau|jugendstil|national romantic)\b/i, 'Art Nouveau / National Romantic'],
-    [/\b(art deco)\b/i, 'Art Deco'],
-    [/\b(neo-byzantine|byzantine)\b/i, 'Byzantine'],
-    [/\b(russian revival)\b/i, 'Russian Revival'],
-    [/\b(rococo)\b/i, 'Rococo Classicism'],
-    [/\b(romanesque)\b/i, 'Romanesque'],
-    [/\b(brutalist|brutalism)\b/i, 'Brutalist'],
-    [/\b(modernist|functionalist|functionalism|contemporary|high-tech)\b/i, 'Modernist']
-  ];
 
-  let matchedStyle = '';
-  for (const [regex, label] of stylePatterns) {
-    if (regex.test(combined)) {
-      matchedStyle = label;
-      break;
-    }
+  // 1. Explicit "between YYYY and YYYY" or "from YYYY to YYYY"
+  const betweenMatch = combined.match(
+    /\b(?:built|constructed|erected|completed|designed|created|begun|opened)?\s*(?:between|from)\s+(1[0-9]\d{2}|20[0-2]\d)\s+(?:and|to)\s+(1[0-9]\d{2}|20[0-2]\d)\b/i
+  );
+  if (betweenMatch) {
+    return `${betweenMatch[1]}–${betweenMatch[2]}`;
   }
 
-  // Match year range like 1830–1852 or single completion year like 1852
-  const rangeMatch = combined.match(/\b(1[1-9]\d{2}|20[0-2]\d)\s*[–—-]\s*(1[1-9]\d{2}|20[0-2]\d|\d{2})\b/);
-  const yearMatch = combined.match(/\b(1[1-9]\d{2}|20[0-2]\d)\b/);
+  // 2. Explicit verb + year or range: "built in 1757", "completed in 1852", "unveiled in 1908"
+  const verbYearMatch = combined.match(
+    /\b(?:built|constructed|completed|erected|opened|unveiled|founded|established|consecrated|inaugurated|rebuilt|restored|dates?\s+from|dating\s+to)\s+(?:in|around|c\.|ca\.)?\s*(?:[A-Z][a-z]+\s+(?:\d{1,2},?\s+)?)?(1[0-9]\d{2}|20[0-2]\d)(?:\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2}))?\b/i
+  );
+  if (verbYearMatch) {
+    return verbYearMatch[2]
+      ? `${verbYearMatch[1]}–${verbYearMatch[2]}`
+      : verbYearMatch[1];
+  }
+
+  // 3. Explicit year range anywhere in description or opening text (e.g. "1830–1852")
+  const rangeMatch = combined.match(
+    /\b(1[0-9]\d{2}|20[0-2]\d)\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2})\b/
+  );
+  if (rangeMatch) {
+    return `${rangeMatch[1]}–${rangeMatch[2]}`;
+  }
+
+  // 4. Single 4-digit year (1000–2029)
+  const yearMatch = combined.match(/\b(1[0-9]\d{2}|20[0-2]\d)\b/);
+  if (yearMatch) {
+    return yearMatch[1];
+  }
+
+  // 5. Century mention (e.g. "18th century")
   const centuryMatch = combined.match(/\b(\d{1,2}(?:st|nd|rd|th)[- ]century)\b/i);
-
-  const eraLabel = rangeMatch
-    ? `${rangeMatch[1]}–${rangeMatch[2]}`
-    : yearMatch
-    ? yearMatch[1]
-    : centuryMatch
-    ? centuryMatch[1]
-    : '';
-
-  if (matchedStyle && eraLabel) return `${matchedStyle} · ${eraLabel}`;
-  if (matchedStyle) return `${matchedStyle} Architecture`;
-  if (eraLabel) return `Historic Landmark · ${eraLabel}`;
-  return 'Civic & Architectural Landmark';
-}
-
-function extractArchitect(text: string): string {
-  const patterns = [
-    /(?:designed|built|created|sculpted|remodelled|remodeled|planned)\s+by\s+(?:the\s+)?(?:[a-z]+\s+)?(?:architect|sculptor|engineer)?\s*([A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+){1,3}(?:\s+and\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+){1,2})?)/,
-    /architect(?:s)?\s+([A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+){1,3})/,
-    /sculptor\s+([A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ.'-]+){1,3})/
-  ];
-
-  for (const pat of patterns) {
-    const m = text.match(pat);
-    if (m && m[1]) {
-      const candidate = m[1]
-        .replace(/\s+(?:in|between|from|during|for|as|who|which|with)\b.*$/i, '')
-        .trim();
-      if (candidate.length >= 5 && candidate.length <= 52) {
-        return candidate;
-      }
-    }
+  if (centuryMatch) {
+    return centuryMatch[1].replace('-', ' ');
   }
-  return 'Historic Civic Commission';
+
+  return 'Historic';
 }
 
 /**
- * Split a Wikipedia multi-sentence extract into a punchy 1-sentence spatial hook,
- * a rich multi-sentence overview (plus optional second paragraph), accurate architectural metadata,
- * and 2-3 non-repetitive key takeaway bullets.
+ * Parses a Wikipedia extract into a single `built` date string and a cohesive `summary`.
  */
 export function parseRichWikipediaSummary(
   title: string,
   description: string | undefined,
   extract: string | undefined
 ): {
-  whyItMatters: string;
-  styleAndEra: string;
-  architect: string;
+  built: string;
   summary: string;
-  historicalContext?: string;
-  highlights: string[];
 } {
   const cleaned = cleanWikiProse(extract || '');
   const sentences = splitIntoSentences(cleaned);
@@ -339,69 +267,25 @@ export function parseRichWikipediaSummary(
     ? description.charAt(0).toUpperCase() + description.slice(1).replace(/\.$/, '')
     : '';
 
-  const whyItMatters =
-    sentences[0] ||
-    (cleanDesc
-      ? `${title} — ${cleanDesc}.`
-      : `${title} is a prominent architectural landmark in this square.`);
-
-  // Primary summary uses sentences 1..4 so it never repeats sentence 0 when multiple sentences exist
-  const primarySentences = sentences.slice(1, 5);
+  const summarySentences = sentences.slice(0, 5);
   const summary =
-    primarySentences.length > 0
-      ? primarySentences.join(' ')
-      : cleanDesc && sentences[0]
-      ? `${cleanDesc}. ${sentences[0]}`
-      : whyItMatters;
+    summarySentences.length > 0
+      ? summarySentences.join(' ')
+      : cleanDesc
+      ? `${title} — ${cleanDesc}.`
+      : `${title} is a notable landmark in this area.`;
 
-  // Optional extended paragraph from sentences 5..8 if the article has rich historical depth
-  const extendedSentences = sentences.slice(5, 9);
-  const historicalContext =
-    extendedSentences.length > 0 ? extendedSentences.join(' ') : undefined;
-
-  const styleAndEra = extractStyleAndEra(cleaned, description);
-  const architect = extractArchitect(cleaned);
-
-  // Build non-repetitive highlights so bullets never duplicate the summary paragraph verbatim
-  const usedInSummary = new Set([whyItMatters, ...primarySentences]);
-  const unusedSentences = sentences.filter((s) => !usedInSummary.has(s));
-
-  const highlights: string[] = [];
-
-  if (cleanDesc) {
-    highlights.push(`Civic & urban role: ${cleanDesc}.`);
-  }
-
-  for (const s of unusedSentences) {
-    if (highlights.length >= 3) break;
-    highlights.push(s);
-  }
-
-  if (highlights.length < 3 && styleAndEra !== 'Civic & Architectural Landmark') {
-    highlights.push(`Architectural period & character: ${styleAndEra}.`);
-  }
-
-  if (highlights.length < 3 && architect !== 'Historic Civic Commission') {
-    highlights.push(`Attributed designer / builder: ${architect}.`);
-  }
-
-  if (highlights.length < 2 && primarySentences.length > 1) {
-    highlights.push(primarySentences[primarySentences.length - 1]);
-  }
+  const built = extractBuiltYear(cleaned, description);
 
   return {
-    whyItMatters,
-    styleAndEra,
-    architect,
-    summary,
-    historicalContext,
-    highlights: highlights.slice(0, 3)
+    built,
+    summary
   };
 }
 
 /**
- * Fetches the full, untruncated Wikipedia introductory extract when a user selects a live landmark
- * so that live-spotted buildings have comprehensive multi-paragraph summaries and accurate metadata.
+ * Fetches the full Wikipedia introductory extract when a user selects a live landmark
+ * so that live-spotted buildings have complete summaries and accurate construction dates.
  */
 export async function fetchFullWikipediaEnrichment(
   wikiTitle: string,
@@ -428,12 +312,8 @@ export async function fetchFullWikipediaEnrichment(
     );
 
     return {
-      whyItMatters: parsed.whyItMatters,
-      styleAndEra: parsed.styleAndEra,
-      architect: parsed.architect,
+      built: parsed.built,
       summary: parsed.summary,
-      historicalContext: parsed.historicalContext,
-      highlights: parsed.highlights,
       enriched: true
     };
   } catch {
@@ -524,7 +404,6 @@ export async function fetchBuildingPhotoGallery(
     });
   }
 
-  // 1. Query Wikipedia REST media-list for article photos
   if (wikiTitle) {
     try {
       const res = await fetch(
@@ -558,12 +437,9 @@ export async function fetchBuildingPhotoGallery(
           candidates.push({ url: fullUrl, score });
         });
       }
-    } catch (_) {
-      // Ignore network errors and fall back to existing candidates
-    }
+    } catch (_) {}
   }
 
-  // 2. If we still have fewer than 3 photos, supplement from Wikimedia Commons search
   if (candidates.length < 3 && buildingName) {
     try {
       const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(
@@ -584,10 +460,8 @@ export async function fetchBuildingPhotoGallery(
     } catch (_) {}
   }
 
-  // Sort highest exterior score first
   candidates.sort((a, b) => b.score - a.score);
 
-  // Deduplicate by normalized filename while keeping lockedExteriorFirst at index 0
   const result: string[] = [];
   const seenKeys = new Set<string>();
 

@@ -288,12 +288,8 @@ export const App: React.FC = () => {
           lat: c.lat,
           lng: c.lon,
           wikiTitle: encodeURIComponent(p.title.replace(/\s+/g, '_')),
-          whyItMatters: parsed.whyItMatters,
-          styleAndEra: parsed.styleAndEra,
-          architect: parsed.architect,
+          built: parsed.built,
           summary: parsed.summary,
-          historicalContext: parsed.historicalContext,
-          highlights: parsed.highlights,
           fallbackImg: usableThumb,
           importance
         });

@@ -4,7 +4,7 @@ import { computeDistanceMeters, formatDistance } from '../utils/geo';
 
 interface BuildingCardProps {
   landmark: Landmark | null;
-  userLocation: { lat: number; lng: number };
+  userLocation: { lat: number; lng: number } | null;
   onClose: () => void;
 }
 
@@ -113,12 +113,14 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     handleTouchEnd();
   };
 
-  const distMeters = computeDistanceMeters(
-    userLocation.lat,
-    userLocation.lng,
-    landmark.lat,
-    landmark.lng
-  );
+  const distMeters = userLocation
+    ? computeDistanceMeters(
+        userLocation.lat,
+        userLocation.lng,
+        landmark.lat,
+        landmark.lng
+      )
+    : null;
 
   const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     landmark.name
@@ -240,7 +242,9 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
 
           <div className="card-photo-badges">
             <span className="card-category-badge">{landmark.catLabel}</span>
-            <span className="card-distance-badge">{formatDistance(distMeters)}</span>
+            {distMeters !== null && (
+              <span className="card-distance-badge">{formatDistance(distMeters)}</span>
+            )}
           </div>
         </div>
 

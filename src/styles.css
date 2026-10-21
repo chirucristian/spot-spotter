@@ -157,6 +157,12 @@ a {
   background-color: var(--surface-subtle);
 }
 
+.locate-fab.is-active {
+  color: #2563EB;
+  border-color: rgba(37, 99, 235, 0.4);
+  background-color: #EFF6FF;
+}
+
 .locate-fab:active {
   transform: scale(0.95);
 }

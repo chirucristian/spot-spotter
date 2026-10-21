@@ -155,9 +155,7 @@ const INITIAL_POOL: Landmark[] = Object.values(CIVIC_SQUARES).flatMap((sq) =>
 
 export const App: React.FC = () => {
   const [isScanning, setIsScanning] = useState<boolean>(false);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>(
-    CIVIC_SQUARES['senate-helsinki'].center
-  );
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [landmarkPool, setLandmarkPool] = useState<Landmark[]>(INITIAL_POOL);
   const [currentZoom, setCurrentZoom] = useState<number>(
     getMobileAwareZoom(CIVIC_SQUARES['senate-helsinki'].zoom)
@@ -185,6 +183,15 @@ export const App: React.FC = () => {
   const queriedRegionsRef = useRef<Array<{ lat: number; lng: number; radius: number }>>([]);
   const autoScanTimerRef = useRef<number | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+  const watchIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -576,20 +583,26 @@ export const App: React.FC = () => {
         }
       }
 
-      if (!googleUserOverlayRef.current) {
-        const userOv = new RooftopOverlay(
-          userLocation,
-          `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
-          null
-        );
-        (userOv as any).setMap(map);
-        googleUserOverlayRef.current = userOv;
-      } else {
-        googleUserOverlayRef.current.pos = new window.google.maps.LatLng(
-          userLocation.lat,
-          userLocation.lng
-        );
-        googleUserOverlayRef.current.draw();
+      if (userLocation) {
+        if (!googleUserOverlayRef.current) {
+          const userOv = new RooftopOverlay(
+            userLocation,
+            `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
+            null
+          );
+          (userOv as any).setMap(map);
+          googleUserOverlayRef.current = userOv;
+        } else {
+          googleUserOverlayRef.current.pos = new window.google.maps.LatLng(
+            userLocation.lat,
+            userLocation.lng
+          );
+          (googleUserOverlayRef.current as any).setMap(map);
+          googleUserOverlayRef.current.draw();
+        }
+      } else if (googleUserOverlayRef.current) {
+        (googleUserOverlayRef.current as any).setMap(null);
+        googleUserOverlayRef.current = null;
       }
 
       // Fade out and remove overlays that are no longer visible
@@ -642,19 +655,27 @@ export const App: React.FC = () => {
     if (engine === 'leaflet' && leafletMapRef.current) {
       const map = leafletMapRef.current;
 
-      if (!leafletUserMarkerRef.current) {
-        const userIcon = L.divIcon({
-          className: 'rooftop-marker-wrap',
-          html: `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
-          iconSize: [20, 20],
-          iconAnchor: [10, 10]
-        });
-        leafletUserMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
-          icon: userIcon,
-          zIndexOffset: 1000
-        }).addTo(map);
-      } else {
-        leafletUserMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+      if (userLocation) {
+        if (!leafletUserMarkerRef.current) {
+          const userIcon = L.divIcon({
+            className: 'rooftop-marker-wrap',
+            html: `<div class="user-gps-dot"><div class="user-gps-halo"></div><div class="user-gps-inner"></div></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+          });
+          leafletUserMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], {
+            icon: userIcon,
+            zIndexOffset: 1000
+          }).addTo(map);
+        } else {
+          leafletUserMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
+          if (!map.hasLayer(leafletUserMarkerRef.current)) {
+            leafletUserMarkerRef.current.addTo(map);
+          }
+        }
+      } else if (leafletUserMarkerRef.current) {
+        map.removeLayer(leafletUserMarkerRef.current);
+        leafletUserMarkerRef.current = null;
       }
 
       // Fade out and remove markers that are no longer visible
@@ -807,6 +828,16 @@ export const App: React.FC = () => {
           leafletMapRef.current.setView([lat, lng], 17);
         }
         await spotBuildingsAround(lat, lng, 700, false);
+
+        if (watchIdRef.current === null && navigator.geolocation) {
+          watchIdRef.current = navigator.geolocation.watchPosition(
+            (p) => {
+              setUserLocation({ lat: p.coords.latitude, lng: p.coords.longitude });
+            },
+            () => {},
+            { enableHighAccuracy: true, maximumAge: 10000 }
+          );
+        }
       },
       () => {
         showToast('Location permission denied — pan the map and tap Spot Here.');
@@ -816,13 +847,16 @@ export const App: React.FC = () => {
   };
 
   const handleSpotCurrentView = () => {
-    let center = userLocation;
+    let center: { lat: number; lng: number } | null = null;
     if (engine === 'google' && googleMapRef.current) {
       const c = googleMapRef.current.getCenter();
       if (c) center = { lat: c.lat(), lng: c.lng() };
     } else if (leafletMapRef.current) {
       const c = leafletMapRef.current.getCenter();
-      center = { lat: c.lat, lng: c.lng };
+      if (c) center = { lat: c.lat, lng: c.lng };
+    }
+    if (!center) {
+      center = CIVIC_SQUARES['senate-helsinki'].center;
     }
     const radius = viewportBounds
       ? Math.max(
@@ -837,7 +871,6 @@ export const App: React.FC = () => {
           )
         )
       : 800;
-    setUserLocation(center);
     spotBuildingsAround(center.lat, center.lng, radius, false);
   };
 
@@ -887,7 +920,7 @@ export const App: React.FC = () => {
       <button
         type="button"
         id="locate-me-btn"
-        className="locate-fab"
+        className={`locate-fab ${userLocation ? 'is-active' : ''}`}
         aria-label="Pinpoint my location"
         title="Pinpoint my location"
         onClick={pinpointMe}

@@ -16,6 +16,7 @@ import {
   parseRichWikipediaSummary
 } from './utils/geo';
 import { BuildingCard } from './components/BuildingCard';
+import { CitySearchBar, CitySearchResult } from './components/CitySearchBar';
 
 declare global {
   interface Window {
@@ -874,6 +875,23 @@ export const App: React.FC = () => {
     spotBuildingsAround(center.lat, center.lng, radius, false);
   };
 
+  const handleSelectCity = async (city: CitySearchResult) => {
+    setSelectedId(null);
+    showToast(`Exploring ${city.name}…`);
+
+    const targetZoom = 15.8;
+    if (engine === 'google' && googleMapRef.current) {
+      googleMapRef.current.panTo({ lat: city.lat, lng: city.lng });
+      googleMapRef.current.setZoom(targetZoom);
+    } else if (leafletMapRef.current) {
+      leafletMapRef.current.flyTo([city.lat, city.lng], targetZoom, {
+        duration: 1.2
+      });
+    }
+
+    await spotBuildingsAround(city.lat, city.lng, 1500, false);
+  };
+
   const selectedLandmark = landmarkPool.find((l) => l.id === selectedId) || null;
 
   return (
@@ -892,6 +910,7 @@ export const App: React.FC = () => {
       </main>
 
       <header className="floating-top-bar">
+        <CitySearchBar onSelectCity={handleSelectCity} isScanning={isScanning} />
         <button
           type="button"
           id="scan-area-btn"

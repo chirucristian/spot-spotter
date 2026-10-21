@@ -82,7 +82,7 @@ a {
 }
 
 /* ==========================================================================
-   Floating Top Bar (Spot Here Action)
+   Floating Top Bar (City Search & Spot Here Action)
    ========================================================================== */
 .floating-top-bar {
   position: fixed;
@@ -91,10 +91,183 @@ a {
   right: 12px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
   z-index: 30;
   pointer-events: none;
+}
+
+/* City Search Bar */
+.city-search-wrap {
+  position: relative;
+  pointer-events: auto;
+  flex: 1;
+  max-width: 340px;
+}
+
+.city-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-float);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.city-search-bar.is-focused,
+.city-search-bar:focus-within {
+  border-color: #2563EB;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+  background: #FFFFFF;
+}
+
+.city-search-bar .search-icon {
+  color: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+.city-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--ink-primary);
+  min-width: 0;
+}
+
+.city-search-input::placeholder {
+  color: #94A3B8;
+}
+
+.city-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #E2E8F0;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.city-search-clear:hover {
+  background: #CBD5E1;
+  color: var(--ink-primary);
+}
+
+.city-search-clear:active {
+  transform: scale(0.92);
+}
+
+.city-search-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid #E2E8F0;
+  border-top-color: #2563EB;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.city-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2), 0 4px 12px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 100;
+  animation: fadeInDown 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.city-dropdown-header {
+  padding: 8px 14px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.city-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  user-select: none;
+}
+
+.city-result-item:hover,
+.city-result-item.is-highlighted {
+  background-color: var(--surface-subtle);
+}
+
+.city-result-pin {
+  color: #2563EB;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.city-result-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.city-result-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-result-sub {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-empty-state {
+  padding: 16px 14px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
 }
 
 .floating-action-pill {
@@ -649,6 +822,19 @@ a {
 .status-toast.is-visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 480px) {
+  .floating-top-bar {
+    gap: 6px;
+  }
+  .city-search-input {
+    font-size: 14px;
+  }
+  .floating-action-pill {
+    padding: 0 10px;
+    font-size: 0.8rem;
+  }
 }
 
 @media (min-width: 768px) {

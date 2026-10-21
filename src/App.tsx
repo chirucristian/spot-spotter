@@ -246,7 +246,7 @@ export const App: React.FC = () => {
           const existing = next[existingIdx];
           next[existingIdx] = {
             ...existing,
-            built: existing.built || item.built,
+            built: item.built || existing.built,
             importance: Math.max(existing.importance ?? 60, item.importance ?? 60),
             summary:
               item.summary.length > existing.summary.length

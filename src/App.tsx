@@ -35,9 +35,9 @@ export const App: React.FC = () => {
   const handlePositionFound = useCallback(
     async (coords: Coordinates) => {
       mapActionsRef.current.setCenterAndZoom(coords, 17);
-      await spotBuildingsAround(coords.lat, coords.lng, 700, false);
+      await spotBuildingsAroundRef.current(coords.lat, coords.lng, 700, false);
     },
-    [] // spotBuildingsAround will be bound via ref below
+    [] // reads the latest spotBuildingsAround through its ref at call time
   );
 
   const { userLocation, pinpointMe } = useGeolocation({
@@ -67,9 +67,8 @@ export const App: React.FC = () => {
   spotBuildingsAroundRef.current = spotBuildingsAround;
 
   const handleAutoScanNeeded = useCallback(
-    (center: Coordinates, radius: number) => {
-      spotBuildingsAroundRef.current(center.lat, center.lng, radius, true);
-    },
+    (center: Coordinates, radius: number) =>
+      spotBuildingsAroundRef.current(center.lat, center.lng, radius, true),
     []
   );
 

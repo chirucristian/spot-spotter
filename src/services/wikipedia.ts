@@ -1,3 +1,4 @@
+import { wikimediaFetch } from './http';
 import { Landmark } from '../types';
 import {
   formatStructuredBuiltYear,
@@ -25,7 +26,10 @@ export async function fetchWikipediaGeosearchAround(
   clampedRadius: number
 ): Promise<Landmark[]> {
   const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
-  const res = await fetch(url);
+  const res = await wikimediaFetch(url);
+  if (!res.ok) {
+    throw new Error(`Wikipedia geosearch error: ${res.status}`);
+  }
   const data = await res.json();
   const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
 
@@ -89,7 +93,7 @@ export async function fetchFullWikipediaEnrichment(
     const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts|description|pageprops&explaintext=1&titles=${encodeURIComponent(
       decodedTitle
     )}&format=json&origin=*`;
-    const res = await fetch(url);
+    const res = await wikimediaFetch(url);
     if (!res.ok) return null;
     const data = await res.json();
     const pages = data?.query?.pages ? Object.values<any>(data.query.pages) : [];
@@ -114,7 +118,7 @@ export async function fetchFullWikipediaEnrichment(
         const wdUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(
           qid
         )}&props=claims&format=json&origin=*`;
-        const wdRes = await fetch(wdUrl);
+        const wdRes = await wikimediaFetch(wdUrl);
         if (wdRes.ok) {
           const wdData = await wdRes.json();
           const claims = wdData?.entities?.[qid]?.claims;
@@ -165,7 +169,7 @@ export async function fetchBuildingPhotoGallery(
 
   if (wikiTitle) {
     try {
-      const res = await fetch(
+      const res = await wikimediaFetch(
         `https://en.wikipedia.org/api/rest_v1/page/media-list/${wikiTitle}`
       );
       if (res.ok) {
@@ -204,7 +208,7 @@ export async function fetchBuildingPhotoGallery(
       const commonsUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(
         `filetype:bitmap ${buildingName}`
       )}&gsrlimit=6&prop=imageinfo&iiprop=url&iiurlwidth=960&format=json&origin=*`;
-      const res = await fetch(commonsUrl);
+      const res = await wikimediaFetch(commonsUrl);
       if (res.ok) {
         const data = await res.json();
         const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];

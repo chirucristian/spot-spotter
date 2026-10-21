@@ -21,7 +21,7 @@ interface UseMapControllerOptions {
   selectedId: string | null;
   userLocation: Coordinates | null;
   onSelectLandmark: (id: string) => void;
-  onAutoScanNeeded: (center: Coordinates, radius: number) => void;
+  onAutoScanNeeded: (center: Coordinates, radius: number) => Promise<boolean> | void;
 }
 
 export function useMapController({
@@ -82,8 +82,15 @@ export function useMapController({
         );
 
         if (!alreadyQueried) {
-          queriedRegionsRef.current.push({ lat: center.lat, lng: center.lng, radius });
-          onAutoScanNeeded(center, radius);
+          const region = { lat: center.lat, lng: center.lng, radius };
+          // Reserve the region up-front to avoid duplicate in-flight scans,
+          // but release it if the scan failed so the area is retried later.
+          queriedRegionsRef.current.push(region);
+          Promise.resolve(onAutoScanNeeded(center, radius)).then((ok) => {
+            if (ok === false) {
+              queriedRegionsRef.current = queriedRegionsRef.current.filter((q) => q !== region);
+            }
+          });
         }
       }, 320);
     },

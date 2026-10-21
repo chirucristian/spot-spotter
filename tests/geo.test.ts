@@ -123,6 +123,8 @@ describe('Building Physical Filtering', () => {
     expect(isArchitecturalBuilding('Space Needle', 'observation tower in Seattle')).toBe(true);
     expect(isArchitecturalBuilding('Havis Amanda', 'fountain and bronze sculpture in Helsinki')).toBe(true);
     expect(isArchitecturalBuilding('Lumen Field', 'stadium in Seattle')).toBe(true);
+    expect(isArchitecturalBuilding('Safeco Plaza', '50-story skyscraper in Downtown Seattle, Washington')).toBe(true);
+    expect(isArchitecturalBuilding('Madison Centre', 'skyscraper in Seattle, Washington')).toBe(true);
   });
 
   it('rejects institutions, companies, government bodies, districts and events', () => {

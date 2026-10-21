@@ -1,3 +1,4 @@
+import { wikimediaFetch } from './http';
 import { Landmark } from '../types';
 import {
   formatStructuredBuiltYear,
@@ -48,7 +49,7 @@ LIMIT 95
     sparql
   )}`;
 
-  const sparqlRes = await fetch(sparqlUrl, {
+  const sparqlRes = await wikimediaFetch(sparqlUrl, {
     headers: {
       Accept: 'application/sparql-results+json'
     }
@@ -130,7 +131,7 @@ LIMIT 95
     const wbUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(
       qidList
     )}&props=sitelinks&sitefilter=enwiki&format=json&origin=*`;
-    const wbRes = await fetch(wbUrl);
+    const wbRes = await wikimediaFetch(wbUrl);
     if (wbRes.ok) {
       const wbData = await wbRes.json();
       const entities = wbData?.entities || {};
@@ -156,7 +157,7 @@ LIMIT 95
       const wpUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(
         wikiTitles.join('|')
       )}&redirects=1&prop=pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
-      const wpRes = await fetch(wpUrl);
+      const wpRes = await wikimediaFetch(wpUrl);
       if (wpRes.ok) {
         const wpData = await wpRes.json();
         const pages: any[] = wpData?.query?.pages

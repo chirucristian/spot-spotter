@@ -126,17 +126,18 @@ export function isArchitecturalBuilding(
     return false;
   }
 
-  // Reject squares, parks, streets, cemeteries by title
+  // Reject squares, parks, streets, cemeteries by title unless title or description explicitly identifies a building or skyscraper
   if (
     /\b(square|piazza|plaza|park|esplanade|gardens|cemetery|churchyard)\b/i.test(titleLower) &&
-    !/\b(tower|building|palace|hall|house|arena|stadium)\b/i.test(titleLower)
+    !/\b(tower|building|palace|hall|house|arena|stadium|skyscraper|center|centre|hotel)\b/i.test(titleLower) &&
+    !/\b(skyscraper|tower|building|high-rise|edifice|hotel)\b/i.test(descLower)
   ) {
     return false;
   }
 
   // 5. Require positive evidence of a physical building, architectural structure, stadium/arena, statue/monument, or fountain
   const POSITIVE_PHYSICAL_CUES =
-    /\b(building|edifice|skyscraper|high-rise|tower|observation tower|needle|palace|palazzo|castle|fortress|citadel|cathedral|church|basilica|abbey|chapel|mosque|synagogue|temple|mansion|manor|villa|historic house|townhouse|city hall|town hall|guildhall|courthouse|stadhuis|rathaus|hôtel de ville|broodhuis|säätytalo|parliament house|parliament building|main building|library|museum|aquarium|opera house|concert hall|theatre|theater|public market|market hall|rotunda|pavilion|loggia|arcade|terminal|central station|train station|railway station|stadium|arena|coliseum|conservatory|spheres|ferris wheel|statue|sculpture|bronze|fountain|monument|memorial|cenotaph|obelisk|triumphal arch|designed by|sculpted by|built in|built between|constructed in|constructed between|completed in|erected in|unveiled in|neoclassical|gothic revival|baroque|renaissance|art nouveau|art deco|brutalist|modernist|facade|façade|storey|story|floors)\b/i;
+    /\b(building|edifice|skyscraper|high-rise|tower|observation tower|needle|palace|palazzo|castle|fortress|citadel|cathedral|church|basilica|abbey|chapel|mosque|synagogue|temple|mansion|manor|villa|historic house|townhouse|city hall|town hall|guildhall|courthouse|stadhuis|rathaus|hôtel de ville|broodhuis|säätytalo|parliament house|parliament building|main building|library|museum|aquarium|opera house|concert hall|theatre|theater|public market|market hall|rotunda|pavilion|loggia|arcade|terminal|central station|train station|railway station|stadium|arena|coliseum|conservatory|spheres|ferris wheel|hotel|statue|sculpture|bronze|fountain|monument|memorial|cenotaph|obelisk|triumphal arch|designed by|sculpted by|built in|built between|constructed in|constructed between|completed in|erected in|unveiled in|neoclassical|gothic revival|baroque|renaissance|art nouveau|art deco|brutalist|modernist|facade|façade|storey|story|floors)\b/i;
 
   return HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE || POSITIVE_PHYSICAL_CUES.test(leadText);
 }

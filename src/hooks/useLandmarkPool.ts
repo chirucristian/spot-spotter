@@ -81,7 +81,7 @@ export function useLandmarkPool({
       lng: number,
       radiusMeters = 1200,
       silent = false
-    ) => {
+    ): Promise<boolean> => {
       const clampedRadius = Math.max(400, Math.min(10000, Math.round(radiusMeters)));
 
       if (!silent) {
@@ -113,19 +113,28 @@ export function useLandmarkPool({
         const geoCount = geoResult.status === 'fulfilled' ? geoResult.value.length : 0;
         const totalUnique = wdCount + geoCount;
 
+        // Both sources failed (rate limit / network): that's an error, not an empty area.
+        if (wdResult.status === 'rejected' && geoResult.status === 'rejected') {
+          console.error('Landmark sources failed', wdResult.reason, geoResult.reason);
+          if (!silent) showToast('Could not fetch live landmarks right now.');
+          return false;
+        }
+
         if (totalUnique === 0) {
           if (!silent) showToast('No landmarks found in this view.');
-          return;
+          return true;
         }
 
         if (!silent) {
           showToast('Updated landmarks in this area');
         }
+        return true;
       } catch (err) {
         console.error(err);
         if (!silent) {
           showToast('Could not fetch live landmarks right now.');
         }
+        return false;
       } finally {
         if (!silent) {
           setIsScanning(false);

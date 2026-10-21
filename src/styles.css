@@ -527,13 +527,11 @@ a {
   color: var(--ink-secondary);
 }
 
-/* Single "Built" Metadata Bar + Controls */
+/* Single "Built" Metadata Bar */
 .card-meta-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
+  padding: 9px 0;
   border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -556,81 +554,6 @@ a {
   font-weight: 800;
   color: var(--ink-primary);
   font-variant-numeric: tabular-nums;
-}
-
-.card-utility-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.card-icon-pill {
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background-color: var(--surface-subtle);
-  color: var(--ink-primary);
-  border: 1px solid var(--border-subtle);
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
-}
-
-.card-icon-pill:hover {
-  background-color: #E2E8F0;
-}
-
-.card-icon-pill:active {
-  transform: scale(0.96);
-}
-
-.card-icon-pill.is-active {
-  background-color: var(--surface-pill-active);
-  color: var(--ink-on-dark);
-  border-color: var(--surface-pill-active);
-}
-
-.card-stepper {
-  height: 30px;
-  padding: 0 3px;
-  border-radius: 999px;
-  background-color: var(--surface-subtle);
-  border: 1px solid var(--border-subtle);
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.stepper-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--ink-primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.stepper-btn:hover {
-  background-color: #E2E8F0;
-}
-
-.stepper-count {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  font-variant-numeric: tabular-nums;
-  padding: 0 3px;
 }
 
 /* Summary Prose */

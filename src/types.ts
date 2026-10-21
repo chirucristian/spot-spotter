@@ -9,8 +9,8 @@ export interface Landmark {
   lat: number;
   lng: number;
   wikiTitle: string;
-  /** Year or period built */
-  built: string;
+  /** Year or period built — only included when clearly stated in the source */
+  built?: string;
   /** Rich multi-sentence historical & architectural summary */
   summary: string;
   fallbackImg: string;

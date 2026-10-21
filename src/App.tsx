@@ -10,6 +10,7 @@ import {
   fetchFullWikipediaEnrichment,
   filterLandmarksForZoomAndBounds,
   inferCategory,
+  isArchitecturalBuilding,
   isUsableBuildingPhoto,
   parseRichWikipediaSummary
 } from './utils/geo';
@@ -244,17 +245,7 @@ export const App: React.FC = () => {
 
       const filtered = pages.filter((p) => {
         if (!p.coordinates?.length) return false;
-        const text = `${p.title} ${p.description || ''}`.toLowerCase();
-        if (
-          text.includes('medieval term') ||
-          text.includes('disambiguation') ||
-          text.includes('election') ||
-          text.includes('bombing of') ||
-          text.includes('battle of')
-        ) {
-          return false;
-        }
-        return true;
+        return isArchitecturalBuilding(p.title, p.description || '', p.extract || '');
       });
 
       const discovered: Landmark[] = [];
@@ -879,8 +870,6 @@ export const App: React.FC = () => {
       <BuildingCard
         landmark={selectedLandmark}
         userLocation={userLocation}
-        visibleLandmarks={visibleLandmarks}
-        onSelectLandmark={handleSelectLandmark}
         onClose={() => setSelectedId(null)}
       />
 

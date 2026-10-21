@@ -5,23 +5,18 @@ import { computeDistanceMeters, formatDistance } from '../utils/geo';
 interface BuildingCardProps {
   landmark: Landmark | null;
   userLocation: { lat: number; lng: number };
-  visibleLandmarks: Landmark[];
-  onSelectLandmark: (id: string) => void;
   onClose: () => void;
 }
 
 export const BuildingCard: React.FC<BuildingCardProps> = ({
   landmark,
   userLocation,
-  visibleLandmarks,
-  onSelectLandmark,
   onClose
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
   const [dragOffsetX, setDragOffsetX] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
@@ -32,22 +27,10 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     setFailedUrls({});
     setDragOffsetX(0);
     setIsDragging(false);
-    setIsSpeaking(false);
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
   }, [landmark?.id]);
-
-  useEffect(() => {
-    return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
 
   if (!landmark) return null;
 
@@ -130,53 +113,12 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
     handleTouchEnd();
   };
 
-  const toggleSpeech = () => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const narrative = [
-      `${landmark.name}. ${landmark.role}.`,
-      landmark.built ? `Built ${landmark.built}.` : '',
-      landmark.summary
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    const utterance = new SpeechSynthesisUtterance(narrative);
-    utterance.rate = 1.0;
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
-  };
-
   const distMeters = computeDistanceMeters(
     userLocation.lat,
     userLocation.lng,
     landmark.lat,
     landmark.lng
   );
-
-  const landmarkIndex = visibleLandmarks.findIndex((l) => l.id === landmark.id);
-  const canStepLandmarks = visibleLandmarks.length > 1 && landmarkIndex !== -1;
-
-  const stepPrevLandmark = () => {
-    if (!canStepLandmarks) return;
-    const prevIdx =
-      landmarkIndex <= 0 ? visibleLandmarks.length - 1 : landmarkIndex - 1;
-    onSelectLandmark(visibleLandmarks[prevIdx].id);
-  };
-
-  const stepNextLandmark = () => {
-    if (!canStepLandmarks) return;
-    const nextIdx =
-      landmarkIndex >= visibleLandmarks.length - 1 ? 0 : landmarkIndex + 1;
-    onSelectLandmark(visibleLandmarks[nextIdx].id);
-  };
 
   const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     landmark.name
@@ -310,92 +252,15 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({
             <p className="card-role">{landmark.role}</p>
           </header>
 
-          {/* Single "Built" Metadata Field + Audio/Stepper Controls */}
-          <div className="card-meta-bar">
-            <dl className="card-built-field">
-              <dt className="built-label">Built</dt>
-              <dd className="built-value">{landmark.built}</dd>
-            </dl>
-
-            <div className="card-utility-bar">
-              {typeof window !== 'undefined' && 'speechSynthesis' in window && (
-                <button
-                  type="button"
-                  className={`card-icon-pill ${isSpeaking ? 'is-active' : ''}`}
-                  onClick={toggleSpeech}
-                  aria-label={isSpeaking ? 'Stop audio summary' : 'Listen to audio summary'}
-                  title={isSpeaking ? 'Stop audio guide' : 'Listen to audio summary'}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    {isSpeaking ? (
-                      <line x1="22" y1="9" x2="16" y2="15"></line>
-                    ) : (
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    )}
-                  </svg>
-                  <span>{isSpeaking ? 'Stop' : 'Listen'}</span>
-                </button>
-              )}
-
-              {canStepLandmarks && (
-                <div className="card-stepper" aria-label="Browse nearby landmarks">
-                  <button
-                    type="button"
-                    className="stepper-btn"
-                    onClick={stepPrevLandmark}
-                    aria-label="Previous landmark in view"
-                    title="Previous landmark"
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                  </button>
-                  <span className="stepper-count">
-                    {landmarkIndex + 1}/{visibleLandmarks.length}
-                  </span>
-                  <button
-                    type="button"
-                    className="stepper-btn"
-                    onClick={stepNextLandmark}
-                    aria-label="Next landmark in view"
-                    title="Next landmark"
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
-                </div>
-              )}
+          {/* Single "Built" Metadata Field — Only shown when clearly stated in the source */}
+          {landmark.built && (
+            <div className="card-meta-bar">
+              <dl className="card-built-field">
+                <dt className="built-label">Built</dt>
+                <dd className="built-value">{landmark.built}</dd>
+              </dl>
             </div>
-          </div>
+          )}
 
           {/* Summary Only */}
           <p className="card-summary">{landmark.summary}</p>

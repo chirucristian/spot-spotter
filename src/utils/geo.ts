@@ -24,29 +24,38 @@ export function formatDistance(meters: number): string {
 
 export function inferCategory(title: string, desc = ''): { category: LandmarkCategory; catLabel: string } {
   const t = `${title} ${desc}`.toLowerCase();
-  if (t.includes('court') || t.includes('justice') || t.includes('law') || t.includes('tribunal') || t.includes('university')) {
-    return { category: 'law', catLabel: t.includes('university') ? 'University' : 'House of Law' };
+  if (t.includes('fountain')) {
+    return { category: 'culture', catLabel: 'Fountain' };
   }
   if (
-    t.includes('parliament') ||
+    t.includes('statue') ||
+    t.includes('sculpture') ||
+    t.includes('monument') ||
+    t.includes('memorial') ||
+    t.includes('obelisk')
+  ) {
+    return { category: 'culture', catLabel: 'Monument' };
+  }
+  if (
+    t.includes('courthouse') ||
+    t.includes('guildhall') ||
+    t.includes('palace of justice') ||
+    t.includes('tribunale')
+  ) {
+    return { category: 'law', catLabel: 'Courthouse' };
+  }
+  if (
     t.includes('palace') ||
-    t.includes('ministry') ||
-    t.includes('government') ||
+    t.includes('palazzo') ||
     t.includes('city hall') ||
     t.includes('town hall') ||
-    t.includes('senate') ||
-    t.includes('bank of') ||
-    t.includes('station')
+    t.includes('stadhuis') ||
+    t.includes('hôtel de ville') ||
+    t.includes('rathaus')
   ) {
     return {
       category: 'civic',
-      catLabel: t.includes('palace')
-        ? 'Palace'
-        : t.includes('parliament')
-        ? 'Parliament'
-        : t.includes('city hall') || t.includes('town hall')
-        ? 'City Hall'
-        : 'Civic Landmark'
+      catLabel: t.includes('palace') || t.includes('palazzo') ? 'Palace' : 'City Hall'
     };
   }
   if (
@@ -54,28 +63,97 @@ export function inferCategory(title: string, desc = ''): { category: LandmarkCat
     t.includes('church') ||
     t.includes('abbey') ||
     t.includes('basilica') ||
-    t.includes('chapel')
+    t.includes('chapel') ||
+    t.includes('mosque') ||
+    t.includes('synagogue') ||
+    t.includes('temple')
   ) {
-    return { category: 'sacred', catLabel: t.includes('cathedral') ? 'Cathedral' : 'Sacred Landmark' };
+    return { category: 'sacred', catLabel: t.includes('cathedral') ? 'Cathedral' : 'Sacred Building' };
   }
-  if (t.includes('statue') || t.includes('monument') || t.includes('memorial') || t.includes('sculpture')) {
-    return { category: 'culture', catLabel: 'Monument' };
+  if (t.includes('skyscraper') || t.includes('tower') || t.includes('high-rise')) {
+    return { category: 'civic', catLabel: 'Tower' };
   }
-  if (t.includes('fountain')) {
-    return { category: 'culture', catLabel: 'Fountain' };
+  if (t.includes('castle') || t.includes('fortress') || t.includes('citadel')) {
+    return { category: 'civic', catLabel: 'Fortress' };
   }
-  if (t.includes('square') || t.includes('piazza') || t.includes('plaza') || t.includes('park') || t.includes('esplanade')) {
-    return { category: 'culture', catLabel: t.includes('park') || t.includes('esplanade') ? 'Park' : 'Square' };
+  if (t.includes('opera house') || t.includes('concert hall') || t.includes('theatre') || t.includes('theater')) {
+    return { category: 'culture', catLabel: 'Hall & Theatre' };
   }
-  if (t.includes('museum') || t.includes('gallery') || t.includes('library') || t.includes('theatre') || t.includes('theater')) {
-    return { category: 'culture', catLabel: t.includes('library') ? 'Library' : 'Museum & Culture' };
+  if (t.includes('museum') || t.includes('gallery') || t.includes('library')) {
+    return { category: 'culture', catLabel: t.includes('library') ? 'Library Building' : 'Museum Building' };
   }
-  return { category: 'culture', catLabel: 'Landmark' };
+  return { category: 'civic', catLabel: 'Building' };
 }
 
 /**
- * Computes a 1–100 prominence score for any Wikipedia landmark/building so that
- * zoomed-out views surface major city icons and zoomed-in views include local details.
+ * Strictly determines whether a Wikipedia geosearch page represents an actual physical
+ * building/edifice (e.g., "The Shard", "Palace of Westminster", "Middlesex Guildhall")
+ * OR a famous statue/monument/fountain (e.g., "Havis Amanda", "Statue of Alexander II"),
+ * while rejecting tenant companies, corporations, government ministries/agencies,
+ * legislatures, courts-as-organizations, universities-as-institutions, streets, and events.
+ */
+export function isArchitecturalBuilding(
+  title: string,
+  description = '',
+  extract = ''
+): boolean {
+  const cleanTitle = title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+  const titleLower = cleanTitle.toLowerCase();
+  const descLower = description.toLowerCase();
+  const firstSentence = (extract.split(/(?<=[.!?])\s+/)[0] || '').toLowerCase();
+  const leadText = `${descLower} ${firstSentence}`;
+
+  // 1. Check if it is explicitly a physical building, tower, palace, church, statue, monument, or fountain
+  const HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE =
+    /\b(building|edifice|skyscraper|tower|palace|palazzo|palatul|castle|citadel|fortress|cathedral|church|abbey|basilica|chapel|kirkko|tuomiokirkko|mansion|manor|villa|house|talo|linna|säätytalo|broodhuis|stadhuis|rathaus|hôtel de ville|city hall|town hall|guildhall|courthouse|rotunda|pavilion|loggia|arcade|opera house|concert hall|railway station|central station|train station|statue|fountain|monument|memorial|cenotaph|obelisk|arch|gate)\b/i.test(
+      cleanTitle
+    ) &&
+    !/\b(house of commons|house of lords|house of representatives|publishing house|software house|fashion house|opera company|theatre company|station road|station street|underground station|metro station|tube station|tram stop|bus station)\b/i.test(
+      cleanTitle
+    );
+
+  // 2. Reject titles that name an institution, ministry, legislature, court organization, company, or school
+  //    rather than the building itself
+  const INSTITUTION_TITLE_PATTERNS =
+    /\b(ministry of|department of|office of|chancellor of|cabinet of|council of|parliament of|senate of|house of commons|house of lords|house of representatives|diet of|supreme court of|court of appeal|constitutional court|high court of|district court|embassy of|consulate of|high commission|diplomatic mission|university of|college of|academy of|institute of|faculty of|school of|bank of|central bank|national bank|stock exchange|chamber of commerce|church of england|church of sweden|diocese of|archdiocese of|parish of|municipality of|city of|borough of|battle of|bombing of|siege of|treaty of|fire of|election|festival|orchestra|choir|fc|f\.c\.|sports club)\b/i;
+
+  if (INSTITUTION_TITLE_PATTERNS.test(cleanTitle) && !HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE) {
+    return false;
+  }
+
+  // 3. Reject if Wikidata description defines the entity as a company, business, government agency/ministry,
+  //    judicial body, educational institution, media outlet, restaurant/retailer, street, district, or person
+  const STRICT_INSTITUTION_OR_NON_LANDMARK_DESC =
+    /\b(company|corporation|multinational|business|enterprise|law firm|consultancy|holding company|conglomerate|central bank|financial institution|commercial bank|investment bank|insurance|retailer|supermarket|department store chain|restaurant|café|coffeehouse|pub|bar|nightclub|newspaper|magazine|periodical|broadcaster|television|radio station|record label|publisher|software|airline|government agency|government ministry|ministry of|executive department|state agency|regulatory agency|local authority|legislature|upper house|lower house|bicameral|unicameral|parliamentary chamber|supreme court|appellate court|court of law|judicial body|diplomatic mission|embassy|consulate|public university|research university|private university|university in|higher education|business school|law school|medical school|secondary school|primary school|grammar school|research institute|think tank|learned society|scientific society|non-profit|charity|foundation|association|federation|trade union|political party|orchestra|ensemble|choir|opera company|theatre company|ballet company|sports club|football club|public square|town square|city square|square in|plaza in|piazza in|urban park|public park|park in|garden in|street in|thoroughfare|avenue|boulevard|road in|alley|neighbourhood|neighborhood|district|quarter|suburb|borough|municipality|commune|parish|island|peninsula|harbour|harbor|canal|river|cemetery|graveyard|underground station|metro station|subway station|tube station|tram stop|bus station|ferry|ship|vessel|museum ship|event|ceremony|protest|riot|massacre|politician|monarch|writer|painter|composer|disambiguation|medieval term)\b/i;
+
+  if (STRICT_INSTITUTION_OR_NON_LANDMARK_DESC.test(descLower)) {
+    return false;
+  }
+
+  // 4. Reject if the first sentence of the Wikipedia extract defines it as a company, institution,
+  //    organization, agency, school, or outdoor area rather than a physical building/statue/fountain
+  const FIRST_SENTENCE_IS_INSTITUTION =
+    /\bis\s+(?:a|an|the)\s+(?:[a-z-]+\s+){0,3}(?:company|corporation|firm|business|bank|ministry|government\s+agency|department|legislature|parliament|upper\s+house|lower\s+house|court|supreme\s+court|tribunal|university|college|school|institute|academy|society|association|foundation|organization|organisation|charity|union|party|newspaper|magazine|broadcaster|orchestra|club|square|plaza|piazza|park|garden|street|road|avenue|boulevard|district|neighbourhood|neighborhood|island|metro\s+station|underground\s+station|tube\s+station|ship)\b/i;
+
+  if (FIRST_SENTENCE_IS_INSTITUTION.test(firstSentence) && !HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE) {
+    return false;
+  }
+
+  // Reject squares, parks, streets, cemeteries by title
+  if (/\b(square|piazza|plaza|park|esplanade|gardens|cemetery|churchyard)\b/i.test(titleLower)) {
+    return false;
+  }
+
+  // 5. Require positive evidence of a physical building, architectural structure, statue/monument, or fountain
+  const POSITIVE_PHYSICAL_CUES =
+    /\b(building|edifice|skyscraper|high-rise|tower|palace|palazzo|castle|fortress|citadel|cathedral|church|basilica|abbey|chapel|mosque|synagogue|temple|mansion|manor|villa|historic house|townhouse|city hall|town hall|guildhall|courthouse|stadhuis|rathaus|hôtel de ville|broodhuis|säätytalo|parliament house|parliament building|main building|library building|museum building|opera house|concert hall|theatre building|theater building|market hall|rotunda|pavilion|loggia|arcade|terminal building|central station|statue|sculpture|bronze|fountain|monument|memorial|cenotaph|obelisk|triumphal arch|designed by|sculpted by|built in|built between|constructed in|constructed between|completed in|erected in|unveiled in|neoclassical|gothic revival|baroque|renaissance|art nouveau|art deco|brutalist|modernist|facade|façade|storey|story|floors)\b/i;
+
+  return HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE || POSITIVE_PHYSICAL_CUES.test(leadText);
+}
+
+/**
+ * Computes a 1–100 prominence score for any Wikipedia building, statue, or fountain so that
+ * zoomed-out views surface major city icons and zoomed-in views include local landmarks.
  */
 export function computeLandmarkImportance(
   title: string,
@@ -93,13 +171,13 @@ export function computeLandmarkImportance(
   }
 
   if (
-    /\b(cathedral|parliament|palace|castle|fortress|citadel|national|supreme court|central station|city hall|town hall|basilica|abbey|opera house)\b/.test(
+    /\b(cathedral|palace|skyscraper|shard|gherkin|castle|fortress|citadel|central station|city hall|town hall|basilica|abbey|opera house|guildhall)\b/.test(
       text
     )
   ) {
     score += 24;
   } else if (
-    /\b(monument|statue|memorial|sculpture|fountain|square|piazza|plaza|museum|gallery|library|university|theatre|theater|church|bridge|arch|tower|esplanade|botanical)\b/.test(
+    /\b(building|tower|house|hall|mansion|villa|pavilion|rotunda|loggia|church|statue|sculpture|fountain|monument|memorial|library|museum|theatre|theater)\b/.test(
       text
     )
   ) {
@@ -202,62 +280,60 @@ function splitIntoSentences(text: string): string[] {
 }
 
 /**
- * Extracts the construction year or range (e.g., "1830–1852", "1757", "19th century")
- * from Wikipedia prose and short description.
+ * Extracts the construction/creation year or period ONLY when explicitly stated in the source text
+ * with a clear construction, completion, or unveiling verb/phrase. Never guesses from random years.
  */
-export function extractBuiltYear(text: string, description = ''): string {
-  const combined = `${description} ${text}`;
+export function extractBuiltYear(text: string, description = ''): string | undefined {
+  const combined = `${description}. ${text}`;
 
-  // 1. Explicit "between YYYY and YYYY" or "from YYYY to YYYY"
+  // 1. "built/constructed/erected/completed/sculpted/cast between YYYY and YYYY" or "from YYYY to YYYY"
   const betweenMatch = combined.match(
-    /\b(?:built|constructed|erected|completed|designed|created|begun|opened)?\s*(?:between|from)\s+(1[0-9]\d{2}|20[0-2]\d)\s+(?:and|to)\s+(1[0-9]\d{2}|20[0-2]\d)\b/i
+    /\b(?:built|constructed|erected|completed|rebuilt|sculpted|cast|created|construction\s+took\s+place|construction\s+lasted)\s+(?:between|from)\s+(1[0-9]\d{2}|20[0-2]\d)\s+(?:and|to)\s+(1[0-9]\d{2}|20[0-2]\d)\b/i
   );
   if (betweenMatch) {
     return `${betweenMatch[1]}–${betweenMatch[2]}`;
   }
 
-  // 2. Explicit verb + year or range: "built in 1757", "completed in 1852", "unveiled in 1908"
-  const verbYearMatch = combined.match(
-    /\b(?:built|constructed|completed|erected|opened|unveiled|founded|established|consecrated|inaugurated|rebuilt|restored|dates?\s+from|dating\s+to)\s+(?:in|around|c\.|ca\.)?\s*(?:[A-Z][a-z]+\s+(?:\d{1,2},?\s+)?)?(1[0-9]\d{2}|20[0-2]\d)(?:\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2}))?\b/i
+  // 2. "construction began/started in YYYY and completed/finished/opened in YYYY"
+  const beganCompletedMatch = combined.match(
+    /\b(?:construction|building\s+work)\s+(?:began|started|commenced)\s+in\s+(?:[A-Z][a-z]+\s+)?(1[0-9]\d{2}|20[0-2]\d)\b[^.]{0,65}?\b(?:completed|finished|ended|opened|inaugurated|consecrated|topped\s+out)\s+in\s+(?:[A-Z][a-z]+\s+)?(1[0-9]\d{2}|20[0-2]\d)\b/i
   );
-  if (verbYearMatch) {
-    return verbYearMatch[2]
-      ? `${verbYearMatch[1]}–${verbYearMatch[2]}`
-      : verbYearMatch[1];
+  if (beganCompletedMatch) {
+    return `${beganCompletedMatch[1]}–${beganCompletedMatch[2]}`;
   }
 
-  // 3. Explicit year range anywhere in description or opening text (e.g. "1830–1852")
-  const rangeMatch = combined.match(
-    /\b(1[0-9]\d{2}|20[0-2]\d)\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2})\b/
+  // 3. Explicit construction/completion/unveiling verb + year or year-range:
+  //    e.g. "built in 1757", "completed in 1852", "unveiled in 1908", "erected in 1894", "opened in 1887"
+  const explicitVerbMatch = combined.match(
+    /\b(?:built|constructed|completed|erected|rebuilt|opened|inaugurated|consecrated|unveiled|sculpted|cast)\s+(?:on\s+\d{1,2}\s+[A-Z][a-z]+\s+|in\s+|around\s+|c\.\s*|ca\.\s*)(?:[A-Z][a-z]+\s+(?:\d{1,2},?\s+)?)?(1[0-9]\d{2}|20[0-2]\d)(?:\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2}))?\b/i
   );
-  if (rangeMatch) {
-    return `${rangeMatch[1]}–${rangeMatch[2]}`;
+  if (explicitVerbMatch) {
+    return explicitVerbMatch[2]
+      ? `${explicitVerbMatch[1]}–${explicitVerbMatch[2]}`
+      : explicitVerbMatch[1];
   }
 
-  // 4. Single 4-digit year (1000–2029)
-  const yearMatch = combined.match(/\b(1[0-9]\d{2}|20[0-2]\d)\b/);
-  if (yearMatch) {
-    return yearMatch[1];
+  // 4. "built/constructed/completed YYYY–YYYY" (directly followed by a year range)
+  const directRangeMatch = combined.match(
+    /\b(?:built|constructed|completed|erected)\s+(1[0-9]\d{2}|20[0-2]\d)\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2})\b/i
+  );
+  if (directRangeMatch) {
+    return `${directRangeMatch[1]}–${directRangeMatch[2]}`;
   }
 
-  // 5. Century mention (e.g. "18th century")
-  const centuryMatch = combined.match(/\b(\d{1,2}(?:st|nd|rd|th)[- ]century)\b/i);
-  if (centuryMatch) {
-    return centuryMatch[1].replace('-', ' ');
-  }
-
-  return 'Historic';
+  return undefined;
 }
 
 /**
- * Parses a Wikipedia extract into a single `built` date string and a cohesive `summary`.
+ * Parses a Wikipedia extract into an optional `built` string (only if clearly stated in source)
+ * and a cohesive `summary`.
  */
 export function parseRichWikipediaSummary(
   title: string,
   description: string | undefined,
   extract: string | undefined
 ): {
-  built: string;
+  built?: string;
   summary: string;
 } {
   const cleaned = cleanWikiProse(extract || '');
@@ -273,7 +349,7 @@ export function parseRichWikipediaSummary(
       ? summarySentences.join(' ')
       : cleanDesc
       ? `${title} — ${cleanDesc}.`
-      : `${title} is a notable landmark in this area.`;
+      : `${title} is a notable architectural landmark in this area.`;
 
   const built = extractBuiltYear(cleaned, description);
 
@@ -285,7 +361,7 @@ export function parseRichWikipediaSummary(
 
 /**
  * Fetches the full Wikipedia introductory extract when a user selects a live landmark
- * so that live-spotted buildings have complete summaries and accurate construction dates.
+ * so that live-spotted buildings, statues, and fountains have complete summaries and accurate dates.
  */
 export async function fetchFullWikipediaEnrichment(
   wikiTitle: string,
@@ -312,7 +388,7 @@ export async function fetchFullWikipediaEnrichment(
     );
 
     return {
-      built: parsed.built,
+      ...(parsed.built ? { built: parsed.built } : {}),
       summary: parsed.summary,
       enriched: true
     };
@@ -328,7 +404,7 @@ const EXTERIOR_CUES =
   /exterior|facade|façade|outside|external|front|view|veduta|square|piazza|piata|piața|place|platz|plaza|aerial|ilmakuva|sky-foto|panoram|seen_from|from_the|from_westminster|main_building|päärakennus|talo|linna|palatul|catedrala|westminster_station|town_hall|townhall|stadhuis|hotel_de_ville|maison_du_roi|ducs_de_brabant|tribunale|loggia_dei_lanzi|uffizi|guildhall|supreme_court/i;
 
 const INTERIOR_OR_DETAIL_CUES =
-  /interior|inside|indoor|hall|sala|salone|room|chamber|chapel|crypt|nave|naos|choir|altar|pulpit|organ|ceiling|vault|fresco|mosaic|stained_glass|window|staircase|stairs|lobby|corridor|cafe|library_-_1|courtroom|statue|sculpture|detail|relief|cristogramma|virtù|portalini|bunker|cellar/i;
+  /interior|inside|indoor|hall|sala|salone|room|chamber|chapel|crypt|nave|naos|choir|altar|pulpit|organ|ceiling|vault|fresco|mosaic|stained_glass|window|staircase|stairs|lobby|corridor|cafe|library_-_1|courtroom|detail|relief|cristogramma|virtù|portalini|bunker|cellar/i;
 
 export function isUsableBuildingPhoto(urlOrTitle: string, caption = ''): boolean {
   if (!urlOrTitle) return false;

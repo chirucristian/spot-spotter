@@ -374,10 +374,11 @@ a {
 }
 
 .rooftop-pill-anchor.is-entering,
-.rooftop-pill-anchor.is-exiting {
-  opacity: 0;
+.rooftop-pill-anchor.is-exiting,
+.rooftop-pill-anchor.is-crowded {
+  opacity: 0 !important;
   transform: translate3d(-50%, calc(-92% + var(--pill-shift-y)), 0) scale(0.88);
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 .rooftop-pill {

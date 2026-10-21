@@ -121,24 +121,39 @@ export function resolvePillCollisions(): void {
       attempts < 3 &&
       placedBoxes.some(
         (b) =>
-          candidate.left < b.right - 3 &&
-          candidate.right > b.left + 3 &&
-          candidate.top < b.bottom + 3 &&
-          candidate.bottom > b.top - 3
+          candidate.left < b.right - 4 &&
+          candidate.right > b.left + 4 &&
+          candidate.top < b.bottom + 4 &&
+          candidate.bottom > b.top - 4
       )
     ) {
-      shiftY -= 30;
+      shiftY -= 28;
       candidate = getBox(shiftY);
       attempts++;
     }
 
-    placedBoxes.push(candidate);
+    const stillCollides =
+      !item.isSelected &&
+      placedBoxes.some(
+        (b) =>
+          candidate.left < b.right - 4 &&
+          candidate.right > b.left + 4 &&
+          candidate.top < b.bottom + 4 &&
+          candidate.bottom > b.top - 4
+      );
 
-    const prevShift = item.el.dataset.shiftY;
-    const nextShift = String(shiftY);
-    if (prevShift !== nextShift) {
-      item.el.dataset.shiftY = nextShift;
-      item.el.style.setProperty('--pill-shift-y', `${shiftY}px`);
+    if (stillCollides) {
+      item.el.classList.add('is-crowded');
+    } else {
+      item.el.classList.remove('is-crowded');
+      placedBoxes.push(candidate);
+
+      const prevShift = item.el.dataset.shiftY;
+      const nextShift = String(shiftY);
+      if (prevShift !== nextShift) {
+        item.el.dataset.shiftY = nextShift;
+        item.el.style.setProperty('--pill-shift-y', `${shiftY}px`);
+      }
     }
   }
 }

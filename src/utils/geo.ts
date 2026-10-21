@@ -207,8 +207,38 @@ function lerp(a: number, b: number, t: number): number {
 }
 
 /**
+ * Computes the screen pixel distance (dx, dy) between two coordinates
+ * at a given zoom level using standard Web Mercator projection.
+ */
+export function computeScreenPixelDelta(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+  zoom: number
+): { dx: number; dy: number; dist: number } {
+  const scale = 256 * Math.pow(2, zoom);
+
+  const x1 = ((lng1 + 180) / 360) * scale;
+  const siny1 = Math.sin((lat1 * Math.PI) / 180);
+  const clampedSiny1 = Math.min(Math.max(siny1, -0.9999), 0.9999);
+  const y1 = (0.5 - Math.log((1 + clampedSiny1) / (1 - clampedSiny1)) / (4 * Math.PI)) * scale;
+
+  const x2 = ((lng2 + 180) / 360) * scale;
+  const siny2 = Math.sin((lat2 * Math.PI) / 180);
+  const clampedSiny2 = Math.min(Math.max(siny2, -0.9999), 0.9999);
+  const y2 = (0.5 - Math.log((1 + clampedSiny2) / (1 - clampedSiny2)) / (4 * Math.PI)) * scale;
+
+  const dx = Math.abs(x1 - x2);
+  const dy = Math.abs(y1 - y2);
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  return { dx, dy, dist };
+}
+
+/**
  * Filters the pool of discovered landmarks based on the current map zoom level
- * and visible viewport bounds.
+ * and visible viewport bounds, strictly preventing label crowding when zoomed out.
  */
 export function filterLandmarksForZoomAndBounds(
   pool: Landmark[],
@@ -216,10 +246,19 @@ export function filterLandmarksForZoomAndBounds(
   bounds: MapBoundsBox | null,
   selectedId: string | null
 ): Landmark[] {
+  // If zoomed way out (zoom < 11.5), hide unselected rooftop pills completely to prevent clutter
+  if (zoom < 11.5) {
+    if (selectedId) {
+      const selected = pool.find((l) => l.id === selectedId);
+      return selected ? [selected] : [];
+    }
+    return [];
+  }
+
   let inView = pool;
   if (bounds) {
-    const latMargin = Math.max(0.001, (bounds.north - bounds.south) * 0.12);
-    const lngMargin = Math.max(0.001, (bounds.east - bounds.west) * 0.12);
+    const latMargin = Math.max(0.001, (bounds.north - bounds.south) * 0.1);
+    const lngMargin = Math.max(0.001, (bounds.east - bounds.west) * 0.1);
     inView = pool.filter(
       (lm) =>
         lm.id === selectedId ||
@@ -230,11 +269,50 @@ export function filterLandmarksForZoomAndBounds(
     );
   }
 
-  const t = (zoom - 13.5) / (18.0 - 13.5);
+  // Adaptive density controls: when zoomed out, allow only high-fame icons and enforce wide pixel clearance
+  let minImportance: number;
+  let maxCount: number;
+  let minPixelRadiusX: number;
+  let minPixelRadiusY: number;
 
-  const minImportance = Math.round(lerp(80, 0, t));
-  const maxCount = Math.round(lerp(6, 32, t));
-  const minSpacingMeters = Math.round(lerp(380, 8, t));
+  if (zoom < 12.8) {
+    // Zoom 11.5 - 12.8: Metropolitan overview (e.g. Seattle whole-city view)
+    // Only show top 1-2 tier-1 city icons (e.g. Space Needle)
+    minImportance = 86;
+    maxCount = 2;
+    minPixelRadiusX = 140;
+    minPixelRadiusY = 65;
+  } else if (zoom < 14.0) {
+    // Zoom 12.8 - 14.0: Broad city overview
+    minImportance = 78;
+    maxCount = 4;
+    minPixelRadiusX = 120;
+    minPixelRadiusY = 50;
+  } else if (zoom < 15.2) {
+    // Zoom 14.0 - 15.2: District / Multi-neighborhood view
+    minImportance = 68;
+    maxCount = 8;
+    minPixelRadiusX = 95;
+    minPixelRadiusY = 38;
+  } else if (zoom < 16.5) {
+    // Zoom 15.2 - 16.5: Neighborhood / Downtown view
+    minImportance = 50;
+    maxCount = 16;
+    minPixelRadiusX = 70;
+    minPixelRadiusY = 28;
+  } else if (zoom < 17.8) {
+    // Zoom 16.5 - 17.8: Civic square / Street view
+    minImportance = 25;
+    maxCount = 24;
+    minPixelRadiusX = 45;
+    minPixelRadiusY = 20;
+  } else {
+    // Zoom 17.8+: Rooftop footprint level
+    minImportance = 0;
+    maxCount = 32;
+    minPixelRadiusX = 28;
+    minPixelRadiusY = 14;
+  }
 
   const sorted = [...inView].sort((a, b) => {
     if (a.id === selectedId) return -1;
@@ -251,17 +329,20 @@ export function filterLandmarksForZoomAndBounds(
     }
 
     const imp = lm.importance ?? 60;
-    if (imp < minImportance && picked.length >= 4) {
+    if (imp < minImportance) {
       continue;
     }
 
-    const tooClose = picked.some(
-      (existing) =>
-        existing.id !== selectedId &&
-        computeDistanceMeters(lm.lat, lm.lng, existing.lat, existing.lng) < minSpacingMeters
-    );
+    // Screen pixel clearance check against already picked higher-importance landmarks
+    const collides = picked.some((existing) => {
+      if (existing.id === selectedId) return false;
+      const { dx, dy } = computeScreenPixelDelta(lm.lat, lm.lng, existing.lat, existing.lng, zoom);
+      const nx = dx / minPixelRadiusX;
+      const ny = dy / minPixelRadiusY;
+      return nx * nx + ny * ny < 1.0;
+    });
 
-    if (!tooClose) {
+    if (!collides) {
       picked.push(lm);
     }
 

@@ -8,6 +8,7 @@ import {
   computeLandmarkImportance,
   fetchBuildingPhotoGallery,
   fetchFullWikipediaEnrichment,
+  fetchWikidataRankedLandmarks,
   filterLandmarksForZoomAndBounds,
   inferCategory,
   isArchitecturalBuilding,
@@ -210,27 +211,93 @@ export const App: React.FC = () => {
     setLandmarkPool((prev) => {
       const next = [...prev];
       for (const item of discovered) {
-        const alreadyExists = next.some(
+        const existingIdx = next.findIndex(
           (existing) =>
             existing.wikiTitle === item.wikiTitle ||
             existing.name.toLowerCase() === item.name.toLowerCase() ||
             computeDistanceMeters(existing.lat, existing.lng, item.lat, item.lng) < 18
         );
-        if (!alreadyExists) {
+        if (existingIdx === -1) {
           next.push(item);
+        } else {
+          const existing = next[existingIdx];
+          next[existingIdx] = {
+            ...existing,
+            built: existing.built || item.built,
+            importance: Math.max(existing.importance ?? 60, item.importance ?? 60),
+            summary:
+              item.summary.length > existing.summary.length
+                ? item.summary
+                : existing.summary
+          };
         }
       }
       return next;
     });
   };
 
+  const fetchWikipediaGeosearchAround = async (
+    lat: number,
+    lng: number,
+    clampedRadius: number
+  ): Promise<Landmark[]> => {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
+
+    const filtered = pages.filter((p) => {
+      if (!p.coordinates?.length) return false;
+      return isArchitecturalBuilding(p.title, p.description || '', p.extract || '');
+    });
+
+    const discovered: Landmark[] = [];
+    for (const p of filtered) {
+      const c = p.coordinates[0];
+      const cat = inferCategory(p.title, p.description || p.extract || '');
+      const cleanName = p.title.replace(/\s*\([^)]*\)\s*/g, '');
+      const parsed = parseRichWikipediaSummary(cleanName, p.description, p.extract);
+      const rawThumb = p.thumbnail?.source;
+      const hasValidThumb = Boolean(rawThumb && isUsableBuildingPhoto(rawThumb));
+      const usableThumb = hasValidThumb
+        ? rawThumb
+        : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
+
+      const importance = computeLandmarkImportance(
+        cleanName,
+        p.description || '',
+        p.extract || '',
+        p.length || 2500,
+        hasValidThumb
+      );
+
+      discovered.push({
+        id: `wiki-${p.pageid}`,
+        name: cleanName,
+        role: p.description
+          ? p.description.charAt(0).toUpperCase() + p.description.slice(1)
+          : cat.catLabel,
+        category: cat.category,
+        catLabel: cat.catLabel,
+        lat: c.lat,
+        lng: c.lon,
+        wikiTitle: encodeURIComponent(p.title.replace(/\s+/g, '_')),
+        built: parsed.built,
+        summary: parsed.summary,
+        fallbackImg: usableThumb,
+        importance
+      });
+    }
+    return discovered;
+  };
+
   const spotBuildingsAround = async (
     lat: number,
     lng: number,
-    radiusMeters = 850,
+    radiusMeters = 1200,
     silent = false
   ) => {
-    const clampedRadius = Math.max(300, Math.min(10000, Math.round(radiusMeters)));
+    const clampedRadius = Math.max(400, Math.min(10000, Math.round(radiusMeters)));
 
     if (!silent) {
       setIsScanning(true);
@@ -238,62 +305,38 @@ export const App: React.FC = () => {
     }
 
     try {
-      const url = `https://en.wikipedia.org/w/api.php?action=query&generator=geosearch&ggscoord=${lat}|${lng}&ggsradius=${clampedRadius}&ggslimit=50&prop=coordinates|pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
-      const res = await fetch(url);
-      const data = await res.json();
-      const pages: any[] = data?.query?.pages ? Object.values(data.query.pages) : [];
+      // Run Wikidata SPARQL (ranked by global sitelinks across the full radius)
+      // and Wikipedia Geosearch (fast local fill-in) in parallel, merging each as it resolves.
+      const wikidataPromise = fetchWikidataRankedLandmarks(lat, lng, clampedRadius).then(
+        (wdItems) => {
+          if (wdItems.length > 0) mergeDiscoveredLandmarks(wdItems);
+          return wdItems;
+        }
+      );
 
-      const filtered = pages.filter((p) => {
-        if (!p.coordinates?.length) return false;
-        return isArchitecturalBuilding(p.title, p.description || '', p.extract || '');
-      });
+      const geosearchPromise = fetchWikipediaGeosearchAround(lat, lng, clampedRadius).then(
+        (geoItems) => {
+          if (geoItems.length > 0) mergeDiscoveredLandmarks(geoItems);
+          return geoItems;
+        }
+      );
 
-      const discovered: Landmark[] = [];
-      for (const p of filtered) {
-        const c = p.coordinates[0];
-        const cat = inferCategory(p.title, p.description || p.extract || '');
-        const cleanName = p.title.replace(/\s*\([^)]*\)\s*/g, '');
-        const parsed = parseRichWikipediaSummary(cleanName, p.description, p.extract);
-        const rawThumb = p.thumbnail?.source;
-        const hasValidThumb = Boolean(rawThumb && isUsableBuildingPhoto(rawThumb));
-        const usableThumb = hasValidThumb
-          ? rawThumb
-          : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
+      const [wdResult, geoResult] = await Promise.allSettled([
+        wikidataPromise,
+        geosearchPromise
+      ]);
 
-        const importance = computeLandmarkImportance(
-          cleanName,
-          p.description || '',
-          p.extract || '',
-          p.length || 2500,
-          hasValidThumb
-        );
+      const wdCount = wdResult.status === 'fulfilled' ? wdResult.value.length : 0;
+      const geoCount = geoResult.status === 'fulfilled' ? geoResult.value.length : 0;
+      const totalUnique = wdCount + geoCount;
 
-        discovered.push({
-          id: `wiki-${p.pageid}`,
-          name: cleanName,
-          role: p.description
-            ? p.description.charAt(0).toUpperCase() + p.description.slice(1)
-            : 'Notable Building & Landmark',
-          category: cat.category,
-          catLabel: cat.catLabel,
-          lat: c.lat,
-          lng: c.lon,
-          wikiTitle: encodeURIComponent(p.title.replace(/\s+/g, '_')),
-          built: parsed.built,
-          summary: parsed.summary,
-          fallbackImg: usableThumb,
-          importance
-        });
-      }
-
-      if (discovered.length === 0) {
+      if (totalUnique === 0) {
         if (!silent) showToast('No landmarks found in this view.');
         return;
       }
 
-      mergeDiscoveredLandmarks(discovered);
       if (!silent) {
-        showToast(`Spotted ${discovered.length} landmarks in this area`);
+        showToast('Updated landmarks in this area');
       }
     } catch (err) {
       console.error(err);

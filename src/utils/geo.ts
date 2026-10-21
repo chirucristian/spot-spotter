@@ -70,8 +70,11 @@ export function inferCategory(title: string, desc = ''): { category: LandmarkCat
   ) {
     return { category: 'sacred', catLabel: t.includes('cathedral') ? 'Cathedral' : 'Sacred Building' };
   }
-  if (t.includes('skyscraper') || t.includes('tower') || t.includes('high-rise')) {
+  if (t.includes('skyscraper') || t.includes('tower') || t.includes('high-rise') || t.includes('needle')) {
     return { category: 'civic', catLabel: 'Tower' };
+  }
+  if (t.includes('stadium') || t.includes('arena') || t.includes('coliseum')) {
+    return { category: 'civic', catLabel: 'Arena & Stadium' };
   }
   if (t.includes('castle') || t.includes('fortress') || t.includes('citadel')) {
     return { category: 'civic', catLabel: 'Fortress' };
@@ -79,18 +82,18 @@ export function inferCategory(title: string, desc = ''): { category: LandmarkCat
   if (t.includes('opera house') || t.includes('concert hall') || t.includes('theatre') || t.includes('theater')) {
     return { category: 'culture', catLabel: 'Hall & Theatre' };
   }
-  if (t.includes('museum') || t.includes('gallery') || t.includes('library')) {
+  if (t.includes('museum') || t.includes('gallery') || t.includes('library') || t.includes('aquarium')) {
     return { category: 'culture', catLabel: t.includes('library') ? 'Library Building' : 'Museum Building' };
   }
   return { category: 'civic', catLabel: 'Building' };
 }
 
 /**
- * Strictly determines whether a Wikipedia geosearch page represents an actual physical
- * building/edifice (e.g., "The Shard", "Palace of Westminster", "Middlesex Guildhall")
+ * Strictly determines whether a candidate represents an actual physical
+ * building/edifice (e.g., "The Shard", "Space Needle", "Palace of Westminster", "Middlesex Guildhall")
  * OR a famous statue/monument/fountain (e.g., "Havis Amanda", "Statue of Alexander II"),
  * while rejecting tenant companies, corporations, government ministries/agencies,
- * legislatures, courts-as-organizations, universities-as-institutions, streets, and events.
+ * legislatures, courts-as-organizations, universities-as-institutions, cities, bays, streets, and events.
  */
 export function isArchitecturalBuilding(
   title: string,
@@ -103,88 +106,99 @@ export function isArchitecturalBuilding(
   const firstSentence = (extract.split(/(?<=[.!?])\s+/)[0] || '').toLowerCase();
   const leadText = `${descLower} ${firstSentence}`;
 
-  // 1. Check if it is explicitly a physical building, tower, palace, church, statue, monument, or fountain
+  // Rejectwikidata QID placeholders if label is missing
+  if (/^Q\d+$/.test(cleanTitle)) return false;
+
+  // 1. Check if it is explicitly a physical building, tower, palace, church, stadium, statue, monument, or fountain
   const HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE =
-    /\b(building|edifice|skyscraper|tower|palace|palazzo|palatul|castle|citadel|fortress|cathedral|church|abbey|basilica|chapel|kirkko|tuomiokirkko|mansion|manor|villa|house|talo|linna|säätytalo|broodhuis|stadhuis|rathaus|hôtel de ville|city hall|town hall|guildhall|courthouse|rotunda|pavilion|loggia|arcade|opera house|concert hall|railway station|central station|train station|statue|fountain|monument|memorial|cenotaph|obelisk|arch|gate)\b/i.test(
+    /\b(building|edifice|skyscraper|tower|needle|palace|palazzo|palatul|castle|citadel|fortress|cathedral|church|abbey|basilica|chapel|kirkko|tuomiokirkko|mansion|manor|villa|house|talo|linna|säätytalo|broodhuis|stadhuis|rathaus|hôtel de ville|city hall|town hall|guildhall|courthouse|rotunda|pavilion|loggia|arcade|opera house|concert hall|railway station|central station|train station|king street station|union station|stadium|arena|coliseum|conservatory|spheres|library|statue|fountain|monument|memorial|cenotaph|obelisk|arch|gate)\b/i.test(
       cleanTitle
     ) &&
-    !/\b(house of commons|house of lords|house of representatives|publishing house|software house|fashion house|opera company|theatre company|station road|station street|underground station|metro station|tube station|tram stop|bus station)\b/i.test(
+    !/\b(house of commons|house of lords|house of representatives|publishing house|software house|fashion house|customs house officer|opera company|theatre company|station road|station street|underground station|metro station|tube station|light rail station|tram stop|bus station)\b/i.test(
       cleanTitle
     );
 
   // 2. Reject titles that name an institution, ministry, legislature, court organization, company, or school
   //    rather than the building itself
   const INSTITUTION_TITLE_PATTERNS =
-    /\b(ministry of|department of|office of|chancellor of|cabinet of|council of|parliament of|senate of|house of commons|house of lords|house of representatives|diet of|supreme court of|court of appeal|constitutional court|high court of|district court|embassy of|consulate of|high commission|diplomatic mission|university of|college of|academy of|institute of|faculty of|school of|bank of|central bank|national bank|stock exchange|chamber of commerce|church of england|church of sweden|diocese of|archdiocese of|parish of|municipality of|city of|borough of|battle of|bombing of|siege of|treaty of|fire of|election|festival|orchestra|choir|fc|f\.c\.|sports club)\b/i;
+    /\b(ministry of|department of|office of|chancellor of|cabinet of|council of|parliament of|senate of|house of commons|house of lords|house of representatives|diet of|supreme court of|court of appeal|constitutional court|high court of|district court|embassy of|consulate of|high commission|diplomatic mission|university of|college of|academy of|institute of|faculty of|school of|bank of|central bank|national bank|stock exchange|chamber of commerce|church of england|church of sweden|diocese of|archdiocese of|parish of|municipality of|city of|borough of|county of|state of|battle of|bombing of|siege of|treaty of|fire of|election|festival|exposition|world's fair|gold cup|world cup|championship|orchestra|choir|fc|f\.c\.|sports club|autonomous zone)\b/i;
 
   if (INSTITUTION_TITLE_PATTERNS.test(cleanTitle) && !HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE) {
     return false;
   }
 
-  // 3. Reject if Wikidata description defines the entity as a company, business, government agency/ministry,
-  //    judicial body, educational institution, media outlet, restaurant/retailer, street, district, or person
+  // 3. Reject if Wikidata description defines the entity as a city, bay, neighborhood, event, company,
+  //    business, government agency/ministry, judicial body, university/school, media outlet, restaurant/retailer, street, or person
   const STRICT_INSTITUTION_OR_NON_LANDMARK_DESC =
-    /\b(company|corporation|multinational|business|enterprise|law firm|consultancy|holding company|conglomerate|central bank|financial institution|commercial bank|investment bank|insurance|retailer|supermarket|department store chain|restaurant|café|coffeehouse|pub|bar|nightclub|newspaper|magazine|periodical|broadcaster|television|radio station|record label|publisher|software|airline|government agency|government ministry|ministry of|executive department|state agency|regulatory agency|local authority|legislature|upper house|lower house|bicameral|unicameral|parliamentary chamber|supreme court|appellate court|court of law|judicial body|diplomatic mission|embassy|consulate|public university|research university|private university|university in|higher education|business school|law school|medical school|secondary school|primary school|grammar school|research institute|think tank|learned society|scientific society|non-profit|charity|foundation|association|federation|trade union|political party|orchestra|ensemble|choir|opera company|theatre company|ballet company|sports club|football club|public square|town square|city square|square in|plaza in|piazza in|urban park|public park|park in|garden in|street in|thoroughfare|avenue|boulevard|road in|alley|neighbourhood|neighborhood|district|quarter|suburb|borough|municipality|commune|parish|island|peninsula|harbour|harbor|canal|river|cemetery|graveyard|underground station|metro station|subway station|tube station|tram stop|bus station|ferry|ship|vessel|museum ship|event|ceremony|protest|riot|massacre|politician|monarch|writer|painter|composer|disambiguation|medieval term)\b/i;
+    /\b(city in|county seat|town in|village in|municipality|metropolitan area|central business district|neighborhood|neighbourhood|district|quarter|suburb|borough|commune|parish|island|peninsula|harbour|harbor|bay of|sound|strait|canal|river|lake|hill in|mountain|company|corporation|multinational|business|enterprise|law firm|consultancy|holding company|conglomerate|central bank|financial institution|commercial bank|investment bank|insurance|retailer|supermarket|grocery|department store chain|chain of|restaurant|café|coffeehouse|deli|bakery|oyster bar|sushi|pizzeria|pub|bar|nightclub|newspaper|magazine|periodical|broadcaster|television|radio station|record label|publisher|software|airline|seaplane base|airport|heliport|government agency|government ministry|ministry of|executive department|state agency|regulatory agency|local authority|legislature|upper house|lower house|bicameral|unicameral|parliamentary chamber|supreme court|appellate court|court of law|judicial body|diplomatic mission|embassy|consulate|archdiocese|diocese|public university|research university|private university|jesuit university|university in|higher education|business school|law school|medical school|secondary school|high school|primary school|grammar school|film school|research institute|think tank|learned society|scientific society|non-profit|charity|foundation|association|federation|trade union|political party|orchestra|ensemble|choir|opera company|theatre company|ballet company|sports club|football club|baseball team|football team|competition|tournament|edition of|world's fair|exposition|convention|public square|town square|city square|square in|plaza in|piazza in|urban park|public park|park in|freeway park|garden in|street in|thoroughfare|avenue|boulevard|road in|alley|cemetery|graveyard|underground station|metro station|subway station|tube station|light rail|tram stop|bus station|ferry|ship|vessel|museum ship|event|ceremony|protest|riot|massacre|politician|monarch|writer|painter|composer|disambiguation|medieval term)\b/i;
 
   if (STRICT_INSTITUTION_OR_NON_LANDMARK_DESC.test(descLower)) {
     return false;
   }
 
   // 4. Reject if the first sentence of the Wikipedia extract defines it as a company, institution,
-  //    organization, agency, school, or outdoor area rather than a physical building/statue/fountain
+  //    organization, agency, school, city, or outdoor area rather than a physical building/statue/fountain
   const FIRST_SENTENCE_IS_INSTITUTION =
-    /\bis\s+(?:a|an|the)\s+(?:[a-z-]+\s+){0,3}(?:company|corporation|firm|business|bank|ministry|government\s+agency|department|legislature|parliament|upper\s+house|lower\s+house|court|supreme\s+court|tribunal|university|college|school|institute|academy|society|association|foundation|organization|organisation|charity|union|party|newspaper|magazine|broadcaster|orchestra|club|square|plaza|piazza|park|garden|street|road|avenue|boulevard|district|neighbourhood|neighborhood|island|metro\s+station|underground\s+station|tube\s+station|ship)\b/i;
+    /\bis\s+(?:a|an|the)\s+(?:[a-z-]+\s+){0,3}(?:city|town|municipality|neighborhood|neighbourhood|district|bay|island|company|corporation|firm|business|chain|restaurant|deli|café|coffeehouse|bank|ministry|government\s+agency|department|legislature|parliament|upper\s+house|lower\s+house|court|supreme\s+court|tribunal|university|college|school|institute|think\s+tank|academy|society|association|foundation|organization|organisation|charity|union|party|newspaper|magazine|broadcaster|radio\s+station|orchestra|club|tournament|competition|exposition|world's\s+fair|square|plaza|piazza|park|garden|street|road|avenue|boulevard|metro\s+station|underground\s+station|tube\s+station|light\s+rail\s+station|ship)\b/i;
 
   if (FIRST_SENTENCE_IS_INSTITUTION.test(firstSentence) && !HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE) {
     return false;
   }
 
   // Reject squares, parks, streets, cemeteries by title
-  if (/\b(square|piazza|plaza|park|esplanade|gardens|cemetery|churchyard)\b/i.test(titleLower)) {
+  if (/\b(square|piazza|plaza|park|esplanade|gardens|cemetery|churchyard)\b/i.test(titleLower) && !/\b(tower|building|palace|hall|house|arena|stadium)\b/i.test(titleLower)) {
     return false;
   }
 
-  // 5. Require positive evidence of a physical building, architectural structure, statue/monument, or fountain
+  // 5. Require positive evidence of a physical building, architectural structure, stadium/arena, statue/monument, or fountain
   const POSITIVE_PHYSICAL_CUES =
-    /\b(building|edifice|skyscraper|high-rise|tower|palace|palazzo|castle|fortress|citadel|cathedral|church|basilica|abbey|chapel|mosque|synagogue|temple|mansion|manor|villa|historic house|townhouse|city hall|town hall|guildhall|courthouse|stadhuis|rathaus|hôtel de ville|broodhuis|säätytalo|parliament house|parliament building|main building|library building|museum building|opera house|concert hall|theatre building|theater building|market hall|rotunda|pavilion|loggia|arcade|terminal building|central station|statue|sculpture|bronze|fountain|monument|memorial|cenotaph|obelisk|triumphal arch|designed by|sculpted by|built in|built between|constructed in|constructed between|completed in|erected in|unveiled in|neoclassical|gothic revival|baroque|renaissance|art nouveau|art deco|brutalist|modernist|facade|façade|storey|story|floors)\b/i;
+    /\b(building|edifice|skyscraper|high-rise|tower|observation tower|needle|palace|palazzo|castle|fortress|citadel|cathedral|church|basilica|abbey|chapel|mosque|synagogue|temple|mansion|manor|villa|historic house|townhouse|city hall|town hall|guildhall|courthouse|stadhuis|rathaus|hôtel de ville|broodhuis|säätytalo|parliament house|parliament building|main building|library|museum|aquarium|opera house|concert hall|theatre|theater|public market|market hall|rotunda|pavilion|loggia|arcade|terminal|central station|train station|railway station|stadium|arena|coliseum|conservatory|spheres|ferris wheel|statue|sculpture|bronze|fountain|monument|memorial|cenotaph|obelisk|triumphal arch|designed by|sculpted by|built in|built between|constructed in|constructed between|completed in|erected in|unveiled in|neoclassical|gothic revival|baroque|renaissance|art nouveau|art deco|brutalist|modernist|facade|façade|storey|story|floors)\b/i;
 
   return HAS_EXPLICIT_PHYSICAL_NOUN_IN_TITLE || POSITIVE_PHYSICAL_CUES.test(leadText);
 }
 
 /**
- * Computes a 1–100 prominence score for any Wikipedia building, statue, or fountain so that
- * zoomed-out views surface major city icons and zoomed-in views include local landmarks.
+ * Computes a 1–100 prominence score for any building, statue, or fountain.
+ * When Wikidata `sitelinks` (number of Wikipedia language editions) is available,
+ * uses it as an authoritative global fame metric so major icons like the Space Needle (45 sitelinks)
+ * always surface at the top of the map at every zoom level.
  */
 export function computeLandmarkImportance(
   title: string,
   description = '',
   extract = '',
   articleLength = 2500,
-  hasThumbnail = false
+  hasThumbnail = false,
+  sitelinks?: number
 ): number {
   const text = `${title} ${description} ${extract.slice(0, 220)}`.toLowerCase();
 
-  let score = Math.min(58, Math.max(12, Math.round(Math.sqrt(articleLength) / 2.6)));
-
-  if (hasThumbnail) {
-    score += 14;
+  let score: number;
+  if (typeof sitelinks === 'number' && sitelinks > 0) {
+    // Map sitelinks (e.g. 2..60+) to a high-confidence base score (45..96)
+    score = Math.min(96, Math.round(38 + Math.log2(sitelinks + 1) * 10.5));
+  } else {
+    score = Math.min(58, Math.max(12, Math.round(Math.sqrt(articleLength) / 2.6)));
+    if (hasThumbnail) {
+      score += 14;
+    }
   }
 
   if (
-    /\b(cathedral|palace|skyscraper|shard|gherkin|castle|fortress|citadel|central station|city hall|town hall|basilica|abbey|opera house|guildhall)\b/.test(
+    /\b(cathedral|palace|skyscraper|space needle|shard|gherkin|castle|fortress|citadel|central station|city hall|town hall|basilica|abbey|opera house|guildhall|stadium|arena)\b/.test(
       text
     )
   ) {
-    score += 24;
+    score += typeof sitelinks === 'number' ? 6 : 24;
   } else if (
     /\b(building|tower|house|hall|mansion|villa|pavilion|rotunda|loggia|church|statue|sculpture|fountain|monument|memorial|library|museum|theatre|theater)\b/.test(
       text
     )
   ) {
-    score += 14;
+    score += typeof sitelinks === 'number' ? 3 : 14;
   }
 
-  return Math.max(15, Math.min(97, score));
+  return Math.max(15, Math.min(99, score));
 }
 
 function lerp(a: number, b: number, t: number): number {
@@ -218,9 +232,9 @@ export function filterLandmarksForZoomAndBounds(
 
   const t = (zoom - 13.5) / (18.0 - 13.5);
 
-  const minImportance = Math.round(lerp(82, 0, t));
-  const maxCount = Math.round(lerp(5, 32, t));
-  const minSpacingMeters = Math.round(lerp(420, 8, t));
+  const minImportance = Math.round(lerp(80, 0, t));
+  const maxCount = Math.round(lerp(6, 32, t));
+  const minSpacingMeters = Math.round(lerp(380, 8, t));
 
   const sorted = [...inView].sort((a, b) => {
     if (a.id === selectedId) return -1;
@@ -280,6 +294,35 @@ function splitIntoSentences(text: string): string[] {
 }
 
 /**
+ * Formats structured Wikidata P571 (inception) and P1619 (official opening) ISO timestamps
+ * into a clean `Built` string (e.g., "1961–1962" or "1914") when clearly present.
+ */
+export function formatStructuredBuiltYear(
+  inceptionIso?: string,
+  openedIso?: string
+): string | undefined {
+  const incYear = inceptionIso?.match(/^\+?(\d{4})-/)?.[1];
+  const openYear = openedIso?.match(/^\+?(\d{4})-/)?.[1];
+
+  const incNum = incYear ? Number(incYear) : NaN;
+  const openNum = openYear ? Number(openYear) : NaN;
+
+  const validInc = !Number.isNaN(incNum) && incNum >= 100 && incNum <= 2030;
+  const validOpen = !Number.isNaN(openNum) && openNum >= 100 && openNum <= 2030;
+
+  if (validInc && validOpen) {
+    if (incNum === openNum) return String(incNum);
+    if (incNum < openNum && openNum - incNum <= 120) {
+      return `${incNum}–${openNum}`;
+    }
+    return String(openNum);
+  }
+  if (validOpen) return String(openNum);
+  if (validInc) return String(incNum);
+  return undefined;
+}
+
+/**
  * Extracts the construction/creation year or period ONLY when explicitly stated in the source text
  * with a clear construction, completion, or unveiling verb/phrase. Never guesses from random years.
  */
@@ -303,9 +346,9 @@ export function extractBuiltYear(text: string, description = ''): string | undef
   }
 
   // 3. Explicit construction/completion/unveiling verb + year or year-range:
-  //    e.g. "built in 1757", "completed in 1852", "unveiled in 1908", "erected in 1894", "opened in 1887"
+  //    e.g. "built in 1757", "completed in 1852", "unveiled in 1908", "erected in 1894", "opened in 1962"
   const explicitVerbMatch = combined.match(
-    /\b(?:built|constructed|completed|erected|rebuilt|opened|inaugurated|consecrated|unveiled|sculpted|cast)\s+(?:on\s+\d{1,2}\s+[A-Z][a-z]+\s+|in\s+|around\s+|c\.\s*|ca\.\s*)(?:[A-Z][a-z]+\s+(?:\d{1,2},?\s+)?)?(1[0-9]\d{2}|20[0-2]\d)(?:\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2}))?\b/i
+    /\b(?:built|constructed|completed|erected|rebuilt|opened|inaugurated|consecrated|unveiled|sculpted|cast)\s+(?:for\s+the\s+\d{4}\s+[^,]+?\s+in\s+|on\s+\d{1,2}\s+[A-Z][a-z]+\s+|on\s+[A-Z][a-z]+\s+\d{1,2},\s+|in\s+|around\s+|c\.\s*|ca\.\s*)(?:[A-Z][a-z]+\s+(?:\d{1,2},?\s+)?)?(1[0-9]\d{2}|20[0-2]\d)(?:\s*[–—-]\s*(1[0-9]\d{2}|20[0-2]\d|\d{2}))?\b/i
   );
   if (explicitVerbMatch) {
     return explicitVerbMatch[2]
@@ -360,8 +403,233 @@ export function parseRichWikipediaSummary(
 }
 
 /**
- * Fetches the full Wikipedia introductory extract when a user selects a live landmark
- * so that live-spotted buildings, statues, and fountains have complete summaries and accurate dates.
+ * Queries Wikidata's live SPARQL service for all notable items within `radiusMeters`
+ * ranked by global sitelink count (fame), filters out demolished structures (`P576`)
+ * and non-building institutions, and enriches the top buildings/statues/fountains
+ * with Wikipedia summaries, thumbnails, and structured `P571`/`P1619` build dates.
+ */
+export async function fetchWikidataRankedLandmarks(
+  lat: number,
+  lng: number,
+  radiusMeters: number
+): Promise<Landmark[]> {
+  const radiusKm = Math.max(0.4, Math.min(8.0, radiusMeters / 1000)).toFixed(2);
+
+  const sparql = `
+SELECT ?item ?itemLabel ?itemDescription (SAMPLE(?loc) AS ?coord) (MAX(?sl) AS ?sitelinks) (MIN(?inc) AS ?inception) (MIN(?open) AS ?opened) (SAMPLE(?img) AS ?image) WHERE {
+  SERVICE wikibase:around {
+    ?item wdt:P625 ?loc .
+    bd:serviceParam wikibase:center "Point(${lng} ${lat})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:radius "${radiusKm}" .
+  }
+  ?item wikibase:sitelinks ?sl .
+  FILTER(?sl >= 2)
+  FILTER NOT EXISTS { ?item wdt:P576 ?demolished }
+  OPTIONAL { ?item wdt:P571 ?inc }
+  OPTIONAL { ?item wdt:P1619 ?open }
+  OPTIONAL { ?item wdt:P18 ?img }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+GROUP BY ?item ?itemLabel ?itemDescription
+ORDER BY DESC(?sitelinks)
+LIMIT 95
+`.trim();
+
+  const sparqlUrl = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(
+    sparql
+  )}`;
+
+  const sparqlRes = await fetch(sparqlUrl, {
+    headers: {
+      Accept: 'application/sparql-results+json'
+    }
+  });
+  if (!sparqlRes.ok) {
+    throw new Error(`Wikidata SPARQL error: ${sparqlRes.status}`);
+  }
+
+  const sparqlData = await sparqlRes.json();
+  const bindings: any[] = sparqlData?.results?.bindings || [];
+
+  interface WikidataCandidate {
+    qid: string;
+    label: string;
+    description: string;
+    lat: number;
+    lng: number;
+    sitelinks: number;
+    structuredBuilt?: string;
+    commonsImg?: string;
+  }
+
+  const candidates: WikidataCandidate[] = [];
+
+  for (const b of bindings) {
+    const itemUri: string = b.item?.value || '';
+    const qid = itemUri.split('/').pop() || '';
+    const label: string = b.itemLabel?.value || '';
+    const description: string = b.itemDescription?.value || '';
+    const coordStr: string = b.coord?.value || '';
+    const ptMatch = coordStr.match(/Point\(([-\d.]+)\s+([-\d.]+)\)/);
+    if (!qid || !label || !ptMatch) continue;
+
+    const itemLng = parseFloat(ptMatch[1]);
+    const itemLat = parseFloat(ptMatch[2]);
+    if (Number.isNaN(itemLat) || Number.isNaN(itemLng)) continue;
+
+    // Pre-filter using label + Wikidata description so cities, events, universities, and companies are dropped early
+    if (!isArchitecturalBuilding(label, description, '')) continue;
+
+    const sitelinks = parseInt(b.sitelinks?.value || '2', 10);
+    const structuredBuilt = formatStructuredBuiltYear(
+      b.inception?.value,
+      b.opened?.value
+    );
+
+    let commonsImg: string | undefined;
+    if (b.image?.value) {
+      const rawImg: string = b.image.value;
+      // Convert Special:FilePath URLs to 960px thumbnail URLs
+      commonsImg = rawImg.includes('Special:FilePath/')
+        ? `${rawImg.replace(/^http:/, 'https:')}?width=960`
+        : rawImg.replace(/^http:/, 'https:');
+    }
+
+    candidates.push({
+      qid,
+      label,
+      description,
+      lat: itemLat,
+      lng: itemLng,
+      sitelinks,
+      structuredBuilt,
+      commonsImg
+    });
+
+    if (candidates.length >= 45) break;
+  }
+
+  if (candidates.length === 0) return [];
+
+  // Resolve exact English Wikipedia titles for the candidate QIDs via wbgetentities
+  const qidList = candidates.map((c) => c.qid).join('|');
+  const qidToWikiTitle = new Map<string, string>();
+
+  try {
+    const wbUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(
+      qidList
+    )}&props=sitelinks&sitefilter=enwiki&format=json&origin=*`;
+    const wbRes = await fetch(wbUrl);
+    if (wbRes.ok) {
+      const wbData = await wbRes.json();
+      const entities = wbData?.entities || {};
+      for (const [qid, ent] of Object.entries<any>(entities)) {
+        const enTitle = ent?.sitelinks?.enwiki?.title;
+        if (enTitle) {
+          qidToWikiTitle.set(qid, enTitle);
+        }
+      }
+    }
+  } catch (_) {}
+
+  // Batch-fetch Wikipedia extracts, descriptions, and thumbnails for resolved titles
+  const wikiTitles = Array.from(
+    new Set(
+      candidates.map((c) => qidToWikiTitle.get(c.qid) || c.label).slice(0, 45)
+    )
+  );
+
+  const wikiPageByTitle = new Map<string, any>();
+  if (wikiTitles.length > 0) {
+    try {
+      const wpUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(
+        wikiTitles.join('|')
+      )}&redirects=1&prop=pageimages|extracts|description|info&exintro=1&explaintext=1&exchars=1400&piprop=thumbnail&pithumbsize=960&format=json&origin=*`;
+      const wpRes = await fetch(wpUrl);
+      if (wpRes.ok) {
+        const wpData = await wpRes.json();
+        const pages: any[] = wpData?.query?.pages
+          ? Object.values(wpData.query.pages)
+          : [];
+        const redirects: Array<{ from: string; to: string }> =
+          wpData?.query?.redirects || [];
+
+        for (const p of pages) {
+          if (p.missing !== undefined) continue;
+          wikiPageByTitle.set(p.title.toLowerCase(), p);
+        }
+        for (const r of redirects) {
+          const target = wikiPageByTitle.get(r.to.toLowerCase());
+          if (target) {
+            wikiPageByTitle.set(r.from.toLowerCase(), target);
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  const results: Landmark[] = [];
+
+  for (const c of candidates) {
+    const resolvedTitle = qidToWikiTitle.get(c.qid) || c.label;
+    const wp =
+      wikiPageByTitle.get(resolvedTitle.toLowerCase()) ||
+      wikiPageByTitle.get(c.label.toLowerCase());
+
+    const extract: string = wp?.extract || '';
+    const desc: string = wp?.description || c.description || '';
+    const titleForCheck = wp?.title || c.label;
+
+    if (!isArchitecturalBuilding(titleForCheck, desc, extract)) {
+      continue;
+    }
+
+    const cleanName = titleForCheck.replace(/\s*\([^)]*\)\s*/g, '').trim();
+    const cat = inferCategory(cleanName, `${desc} ${extract}`);
+    const parsed = parseRichWikipediaSummary(cleanName, desc, extract);
+
+    const rawThumb = wp?.thumbnail?.source || c.commonsImg;
+    const hasValidThumb = Boolean(rawThumb && isUsableBuildingPhoto(rawThumb));
+    const usableThumb = hasValidThumb
+      ? rawThumb!
+      : 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Lutheran_Cathedral_Helsinki.jpg/960px-Lutheran_Cathedral_Helsinki.jpg';
+
+    const importance = computeLandmarkImportance(
+      cleanName,
+      desc,
+      extract,
+      wp?.length || 3500,
+      hasValidThumb,
+      c.sitelinks
+    );
+
+    results.push({
+      id: wp?.pageid ? `wiki-${wp.pageid}` : `wd-${c.qid}`,
+      name: cleanName,
+      role: desc
+        ? desc.charAt(0).toUpperCase() + desc.slice(1)
+        : cat.catLabel,
+      category: cat.category,
+      catLabel: cat.catLabel,
+      lat: c.lat,
+      lng: c.lng,
+      wikiTitle: encodeURIComponent(
+        (wp?.title || resolvedTitle).replace(/\s+/g, '_')
+      ),
+      built: c.structuredBuilt || parsed.built,
+      summary: parsed.summary,
+      fallbackImg: usableThumb,
+      importance,
+      enriched: Boolean(extract)
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Fetches the full Wikipedia introductory extract and Wikidata structured build date (P571/P1619)
+ * when a user selects a landmark.
  */
 export async function fetchFullWikipediaEnrichment(
   wikiTitle: string,
@@ -371,7 +639,7 @@ export async function fetchFullWikipediaEnrichment(
   if (!wikiTitle) return null;
   try {
     const decodedTitle = decodeURIComponent(wikiTitle);
-    const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts|description&exintro=1&explaintext=1&titles=${encodeURIComponent(
+    const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts|description|pageprops&exintro=1&explaintext=1&titles=${encodeURIComponent(
       decodedTitle
     )}&format=json&origin=*`;
     const res = await fetch(url);
@@ -387,8 +655,30 @@ export async function fetchFullWikipediaEnrichment(
       page.extract
     );
 
+    let structuredBuilt: string | undefined;
+    const qid: string | undefined = page.pageprops?.wikibase_item;
+    if (qid) {
+      try {
+        const wdUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(
+          qid
+        )}&props=claims&format=json&origin=*`;
+        const wdRes = await fetch(wdUrl);
+        if (wdRes.ok) {
+          const wdData = await wdRes.json();
+          const claims = wdData?.entities?.[qid]?.claims;
+          const incIso =
+            claims?.P571?.[0]?.mainsnak?.datavalue?.value?.time;
+          const openIso =
+            claims?.P1619?.[0]?.mainsnak?.datavalue?.value?.time;
+          structuredBuilt = formatStructuredBuiltYear(incIso, openIso);
+        }
+      } catch (_) {}
+    }
+
+    const finalBuilt = structuredBuilt || parsed.built;
+
     return {
-      ...(parsed.built ? { built: parsed.built } : {}),
+      ...(finalBuilt ? { built: finalBuilt } : {}),
       summary: parsed.summary,
       enriched: true
     };
